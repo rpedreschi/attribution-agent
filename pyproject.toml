@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "attribution-agent"
+version = "0.1.0"
+description = "DeltaStream Marketing Attribution Agent — Phase 0 demo (real-time multi-touch attribution + budget-reallocation agent)."
+requires-python = ">=3.10"
+dependencies = [
+    "confluent-kafka>=2.3,<3.0",
+    "clickhouse-connect>=0.7,<1.0",
+    "boto3>=1.34,<2.0",
+    "openpyxl>=3.1,<4.0",
+    "PyYAML>=6.0,<7.0",
+    "pydantic>=2.6,<3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+attribution-generate = "attribution_agent.mock_generator.__main__:main"
+attribution-boardpack = "attribution_agent.spreadsheet.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

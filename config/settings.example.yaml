@@ -1,0 +1,53 @@
+# DeltaStream Attribution Agent — configuration template.
+# Copy to config/settings.yaml and fill in. settings.yaml is gitignored.
+# Every value can also be supplied via the matching UPPER_SNAKE env var
+# (e.g. KAFKA_BOOTSTRAP_SERVERS), which takes precedence over this file.
+
+customer:
+  # The demo tenant. "acme_cloud" drives the deterministic sample dataset.
+  id: acme_cloud
+  display_name: "Acme Cloud"
+  fiscal_period: "2026-Q1"          # period the weekly board pack reports on
+
+kafka:
+  bootstrap_servers: "pkc-xxxxx.us-east-1.aws.confluent.cloud:9092"
+  security_protocol: "SASL_SSL"     # PLAINTEXT for local self-hosted
+  sasl_mechanism: "PLAIN"
+  sasl_username: "${KAFKA_API_KEY}"
+  sasl_password: "${KAFKA_API_SECRET}"
+  # One topic per source object. The generator publishes here; DeltaStream
+  # CREATE STREAM / CREATE CHANGELOG reads from here. Keys match the topic_key
+  # each event builder emits in mock_generator/schemas.py.
+  topics:
+    salesforce_accounts: "src.salesforce.cdc.accounts"
+    salesforce_contacts: "src.salesforce.cdc.contacts"
+    salesforce_opportunities: "src.salesforce.cdc.opportunities"
+    hubspot: "src.hubspot.events"
+    ga4: "src.ga4.events"
+    linkedin_ads: "src.linkedin.ads"
+    google_ads: "src.google.ads"
+    outreach: "src.outreach.activity"
+
+clickhouse:
+  host: "your-instance.clickhouse.cloud"
+  port: 8443
+  secure: true
+  database: "attribution"
+  username: "default"
+  password: "${CLICKHOUSE_PASSWORD}"
+
+agent:
+  # AWS Bedrock AgentCore + Claude via Bedrock
+  aws_region: "us-east-1"
+  bedrock_model_id: "us.anthropic.claude-sonnet-4-6-v1:0"
+  agentcore_runtime_arn: "arn:aws:bedrock-agentcore:us-east-1:ACCOUNT:runtime/attribution-agent"
+  # Guardrails — see agent/guardrails.py. These are the v1 defaults.
+  guardrails:
+    max_weekly_reallocation_pct: 0.20      # +/- 20% of current channel spend
+    min_conversions_trailing_90d: 30        # exclude thin channels
+    excluded_channels: ["Brand", "Events"]  # no agent autonomy over these
+    attribution_model_for_decisions: "time_decay"
+
+output:
+  directory: "out"
+  filename_template: "{customer_id}_attribution_{fiscal_period}.xlsx"
