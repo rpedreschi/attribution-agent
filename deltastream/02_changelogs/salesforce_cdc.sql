@@ -19,7 +19,8 @@ CREATE CHANGELOG sf_contacts (
     'topic' = 'src.salesforce.cdc.contacts',
     'store' = 'confluent_cloud',
     'value.format' = 'json',
-    'timestamp' = 'updated_at'
+    'timestamp' = 'updated_at',
+    'timestamp.format' = 'iso8601'
 );
 
 CREATE CHANGELOG sf_accounts (
@@ -36,7 +37,8 @@ CREATE CHANGELOG sf_accounts (
     'topic' = 'src.salesforce.cdc.accounts',
     'store' = 'confluent_cloud',
     'value.format' = 'json',
-    'timestamp' = 'updated_at'
+    'timestamp' = 'updated_at',
+    'timestamp.format' = 'iso8601'
 );
 
 CREATE CHANGELOG sf_opportunities (
@@ -52,5 +54,6 @@ CREATE CHANGELOG sf_opportunities (
     'topic' = 'src.salesforce.cdc.opportunities',
     'store' = 'confluent_cloud',
     'value.format' = 'json',
-    'timestamp' = 'event_time'
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );

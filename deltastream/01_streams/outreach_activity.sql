@@ -14,5 +14,6 @@ CREATE STREAM outreach_activity (
     'topic' = 'src.outreach.activity',
     'store' = 'confluent_cloud',
     'value.format' = 'json',
-    'timestamp' = 'event_time'
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );

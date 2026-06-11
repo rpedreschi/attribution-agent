@@ -14,7 +14,7 @@ customer:
 
 kafka:
   # Confluent Cloud cluster. SASL_SSL + PLAIN (API key / secret).
-  bootstrap_servers: "pkc-xxxxx.us-east-2.aws.confluent.cloud:9092"
+  bootstrap_servers: "${KAFKA_BOOTSTRAP_SERVERS}"   # e.g. pkc-921jm.us-east-2.aws.confluent.cloud:9092
   security_protocol: "SASL_SSL"
   sasl_mechanism: "PLAIN"
   sasl_username: "${KAFKA_API_KEY}"

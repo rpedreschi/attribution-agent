@@ -19,5 +19,6 @@ CREATE STREAM hubspot_events (
     'topic' = 'src.hubspot.events',
     'store' = 'confluent_cloud',
     'value.format' = 'json',
-    'timestamp' = 'event_time'
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );
