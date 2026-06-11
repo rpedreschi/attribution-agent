@@ -1,12 +1,10 @@
 # Runtime dependencies for the DeltaStream Attribution Agent (Phase 0 demo)
 
-# Mock data generator -> Kafka
+# Mock data generator -> Kafka (Confluent Cloud)
 confluent-kafka>=2.3,<3.0
 
-# Analytical store client
-clickhouse-connect>=0.7,<1.0
-
-# Agent runtime (AWS Bedrock AgentCore + Claude)
+# Agent runtime: Claude via direct Anthropic API (local CLI) or AWS Bedrock
+anthropic>=0.40,<1.0
 boto3>=1.34,<2.0
 
 # Spreadsheet artifact

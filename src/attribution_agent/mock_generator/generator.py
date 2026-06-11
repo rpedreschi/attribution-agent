@@ -14,10 +14,10 @@ Volumes are pinned to sample_data.FUNNEL and sample_data.CHANNELS so the events
 roll up to the same 36 closed-won deals, 142 opportunities, and per-channel
 spend that the board pack reports. Every closed-won account is given a real
 multi-touch journey across channels ending before its close date, so the
-ClickHouse attribution views have journeys to credit.
+DeltaStream materialized views have real journeys to credit.
 
 NOTE: the published sample workbook reads canonical figures from `sample_data`
-directly (exact tie-out); a live run through Kafka -> DeltaStream -> ClickHouse
+directly (exact tie-out); a live run through Kafka -> DeltaStream -> the agent
 reproduces these aggregates closely but not to the penny, because attribution
 credit depends on the randomized journey shapes generated here.
 """
@@ -246,7 +246,7 @@ class Generator:
 
     def emit_spend(self) -> list[Event]:
         """Daily spend for the two ad platforms. Non-ad channel cost is loaded
-        into ClickHouse directly (see sink notes) and is not emitted here."""
+        as its own Kafka topic by finance/manual export and is not emitted here."""
         events: list[Event] = []
         for ch_name, builder, campaigns in (
             ("Paid Social", schemas.linkedin_spend,

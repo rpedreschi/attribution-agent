@@ -82,6 +82,32 @@ class KafkaPublisher:
         self._producer.flush(30)
 
 
+def create_topics(settings: Settings, *, partitions: int = 6, replication: int = 3) -> None:
+    """Create the source topics on Confluent Cloud (auto-create is usually off).
+    Confluent Basic/Standard clusters require replication factor 3."""
+    from confluent_kafka.admin import AdminClient, NewTopic  # lazy import
+
+    conf: dict[str, object] = {
+        "bootstrap.servers": settings.kafka.bootstrap_servers,
+        "security.protocol": settings.kafka.security_protocol,
+    }
+    if settings.kafka.sasl_mechanism:
+        conf.update({
+            "sasl.mechanism": settings.kafka.sasl_mechanism,
+            "sasl.username": settings.kafka.sasl_username,
+            "sasl.password": settings.kafka.sasl_password,
+        })
+    admin = AdminClient(conf)
+    topics = [NewTopic(t, num_partitions=partitions, replication_factor=replication)
+              for t in settings.kafka.topics.values()]
+    for topic, fut in admin.create_topics(topics).items():
+        try:
+            fut.result()
+            print(f"  created topic {topic}")
+        except Exception as exc:  # noqa: BLE001 - already-exists is fine
+            print(f"  topic {topic}: {exc}")
+
+
 def publish_all(events: Iterable[Event], settings: Settings, *, dry_run: bool,
                 out_dir: Path | None = None) -> dict[str, int]:
     """Route each event to its topic and publish. Returns per-topic counts."""

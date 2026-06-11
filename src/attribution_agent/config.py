@@ -32,13 +32,24 @@ class KafkaConfig(BaseModel):
     topics: dict[str, str] = Field(default_factory=dict)
 
 
-class ClickHouseConfig(BaseModel):
-    host: str = "localhost"
-    port: int = 8443
-    secure: bool = True
+class DeltaStreamConfig(BaseModel):
+    """DeltaStream MCP endpoint. Materialized views the API token's role can
+    SELECT are exposed as MCP tools the agent discovers and calls."""
+    mcp_endpoint: str = "https://api.deltastream.io/v2/mcp"
+    api_token: str | None = None          # CREATE API_TOKEN; sent as Bearer
+    organization: str | None = None
+    role: str = "attribution_reader"
     database: str = "attribution"
-    username: str = "default"
-    password: str | None = None
+    schema_name: str = "public"
+    # MV names exposed as MCP tools (must match the deltastream/ SQL). These
+    # serve the real-time *context*; the agent computes the three attribution
+    # models from the per-account touch distribution + won revenue.
+    views: dict[str, str] = Field(default_factory=lambda: {
+        "spend_by_channel": "mv_spend_by_channel",
+        "funnel_by_category": "mv_funnel_by_category",
+        "channel_touch_distribution": "mv_channel_touch_distribution",
+        "won_revenue_by_account": "mv_won_revenue_by_account",
+    })
 
 
 class GuardrailConfig(BaseModel):
@@ -49,8 +60,13 @@ class GuardrailConfig(BaseModel):
 
 
 class AgentConfig(BaseModel):
+    # LLM backend: "bedrock" (AgentCore) or "anthropic" (direct API, for the
+    # local interactive CLI). Both call Claude.
+    llm_backend: str = "bedrock"
     aws_region: str = "us-east-1"
     bedrock_model_id: str = "us.anthropic.claude-sonnet-4-6-v1:0"
+    anthropic_model_id: str = "claude-sonnet-4-6"
+    anthropic_api_key: str | None = None
     agentcore_runtime_arn: str | None = None
     guardrails: GuardrailConfig = Field(default_factory=GuardrailConfig)
 
@@ -69,7 +85,7 @@ class OutputConfig(BaseModel):
 class Settings(BaseModel):
     customer: CustomerConfig = Field(default_factory=CustomerConfig)
     kafka: KafkaConfig = Field(default_factory=KafkaConfig)
-    clickhouse: ClickHouseConfig = Field(default_factory=ClickHouseConfig)
+    deltastream: DeltaStreamConfig = Field(default_factory=DeltaStreamConfig)
     agent: AgentConfig = Field(default_factory=AgentConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
 

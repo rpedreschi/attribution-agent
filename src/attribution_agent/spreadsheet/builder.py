@@ -261,9 +261,9 @@ def _data_assumptions(wb: Workbook, d: BoardPackData) -> None:
         ("", ""),
         ("Source systems", "Salesforce CRM, HubSpot MAP, Google Analytics 4, "
                            "LinkedIn Ads, Google Ads, Outreach"),
-        ("Pipeline", "Source APIs -> Kafka -> DeltaStream (identity resolution) "
-                     "-> ClickHouse -> Agent -> this workbook"),
-        ("Refresh cadence", "Attribution views refresh every 15 minutes; board pack generated weekly"),
+        ("Pipeline", "Source APIs -> Kafka (Confluent Cloud) -> DeltaStream "
+                     "(identity resolution + materialized views) -> MCP -> Agent -> this workbook"),
+        ("Refresh cadence", "DeltaStream materialized views update continuously; board pack generated weekly"),
         ("Identity resolution", "Anonymous web user_id stitched to Salesforce contact/account via "
                                 "the HubSpot form web-cookie bridge and Salesforce contacts CDC"),
         ("", ""),

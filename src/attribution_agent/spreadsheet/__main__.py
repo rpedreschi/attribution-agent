@@ -3,8 +3,8 @@
     # Deterministic sample (no infra) -> ./out/acme_cloud_attribution_2026-Q1.xlsx
     python -m attribution_agent.spreadsheet
 
-    # From live ClickHouse views:
-    python -m attribution_agent.spreadsheet --source clickhouse
+    # From live DeltaStream materialized views over MCP:
+    python -m attribution_agent.spreadsheet --source mcp
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from .builder import build_workbook
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate the attribution board pack.")
-    parser.add_argument("--source", choices=["sample", "clickhouse"], default="sample",
+    parser.add_argument("--source", choices=["sample", "mcp"], default="sample",
                         help="Where to read attribution data from (default: sample).")
     parser.add_argument("--out", default=None, help="Output .xlsx path (overrides config).")
     args = parser.parse_args()

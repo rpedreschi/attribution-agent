@@ -1,17 +1,19 @@
 """BoardPackData — the assembled, view-agnostic dataset for one weekly report.
 
 `from_sample()` builds it from the canonical Acme Cloud figures (exact tie-out,
-used for the demo artifact). `from_clickhouse()` builds the identical shape from
-the live attribution views. Everything downstream (spreadsheet, observations,
-recommendations) consumes BoardPackData and never touches the data source.
+used for the demo artifact). `from_mcp()` builds the identical shape from the
+live DeltaStream materialized views served over MCP. Everything downstream
+(spreadsheet, observations, recommendations) consumes BoardPackData and never
+touches the data source.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 from statistics import mean
 
 from .. import sample_data as sd
-from .clickhouse_client import ClickHouseClient
+from .deltastream_mcp import DeltaStreamMCPClient
 
 
 @dataclass
@@ -160,25 +162,41 @@ class BoardPackData:
         )
 
     @classmethod
-    def from_clickhouse(cls, client: ClickHouseClient, customer_name: str,
-                        fiscal_period: str) -> "BoardPackData":
-        attr_rows = client.attribution_by_channel()
-        channels = [ChannelAttribution(
-            r["channel"], float(r["last_touch_revenue"]), float(r["linear_revenue"]),
-            float(r["time_decay_revenue"])) for r in attr_rows]
-        funnel = [FunnelRow(r["program_category"], int(r["touches"]), int(r["conversations"]),
-                            int(r["mqls"]), int(r["sqls"]), int(r["opps"]), int(r["won"]))
-                  for r in client.funnel_metrics()]
-        cac_roi = [CacRoiRow(r["program_category"], float(r["spend"] or 0),
-                             float(r["attributed_revenue"] or 0), int(r["attributed_deals"] or 0))
-                   for r in client.cac_roi()]
-        campaigns = [CampaignRow(r["campaign"], r["channel"], 0.0,
-                                 float(r["attributed_revenue"]), 0)
-                     for r in client.top_campaigns(20)]
+    def from_mcp(cls, client: DeltaStreamMCPClient, customer_name: str,
+                 fiscal_period: str) -> "BoardPackData":
+        """Build from the DeltaStream materialized views served over MCP.
+
+        DeltaStream serves the live aggregated context (spend, funnel, per-account
+        channel touch distribution, won revenue); the three attribution models are
+        computed here from that context — see `_attribution_from_context`.
+        """
+        spend_rows = client.query_view("spend_by_channel")
+        funnel_rows = client.query_view("funnel_by_category")
+        dist_rows = client.query_view("channel_touch_distribution")
+        won_rows = client.query_view("won_revenue_by_account")
+
+        spend_by_channel = {r["channel"]: float(r.get("spend") or 0) for r in spend_rows}
+        attr, deals = _attribution_from_context(dist_rows, won_rows)
+
+        all_channels = sorted(set(spend_by_channel) | set(attr))
+        channels = [ChannelAttribution(ch, attr.get(ch, _Z).last_touch,
+                                       attr.get(ch, _Z).linear, attr.get(ch, _Z).time_decay)
+                    for ch in all_channels]
+        funnel = [FunnelRow(r["program_category"], int(r.get("touches") or 0),
+                            int(r.get("conversations") or 0), int(r.get("mqls") or 0),
+                            int(r.get("sqls") or 0), int(r.get("opps") or 0),
+                            int(r.get("won") or 0)) for r in funnel_rows]
+        cac_roi = [CacRoiRow(ch, spend_by_channel.get(ch, 0.0),
+                             attr.get(ch, _Z).time_decay, deals.get(ch, 0))
+                   for ch in all_channels]
+        # No campaign-level MV in v1; the campaign sheet is populated only in
+        # sample mode. Live mode leaves it empty rather than fabricate it.
+        campaigns: list[CampaignRow] = []
+
         total_attr = sum(c.time_decay for c in channels)
-        total_spend = sum(r.spend for r in cac_roi)
-        won = sum(f.won for f in funnel)
-        # Prior-period comparators would come from a second windowed query in
+        total_spend = sum(spend_by_channel.values())
+        won = len(won_rows) or sum(f.won for f in funnel)
+        # Prior-period comparators would come from a windowed re-query in
         # production; the sample comparators stand in for the demo.
         return cls(
             customer_name=customer_name, fiscal_period=fiscal_period,
@@ -187,6 +205,86 @@ class BoardPackData:
             total_spend=total_spend, prior_spend=sd.PRIOR_TOTAL_SPEND,
             won_deals=won, prior_won_deals=sd.PRIOR_WON_DEALS,
         )
+
+
+@dataclass
+class _Attr:
+    last_touch: float = 0.0
+    linear: float = 0.0
+    time_decay: float = 0.0
+
+
+_Z = _Attr()  # zero sentinel for channels with no attribution
+
+
+def _parse_ts(value) -> datetime | None:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        secs = value / 1000 if value > 1e12 else value
+        return datetime.utcfromtimestamp(secs)
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00")).replace(tzinfo=None)
+    except ValueError:
+        return None
+
+
+def _attribution_from_context(
+    dist_rows: list[dict], won_rows: list[dict],
+    half_life_days: float = 7.0,
+) -> tuple[dict[str, _Attr], dict[str, int]]:
+    """Distribute each account's won revenue across channels under all three
+    models, from the per-account channel touch distribution.
+
+    last touch  = the channel with the most recent touch gets 100%
+    linear      = revenue split by each channel's share of touch count
+    time decay  = recency-weighted (per channel's latest touch vs close), halved
+                  every `half_life_days`, normalized per account
+    deals       = last-touch credit (new customers per channel, for CAC)
+    """
+    by_account: dict[str, list[dict]] = {}
+    for r in dist_rows:
+        by_account.setdefault(r["account_id"], []).append(r)
+
+    attr: dict[str, _Attr] = {}
+    deals: dict[str, int] = {}
+
+    def bucket(ch: str) -> _Attr:
+        return attr.setdefault(ch, _Attr())
+
+    for won in won_rows:
+        acct = won.get("account_id")
+        revenue = float(won.get("revenue") or 0)
+        rows = by_account.get(acct)
+        if not rows or revenue <= 0:
+            continue
+        close = _parse_ts(won.get("close_time"))
+        total_touch = sum(int(r.get("touch_count") or 0) for r in rows) or 1
+
+        # last touch + deal credit
+        last_row = max(rows, key=lambda r: _parse_ts(r.get("last_touch_time")) or datetime.min)
+        last_ch = last_row["channel"]
+        bucket(last_ch).last_touch += revenue
+        deals[last_ch] = deals.get(last_ch, 0) + 1
+
+        # linear
+        for r in rows:
+            bucket(r["channel"]).linear += revenue * int(r.get("touch_count") or 0) / total_touch
+
+        # time decay
+        weights: dict[str, float] = {}
+        for r in rows:
+            touch_t = _parse_ts(r.get("last_touch_time"))
+            if close and touch_t:
+                days = max((close - touch_t).total_seconds() / 86400, 0)
+                weights[r["channel"]] = 2 ** (-days / half_life_days)
+            else:
+                weights[r["channel"]] = 1.0
+        wsum = sum(weights.values()) or 1.0
+        for ch, w in weights.items():
+            bucket(ch).time_decay += revenue * w / wsum
+
+    return attr, deals
 
 
 def _pearson(a: list[float], b: list[float]) -> float:

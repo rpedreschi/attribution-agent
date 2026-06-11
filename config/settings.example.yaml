@@ -1,23 +1,24 @@
 # DeltaStream Attribution Agent — configuration template.
-# Copy to config/settings.yaml and fill in. settings.yaml is gitignored.
-# Every value can also be supplied via the matching UPPER_SNAKE env var
-# (e.g. KAFKA_BOOTSTRAP_SERVERS), which takes precedence over this file.
+# Copy to config/settings.yaml (gitignored) and fill in, or supply any value
+# via the matching UPPER_SNAKE env var (takes precedence). ${VAR} references in
+# this file are expanded from the environment so secrets stay out of the file.
+#
+# Architecture:
+#   datagen (local) -> Confluent Cloud (Kafka) -> DeltaStream (streams + MVs)
+#   -> DeltaStream MCP endpoint -> interactive agent -> xlsx
 
 customer:
-  # The demo tenant. "acme_cloud" drives the deterministic sample dataset.
   id: acme_cloud
   display_name: "Acme Cloud"
-  fiscal_period: "2026-Q1"          # period the weekly board pack reports on
+  fiscal_period: "2026-Q1"
 
 kafka:
-  bootstrap_servers: "pkc-xxxxx.us-east-1.aws.confluent.cloud:9092"
-  security_protocol: "SASL_SSL"     # PLAINTEXT for local self-hosted
+  # Confluent Cloud cluster. SASL_SSL + PLAIN (API key / secret).
+  bootstrap_servers: "pkc-xxxxx.us-east-2.aws.confluent.cloud:9092"
+  security_protocol: "SASL_SSL"
   sasl_mechanism: "PLAIN"
   sasl_username: "${KAFKA_API_KEY}"
   sasl_password: "${KAFKA_API_SECRET}"
-  # One topic per source object. The generator publishes here; DeltaStream
-  # CREATE STREAM / CREATE CHANGELOG reads from here. Keys match the topic_key
-  # each event builder emits in mock_generator/schemas.py.
   topics:
     salesforce_accounts: "src.salesforce.cdc.accounts"
     salesforce_contacts: "src.salesforce.cdc.contacts"
@@ -28,24 +29,28 @@ kafka:
     google_ads: "src.google.ads"
     outreach: "src.outreach.activity"
 
-clickhouse:
-  host: "your-instance.clickhouse.cloud"
-  port: 8443
-  secure: true
+deltastream:
+  # DeltaStream MCP REST endpoint. Materialized views the token's role can
+  # SELECT are auto-exposed as MCP tools. See deltastream/ for the SQL and the
+  # CREATE API_TOKEN step.
+  mcp_endpoint: "https://api.deltastream.io/v2/mcp"
+  api_token: "${DELTASTREAM_API_TOKEN}"   # CREATE API_TOKEN bound to the role below
+  organization: "${DELTASTREAM_ORG}"
+  role: "attribution_reader"
   database: "attribution"
-  username: "default"
-  password: "${CLICKHOUSE_PASSWORD}"
+  schema_name: "public"
 
 agent:
-  # AWS Bedrock AgentCore + Claude via Bedrock
-  aws_region: "us-east-1"
+  # Local interactive CLI -> "anthropic". AgentCore deployment -> "bedrock".
+  llm_backend: "anthropic"
+  anthropic_model_id: "claude-sonnet-4-6"
+  anthropic_api_key: "${ANTHROPIC_API_KEY}"
+  aws_region: "us-east-2"
   bedrock_model_id: "us.anthropic.claude-sonnet-4-6-v1:0"
-  agentcore_runtime_arn: "arn:aws:bedrock-agentcore:us-east-1:ACCOUNT:runtime/attribution-agent"
-  # Guardrails — see agent/guardrails.py. These are the v1 defaults.
   guardrails:
-    max_weekly_reallocation_pct: 0.20      # +/- 20% of current channel spend
-    min_conversions_trailing_90d: 30        # exclude thin channels
-    excluded_channels: ["Brand", "Events"]  # no agent autonomy over these
+    max_weekly_reallocation_pct: 0.20
+    min_conversions_trailing_90d: 30
+    excluded_channels: ["Brand", "Events"]
     attribution_model_for_decisions: "time_decay"
 
 output:

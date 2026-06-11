@@ -12,7 +12,7 @@ CREATE STREAM outreach_activity (
     "sdr"          VARCHAR
 ) WITH (
     'topic' = 'src.outreach.activity',
-    'store' = 'kafka_src',
+    'store' = 'confluent_cloud',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

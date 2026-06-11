@@ -2,8 +2,9 @@
 
 Subpackages:
     mock_generator  Deterministic source events -> Kafka topics.
-    agent           ClickHouse-backed reporting, observations, and the
-                    recommendation agent (AWS Bedrock AgentCore + Claude).
+    agent           reporting over DeltaStream MVs (served via MCP),
+                    observations, and the recommendation agent; plus the
+                    interactive CLI (Claude via Anthropic API or Bedrock).
     spreadsheet     openpyxl six-sheet board pack (the CMO artifact).
 
 `sample_data` holds the canonical, internally-consistent Acme Cloud figures

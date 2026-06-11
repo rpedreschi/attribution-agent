@@ -17,7 +17,7 @@ CREATE STREAM hubspot_events (
     "utm_campaign"    VARCHAR
 ) WITH (
     'topic' = 'src.hubspot.events',
-    'store' = 'kafka_src',
+    'store' = 'confluent_cloud',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

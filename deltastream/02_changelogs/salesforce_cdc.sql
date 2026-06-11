@@ -4,7 +4,7 @@
 --
 -- contacts: the identity spine. Maps email -> contact_id -> account_id, which
 --           is how anonymous web/ad traffic gets attributed to an account.
--- accounts: the account dimension sunk into ClickHouse.
+-- accounts: the account dimension (available for enrichment / future MVs).
 -- opportunities: stage transitions feed the conversions table.
 
 CREATE CHANGELOG sf_contacts (
@@ -17,7 +17,7 @@ CREATE CHANGELOG sf_contacts (
     PRIMARY KEY ("contact_id")
 ) WITH (
     'topic' = 'src.salesforce.cdc.contacts',
-    'store' = 'kafka_src',
+    'store' = 'confluent_cloud',
     'value.format' = 'json',
     'timestamp' = 'updated_at'
 );
@@ -34,7 +34,7 @@ CREATE CHANGELOG sf_accounts (
     PRIMARY KEY ("account_id")
 ) WITH (
     'topic' = 'src.salesforce.cdc.accounts',
-    'store' = 'kafka_src',
+    'store' = 'confluent_cloud',
     'value.format' = 'json',
     'timestamp' = 'updated_at'
 );
@@ -50,7 +50,7 @@ CREATE CHANGELOG sf_opportunities (
     PRIMARY KEY ("opportunity_id", "event_time")
 ) WITH (
     'topic' = 'src.salesforce.cdc.opportunities',
-    'store' = 'kafka_src',
+    'store' = 'confluent_cloud',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

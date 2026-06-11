@@ -1,7 +1,7 @@
 """AgentCore runtime entrypoint.
 
 Orchestrates the weekly cycle:
-    1. reporting       -> BoardPackData (from ClickHouse, or sample for the demo)
+    1. reporting       -> BoardPackData (from DeltaStream MVs over MCP, or sample)
     2. observations    -> prose commentary (scheduled LLM job)
     3. recommendations -> guardrailed reallocation proposals (the agent)
 
@@ -26,16 +26,16 @@ from .reporting import BoardPackData
 def run_pipeline(settings: Settings | None = None, *, source: str = "sample") -> BoardPackData:
     """Build the board pack data and attach observations + recommendations.
 
-    source="sample"     -> canonical Acme Cloud figures (no infra needed)
-    source="clickhouse" -> live attribution views
+    source="sample" -> canonical Acme Cloud figures (no infra needed)
+    source="mcp"    -> live DeltaStream materialized views over MCP
     """
     settings = settings or load_settings()
 
-    if source == "clickhouse":
-        from .clickhouse_client import ClickHouseClient
+    if source == "mcp":
+        from .deltastream_mcp import DeltaStreamMCPClient
 
-        client = ClickHouseClient(settings.clickhouse)
-        data = BoardPackData.from_clickhouse(
+        client = DeltaStreamMCPClient(settings.deltastream)
+        data = BoardPackData.from_mcp(
             client, settings.customer.display_name, settings.customer.fiscal_period)
     else:
         data = BoardPackData.from_sample()
@@ -82,7 +82,7 @@ try:
 
     @app.entrypoint
     def agent_entrypoint(payload: dict, context: Any = None) -> dict:  # noqa: ANN401
-        source = payload.get("source", "clickhouse")
+        source = payload.get("source", "mcp")
         data = run_pipeline(source=source)
         return _summarize(data)
 

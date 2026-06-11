@@ -13,7 +13,7 @@ from pathlib import Path
 
 from ..config import load_settings
 from .generator import SEED, Generator
-from .kafka_publisher import publish_all
+from .kafka_publisher import create_topics, publish_all
 
 
 def main() -> None:
@@ -22,11 +22,17 @@ def main() -> None:
                         help="Write JSONL files instead of producing to Kafka.")
     parser.add_argument("--out-dir", default="events",
                         help="Directory for --dry-run JSONL output (default: events).")
+    parser.add_argument("--create-topics", action="store_true",
+                        help="Create the Confluent Cloud topics before publishing.")
     parser.add_argument("--seed", type=int, default=SEED,
                         help=f"RNG seed for reproducibility (default: {SEED}).")
     args = parser.parse_args()
 
     settings = load_settings()
+    if args.create_topics and not args.dry_run:
+        print("Creating topics…")
+        create_topics(settings)
+
     events = Generator(seed=args.seed).generate()
     counts = publish_all(events, settings, dry_run=args.dry_run, out_dir=Path(args.out_dir))
 

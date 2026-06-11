@@ -17,7 +17,7 @@ CREATE STREAM ga4_events (
     "utm_content"   VARCHAR
 ) WITH (
     'topic' = 'src.ga4.events',
-    'store' = 'kafka_src',
+    'store' = 'confluent_cloud',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

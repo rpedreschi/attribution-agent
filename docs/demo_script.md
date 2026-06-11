@@ -8,10 +8,14 @@ revenue).
 
 ```bash
 pip install -e .
-# Generate the board pack from the deterministic sample (no infra needed):
-python -m attribution_agent.spreadsheet
-open out/acme_cloud_attribution_2026-Q1.xlsx
+# Launch the interactive agent on the deterministic sample (no infra needed):
+python -m attribution_agent.agent.cli --source sample
+#   agent> summary      # land here to open
+#   agent> export       # writes out/acme_cloud_attribution_2026-Q1.xlsx
 ```
+
+Keep the xlsx open in a second window to flip to when you say "and here's the
+board pack." Drive the live story from the REPL.
 
 ## 1. The pain (1 min)
 
@@ -44,7 +48,7 @@ work."
 
 ## 4. The agent (3 min) — the actual point
 
-Back to **Executive Summary → Agent Recommendations**:
+In the REPL, `agent> recs`:
 
 - "Paid Social ROI is 1.36x, below blended. The agent proposes trimming it
   **−$112K/week** — and note it's *capped at −20%*. It will not blow up your
@@ -52,7 +56,10 @@ Back to **Executive Summary → Agent Recommendations**:
 - "It redeploys into Email Nurture (12.8x) and Organic (10x), each also capped.
   Brand and Events? The agent won't touch them — excluded by policy."
 - "Every line has a rationale and the source data it came from. And nothing
-  moves until *you* approve it. The agent recommends; the human decides."
+  moves until *you* approve it." Then do it live: `agent> reject 0 not this
+  quarter` — "the human decides, and every decision is logged for the audit
+  trail." Try `agent> ask which move has the best revenue-per-dollar?` to show
+  grounded Q&A.
 
 "This is real-time. When a campaign turns last week, the recommendation reflects
 it today — not next month's batch."
@@ -74,10 +81,13 @@ of three design partners?"
 
 ### Live-data variant
 
-With Kafka + DeltaStream + ClickHouse provisioned (see README):
+With Confluent Cloud + DeltaStream provisioned and the MVs exposed over MCP
+(see README):
 
 ```bash
-python -m attribution_agent.mock_generator           # publish events to Kafka
-# (DeltaStream jobs ingest → ClickHouse; MVs refresh every 15 min)
-python -m attribution_agent.spreadsheet --source clickhouse
+python -m attribution_agent.mock_generator --create-topics   # publish to Confluent
+# (DeltaStream ingests, resolves identity, maintains the materialized views)
+python -m attribution_agent.agent.cli                        # auto-connects via MCP
+#   agent> tools     # shows the live MVs exposed as MCP tools
+#   agent> refresh   # re-pull live state mid-demo
 ```
