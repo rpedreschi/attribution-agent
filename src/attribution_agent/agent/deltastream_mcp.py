@@ -73,10 +73,14 @@ class DeltaStreamMCPClient:
         result = self._rpc("tools/list")
         return (result or {}).get("tools", [])
 
+    def call_tool_raw(self, name: str, arguments: dict | None = None) -> Any:
+        """Call an MV tool and return the raw JSON-RPC result (for debugging the
+        response shape during bring-up)."""
+        return self._rpc("tools/call", {"name": name, "arguments": arguments or {}})
+
     def call_tool(self, name: str, arguments: dict | None = None) -> list[dict[str, Any]]:
         """Call an MV tool and return its rows as dicts."""
-        result = self._rpc("tools/call", {"name": name, "arguments": arguments or {}})
-        return _rows_from_result(result)
+        return _rows_from_result(self.call_tool_raw(name, arguments))
 
     # -- convenience --------------------------------------------------------
 

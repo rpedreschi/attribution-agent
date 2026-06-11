@@ -228,6 +228,47 @@ class AgentCLI:
         for t in tools:
             print(f"  • {t.get('name')} — {t.get('description', '')}")
 
+    def cmd_query(self, arg: str) -> None:
+        """Call one MV tool and print the parsed rows. Accepts a view key
+        (e.g. spend_by_channel) or a raw MV/tool name."""
+        if not self.mcp:
+            print("\nNot connected to DeltaStream MCP (running on sample data).")
+            return
+        name = arg.strip()
+        if not name:
+            print("usage: query <view-key-or-tool>   (keys: "
+                  + ", ".join(self.settings.deltastream.views) + ")")
+            return
+        try:
+            tool = self.settings.deltastream.views.get(name, name)
+            rows = self.mcp.call_tool(tool)
+        except DeltaStreamMCPError as exc:
+            print(f"\nMCP error: {exc}")
+            return
+        print(f"\n{tool}: {len(rows)} rows")
+        for r in rows[:25]:
+            print(f"  {r}")
+        if len(rows) > 25:
+            print(f"  … {len(rows) - 25} more")
+
+    def cmd_raw(self, arg: str) -> None:
+        """Dump the raw JSON-RPC result for a tool — use this to share the exact
+        response shape during bring-up so the row parser can be pinned."""
+        if not self.mcp:
+            print("\nNot connected to DeltaStream MCP (running on sample data).")
+            return
+        name = arg.strip()
+        if not name:
+            print("usage: raw <view-key-or-tool>")
+            return
+        try:
+            tool = self.settings.deltastream.views.get(name, name)
+            result = self.mcp.call_tool_raw(tool)
+        except DeltaStreamMCPError as exc:
+            print(f"\nMCP error: {exc}")
+            return
+        print("\n" + json.dumps(result, indent=2, default=str)[:4000])
+
     def cmd_refresh(self, _: str) -> None:
         print("Refreshing from source…")
         self.data = self._load()
@@ -258,7 +299,8 @@ class AgentCLI:
         "cac": "cmd_cac", "roi": "cmd_cac",
         "recs": "cmd_recs", "recommendations": "cmd_recs",
         "approve": "cmd_approve", "reject": "cmd_reject",
-        "ask": "cmd_ask", "tools": "cmd_tools", "refresh": "cmd_refresh",
+        "ask": "cmd_ask", "tools": "cmd_tools", "query": "cmd_query",
+        "raw": "cmd_raw", "refresh": "cmd_refresh",
         "export": "cmd_export", "help": "cmd_help",
     }
 
@@ -299,6 +341,8 @@ def _help_text() -> str:
         "  reject <n> [why]   reject a recommendation (logged)\n"
         "  ask <question>     grounded Q&A about the data\n"
         "  tools              list DeltaStream MCP tools (live mode)\n"
+        "  query <view>       call one MV tool, print parsed rows (live mode)\n"
+        "  raw <view>         dump one MV tool's raw JSON-RPC result (live mode)\n"
         "  refresh            re-pull from the source\n"
         "  export [path]      write the board pack xlsx\n"
         "  help | quit")
