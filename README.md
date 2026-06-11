@@ -94,14 +94,20 @@ deterministic, number-grounded templates so the artifact always builds.
    `06_mcp/01_expose_over_mcp.sql`. Copy the API token from the last step into
    `DELTASTREAM_API_TOKEN`.
 
-4. **Launch the agent against live data:**
+4. **Check the bring-up** — config, Confluent topics, the live MCP handshake
+   (lists the exposed MVs), and the LLM backend, in one command:
+   ```bash
+   python -m attribution_agent.agent.cli doctor
+   ```
+
+5. **Launch the agent against live data:**
    ```bash
    python -m attribution_agent.agent.cli            # auto-detects the MCP token
    #   agent> tools        # lists the MVs exposed over MCP
    #   agent> refresh      # re-pull live state
    ```
 
-5. **(Optional) deploy to Bedrock AgentCore** using
+6. **(Optional) deploy to Bedrock AgentCore** using
    `attribution_agent.agent.runtime:agent_entrypoint` (set `agent.llm_backend:
    bedrock`); the module exposes an AgentCore `app` when the `bedrock_agentcore`
    SDK is installed.

@@ -1,6 +1,21 @@
 """The DeltaStream MCP live path: result parsing + attribution arithmetic."""
-from attribution_agent.agent.deltastream_mcp import _rows_from_result
+from attribution_agent.agent.deltastream_mcp import _parse_rpc_body, _rows_from_result
 from attribution_agent.agent.reporting import BoardPackData, _attribution_from_context
+
+
+def test_parse_rpc_body_handles_sse_and_json():
+    sse = ('event: message\n'
+           'data: {"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"mv_x"}]}}\n\n')
+    assert _parse_rpc_body(sse, "text/event-stream", 2)["result"]["tools"][0]["name"] == "mv_x"
+    # picks the frame matching the rpc id when several are present
+    multi = ('data: {"id":1,"result":"a"}\n\n'
+             'data: {"id":2,"result":"b"}\n\n')
+    assert _parse_rpc_body(multi, "text/event-stream", 2)["result"] == "b"
+    # plain JSON
+    assert _parse_rpc_body('{"id":5,"result":{"ok":true}}', "application/json", 5)["result"] == {"ok": True}
+    # empty / garbage
+    assert _parse_rpc_body("", "application/json", 1) is None
+    assert _parse_rpc_body("not json", "application/json", 1) is None
 
 
 def test_rows_parser_handles_mcp_shapes():

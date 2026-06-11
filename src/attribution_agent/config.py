@@ -35,7 +35,8 @@ class KafkaConfig(BaseModel):
 class DeltaStreamConfig(BaseModel):
     """DeltaStream MCP endpoint. Materialized views the API token's role can
     SELECT are exposed as MCP tools the agent discovers and calls."""
-    mcp_endpoint: str = "https://api.deltastream.io/v2/mcp"
+    # Org-specific REST endpoint; find yours via the DeltaStream REST API docs.
+    mcp_endpoint: str = "https://api-kap822.deltastream.io/mcp/v1"
     api_token: str | None = None          # CREATE API_TOKEN; sent as Bearer
     organization: str | None = None
     role: str = "attribution_reader"

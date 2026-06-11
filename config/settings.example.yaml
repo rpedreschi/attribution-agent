@@ -33,7 +33,7 @@ deltastream:
   # DeltaStream MCP REST endpoint. Materialized views the token's role can
   # SELECT are auto-exposed as MCP tools. See deltastream/ for the SQL and the
   # CREATE API_TOKEN step.
-  mcp_endpoint: "https://api.deltastream.io/v2/mcp"
+  mcp_endpoint: "https://api-kap822.deltastream.io/mcp/v1"   # your org's REST endpoint
   api_token: "${DELTASTREAM_API_TOKEN}"   # CREATE API_TOKEN bound to the role below
   organization: "${DELTASTREAM_ORG}"
   role: "attribution_reader"

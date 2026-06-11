@@ -35,24 +35,35 @@ class DeltaStreamMCPClient:
         if not self.cfg.api_token:
             raise DeltaStreamMCPError("No DeltaStream API token configured.")
         self._id += 1
+        rpc_id = self._id
         body = json.dumps({
-            "jsonrpc": "2.0", "id": self._id, "method": method,
+            "jsonrpc": "2.0", "id": rpc_id, "method": method,
             "params": params or {},
         }).encode()
+        # DeltaStream's MCP endpoint speaks Streamable HTTP: a POST may come back
+        # as plain JSON or as an SSE (text/event-stream) frame, so accept both.
         req = urllib.request.Request(
             self.cfg.mcp_endpoint, data=body, method="POST",
             headers={
                 "Authorization": f"Bearer {self.cfg.api_token}",
                 "Content-Type": "application/json",
-                "Accept": "application/json",
+                "Accept": "application/json,text/event-stream",
             },
         )
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                payload = json.loads(resp.read())
+                content_type = resp.headers.get("Content-Type", "")
+                raw = resp.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", "replace")[:300] if exc.fp else ""
+            raise DeltaStreamMCPError(f"MCP HTTP {exc.code}: {exc.reason} {detail}") from exc
         except urllib.error.URLError as exc:
-            raise DeltaStreamMCPError(f"MCP request failed: {exc}") from exc
-        if "error" in payload:
+            raise DeltaStreamMCPError(f"MCP request failed: {exc.reason}") from exc
+
+        payload = _parse_rpc_body(raw, content_type, rpc_id)
+        if payload is None:
+            raise DeltaStreamMCPError(f"No JSON-RPC response in MCP reply: {raw[:200]}")
+        if payload.get("error"):
             raise DeltaStreamMCPError(f"MCP error: {payload['error']}")
         return payload.get("result")
 
@@ -83,6 +94,42 @@ class DeltaStreamMCPClient:
             return True
         except DeltaStreamMCPError:
             return False
+
+
+def _parse_rpc_body(raw: str, content_type: str, rpc_id: int) -> dict | None:
+    """Extract the JSON-RPC envelope from either a plain-JSON or SSE response.
+
+    SSE frames look like `event: message\\ndata: {json}\\n\\n`; there may be
+    several, so pick the one carrying our id (or any result/error).
+    """
+    raw = raw.strip()
+    if not raw:
+        return None
+    if "text/event-stream" in content_type or raw.startswith("event:") or raw.startswith("data:"):
+        candidates: list[dict] = []
+        for line in raw.splitlines():
+            line = line.strip()
+            if not line.startswith("data:"):
+                continue
+            data = line[len("data:"):].strip()
+            try:
+                obj = json.loads(data)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(obj, dict):
+                candidates.append(obj)
+        for obj in candidates:
+            if obj.get("id") == rpc_id:
+                return obj
+        for obj in candidates:
+            if "result" in obj or "error" in obj:
+                return obj
+        return candidates[-1] if candidates else None
+    try:
+        obj = json.loads(raw)
+        return obj if isinstance(obj, dict) else None
+    except json.JSONDecodeError:
+        return None
 
 
 def _rows_from_result(result: Any) -> list[dict[str, Any]]:

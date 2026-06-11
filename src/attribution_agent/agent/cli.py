@@ -8,6 +8,7 @@ loop), ask grounded questions, and export the board pack to xlsx on demand.
 
     python -m attribution_agent.agent.cli            # auto: MCP if configured
     python -m attribution_agent.agent.cli --source sample
+    python -m attribution_agent.agent.cli doctor     # connectivity diagnostic
 """
 from __future__ import annotations
 
@@ -305,9 +306,16 @@ def _help_text() -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Interactive DeltaStream attribution agent.")
+    parser.add_argument("command", nargs="?", choices=["run", "doctor"], default="run",
+                        help="run = interactive agent (default); doctor = connectivity check.")
     parser.add_argument("--source", choices=["auto", "mcp", "sample"], default="auto",
                         help="Data source (default: auto — MCP if a token is configured).")
     args = parser.parse_args()
+
+    if args.command == "doctor":
+        from .doctor import run_doctor
+
+        raise SystemExit(run_doctor(load_settings()))
     AgentCLI(load_settings(), args.source).run()
 
 
