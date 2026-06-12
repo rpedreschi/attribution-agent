@@ -21,8 +21,8 @@ USE SCHEMA "public";
 -- changelog's primary key.
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'attr_web_identity_map',
-    'topic.partitions' = '6',
-    'topic.replicas' = '3',
+    'topic.partitions' = 1,
+    'topic.replicas' = 3,
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'key.columns' = 'web_user_id'

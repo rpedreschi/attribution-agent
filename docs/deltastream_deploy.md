@@ -55,9 +55,9 @@ LIST DATABASES;                       -- attribution present
 > `attr_funnel_events`, `attr_web_identity_map`) so ops can tell whose topics
 > they are. The `src.*` topics are datagen *inputs* and are not renamed.
 > Because DeltaStream has to create those `attr_*` topics, each carries
-> `'topic.partitions' = '6'` and `'topic.replicas' = '3'` in its WITH clause
-> (Confluent Cloud requires replication factor 3); adjust if your cluster
-> differs.
+> `'topic.partitions' = 1` and `'topic.replicas' = 3` (unquoted integers) in its
+> WITH clause (Confluent Cloud requires replication factor 3); adjust if your
+> cluster differs.
 
 If `PRINT STORE` can't list topics, the store credentials/URI are wrong — fix
 before going further.
