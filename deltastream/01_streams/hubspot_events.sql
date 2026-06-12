@@ -2,6 +2,10 @@
 -- Shaped like HubSpot's webhook/event payload. Carries an email, which is the
 -- join key into the Salesforce contacts changelog for identity resolution.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE STREAM "hubspot_events" (
     "event_time"      TIMESTAMP,
     "vid"             VARCHAR,        -- HubSpot contact id

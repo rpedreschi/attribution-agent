@@ -6,6 +6,10 @@
 -- The three INSERT INTO statements run as continuous queries into the same
 -- backing topic, so the materialized views in 05_views read a single stream.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE STREAM "touchpoints" (
     "event_time"       TIMESTAMP,
     "user_id"          VARCHAR,

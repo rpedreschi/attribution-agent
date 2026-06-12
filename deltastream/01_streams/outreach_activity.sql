@@ -2,6 +2,10 @@
 -- Carries the prospect email + (when known) the Salesforce contact id, so SDR
 -- touches attach to the right account during identity resolution.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE STREAM "outreach_activity" (
     "event_time"   TIMESTAMP,
     "prospect_id"  VARCHAR,

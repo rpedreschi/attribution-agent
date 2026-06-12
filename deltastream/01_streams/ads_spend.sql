@@ -2,6 +2,10 @@
 -- Both platforms publish the same shape into their own topics; we define one
 -- stream per platform and UNION them at the sink. Daily granularity rows.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE STREAM "linkedin_ads" (
     "spend_date"   VARCHAR,           -- yyyy-mm-dd
     "channel"      VARCHAR,           -- Paid Social

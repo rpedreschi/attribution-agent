@@ -2,6 +2,10 @@
 -- The numerator the agent distributes across channels using the touch
 -- distribution. Summed across accounts it is the total attributed revenue.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE MATERIALIZED VIEW "mv_won_revenue_by_account" AS
 SELECT
     "account_id",

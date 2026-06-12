@@ -10,6 +10,10 @@
 -- Join only — no aggregation (per conventions). Chained through this
 -- intermediate object rather than folded into the GA4 enrichment statement.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'attr_web_identity_map',
     'store' = 'demo_confluent',

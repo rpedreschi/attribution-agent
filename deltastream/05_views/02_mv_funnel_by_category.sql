@@ -1,6 +1,10 @@
 -- mv_funnel_by_category: the B2B funnel counts per program category, in one
 -- pivoted row each. touch -> conversation -> MQL -> SQL -> opp -> won.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE MATERIALIZED VIEW "mv_funnel_by_category" AS
 SELECT
     "program_category",

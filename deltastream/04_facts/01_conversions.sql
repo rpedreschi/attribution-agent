@@ -2,6 +2,10 @@
 -- from Salesforce opportunity changes and HubSpot lifecycle changes. Feeds the
 -- funnel + won-revenue materialized views in 05_views.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE STREAM "conversions" (
     "event_time"       TIMESTAMP,
     "account_id"       VARCHAR,

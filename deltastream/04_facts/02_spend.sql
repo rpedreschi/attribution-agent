@@ -3,6 +3,10 @@
 -- topic by finance/manual export and unioned in here in production; for the
 -- demo the two ad platforms are the live spend sources.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE STREAM "spend" (
     "spend_date"       VARCHAR,
     "channel"          VARCHAR,

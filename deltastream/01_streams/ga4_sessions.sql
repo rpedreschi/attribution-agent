@@ -3,6 +3,10 @@
 -- This is the anonymous-traffic stream that identity resolution later stitches
 -- to known Salesforce contacts.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE STREAM "ga4_events" (
     "event_time"    TIMESTAMP,
     "user_id"       VARCHAR,          -- GA4 client_id (anonymous) or user_id when set

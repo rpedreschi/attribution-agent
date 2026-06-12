@@ -12,6 +12,10 @@
 
 USE ROLE orgadmin;
 
+-- Context for consistency; the grants below are fully qualified regardless.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 -- 1. Least-privilege role.
 CREATE ROLE "attribution_reader";
 GRANT USAGE ON DATABASE "attribution" TO ROLE "attribution_reader";

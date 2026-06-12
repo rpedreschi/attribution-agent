@@ -7,6 +7,10 @@
 -- accounts: the account dimension (available for enrichment / future MVs).
 -- opportunities: stage transitions feed the conversions table.
 
+-- Ensure objects land in attribution.public even if run in a fresh session.
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE CHANGELOG "sf_contacts" (
     "contact_id" VARCHAR,
     "email"      VARCHAR,
