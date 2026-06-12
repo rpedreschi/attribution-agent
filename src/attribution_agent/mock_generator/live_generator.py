@@ -47,6 +47,13 @@ _AD_CAMPAIGNS = {
                     "Solution Keywords - Cloud", "Generic Keywords - Broad"],
 }
 
+# Ad spend (Paid Search + Paid Social) as a fraction of attributed revenue, from
+# sample_data. Live spend is emitted at this ratio of the revenue closing each
+# tick — so blended ROI stays realistic and mv_spend_by_channel is continuously
+# populated, instead of the old once-per-day batch a 'latest'-offset query misses.
+SPEND_RATIO = (sd.channel_by_name("Paid Search").spend
+               + sd.channel_by_name("Paid Social").spend) / sd.TOTAL_ATTRIBUTED_REVENUE
+
 
 class _Journey:
     """An in-flight account with a queue of (scheduled_time, event) pairs."""
@@ -72,14 +79,13 @@ class LiveGenerator:
     """Stateful generator driven one ``tick(now)`` at a time."""
 
     def __init__(self, *, seed: int = 42, journey_seconds: float = 180.0,
-                 new_journey_rate: float = 0.4, ambient_per_tick: int = 2) -> None:
+                 new_journey_rate: float = 0.15, ambient_per_tick: int = 2) -> None:
         self.rng = random.Random(seed)
         self.journey_seconds = journey_seconds
         self.new_journey_rate = new_journey_rate
         self.ambient_per_tick = ambient_per_tick
         self._seq = 0
         self._inflight: list[_Journey] = []
-        self._last_spend_day: str | None = None
         self._channels = [c.name for c in sd.CHANNELS]
         self._weights = [c.attributed_deals for c in sd.CHANNELS]
 
@@ -194,18 +200,23 @@ class LiveGenerator:
             self.rng.choice(_DEVICES), "google", "organic",
             f"{f.program_category} Campaign", now)]
 
-    def _daily_spend(self, day: str) -> list[Event]:
+    def _spend_slice(self, ad_spend: float, now: datetime) -> list[Event]:
+        """One tick of ad spend, split across the two platforms (by their
+        sample-data spend share) and a random campaign each, dated today."""
         events: list[Event] = []
-        for ch_name, builder in (("Paid Social", schemas.linkedin_spend),
-                                 ("Paid Search", schemas.google_spend)):
-            ch = sd.channel_by_name(ch_name)
-            campaigns = _AD_CAMPAIGNS[ch_name]
-            daily = ch.spend / 90.0
-            for campaign in campaigns:
-                spend = daily * self.rng.uniform(0.6, 1.4) / len(campaigns)
-                impr = int(spend * self.rng.uniform(20, 60))
-                clicks = int(impr * self.rng.uniform(0.01, 0.04))
-                events.append(builder(day, campaign, spend, impr, clicks))
+        day = now.strftime("%Y-%m-%d")
+        ps = sd.channel_by_name("Paid Search").spend
+        psoc = sd.channel_by_name("Paid Social").spend
+        total = ps + psoc
+        for ch_name, builder, share in (
+            ("Paid Search", schemas.google_spend, ps / total),
+            ("Paid Social", schemas.linkedin_spend, psoc / total),
+        ):
+            spend = ad_spend * share
+            campaign = self.rng.choice(_AD_CAMPAIGNS[ch_name])
+            impr = int(spend * self.rng.uniform(20, 60))
+            clicks = int(impr * self.rng.uniform(0.01, 0.04))
+            events.append(builder(day, campaign, round(spend, 2), impr, clicks))
         return events
 
     # -- the tick ------------------------------------------------------------
@@ -228,9 +239,11 @@ class LiveGenerator:
         for _ in range(self.ambient_per_tick):
             events += self._ambient(now)
 
-        day = now.strftime("%Y-%m-%d")
-        if day != self._last_spend_day:
-            self._last_spend_day = day
-            events += self._daily_spend(day)
+        # Continuous ad spend that tracks the revenue closing this tick (plus a
+        # small floor so it always flows), instead of one batch per day — which a
+        # 'latest'-offset stream query would miss, leaving mv_spend_by_channel empty.
+        won_rev = sum(p.get("amount", 0) for k, p in events
+                      if k == "salesforce_opportunities" and p.get("stage_to") == "ClosedWon")
+        events += self._spend_slice(max(won_rev * SPEND_RATIO, 500.0), now)
 
         return events

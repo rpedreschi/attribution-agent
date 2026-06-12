@@ -100,9 +100,9 @@ def main() -> None:
     parser.add_argument("--journey-seconds", type=float, default=180.0,
                         help="Wall-clock span of a full anon->close journey "
                              "(default: 180).")
-    parser.add_argument("--new-journey-rate", type=float, default=0.4,
+    parser.add_argument("--new-journey-rate", type=float, default=0.15,
                         help="Probability a new journey starts each tick "
-                             "(default: 0.4).")
+                             "(default: 0.15 — gentle drift; raise for a busier stream).")
     parser.add_argument("--ambient-per-tick", type=int, default=2,
                         help="Anonymous background touches per tick (default: 2).")
     parser.add_argument("--max-events", type=int, default=0,
