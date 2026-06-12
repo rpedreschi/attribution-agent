@@ -25,6 +25,8 @@ CREATE CHANGELOG "web_identity_map" (
     PRIMARY KEY ("web_user_id")
 ) WITH (
     'topic' = 'attr_web_identity_map',
+    'topic.partitions' = '6',
+    'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'resolved_at'

@@ -274,6 +274,8 @@ CREATE CHANGELOG "web_identity_map" (
     PRIMARY KEY ("web_user_id")
 ) WITH (
     'topic' = 'attr_web_identity_map',
+    'topic.partitions' = '6',
+    'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'resolved_at'
@@ -320,6 +322,8 @@ CREATE STREAM "touchpoints" (
     "source_system"    VARCHAR
 ) WITH (
     'topic' = 'attr_touchpoints',
+    'topic.partitions' = '6',
+    'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time'
@@ -378,6 +382,8 @@ CREATE STREAM "conversions" (
     "program_category" VARCHAR
 ) WITH (
     'topic' = 'attr_conversions',
+    'topic.partitions' = '6',
+    'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time'
@@ -432,6 +438,8 @@ CREATE STREAM "spend" (
     "source_platform"  VARCHAR
 ) WITH (
     'topic' = 'attr_spend',
+    'topic.partitions' = '6',
+    'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json'
 );
@@ -464,6 +472,8 @@ CREATE STREAM "funnel_events" (
     "stage"            VARCHAR
 ) WITH (
     'topic' = 'attr_funnel_events',
+    'topic.partitions' = '6',
+    'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time'

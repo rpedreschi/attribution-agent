@@ -17,6 +17,8 @@ CREATE STREAM "conversions" (
     "program_category" VARCHAR
 ) WITH (
     'topic' = 'attr_conversions',
+    'topic.partitions' = '6',
+    'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time'

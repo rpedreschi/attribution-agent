@@ -12,6 +12,8 @@ CREATE STREAM "funnel_events" (
     "stage"            VARCHAR
 ) WITH (
     'topic' = 'attr_funnel_events',
+    'topic.partitions' = '6',
+    'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time'
