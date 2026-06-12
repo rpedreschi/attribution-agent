@@ -13,21 +13,21 @@
 USE ROLE orgadmin;
 
 -- 1. Least-privilege role.
-CREATE ROLE attribution_reader;
-GRANT USAGE ON DATABASE attribution TO ROLE attribution_reader;
-GRANT USAGE ON SCHEMA attribution.public TO ROLE attribution_reader;
+CREATE ROLE "attribution_reader";
+GRANT USAGE ON DATABASE "attribution" TO ROLE "attribution_reader";
+GRANT USAGE ON SCHEMA "attribution"."public" TO ROLE "attribution_reader";
 
 -- 2. Grant SELECT on only the exposed MVs (fully qualified). Each becomes a tool.
-GRANT SELECT ON attribution.public.mv_spend_by_channel           TO ROLE attribution_reader;
-GRANT SELECT ON attribution.public.mv_funnel_by_category         TO ROLE attribution_reader;
-GRANT SELECT ON attribution.public.mv_channel_touch_distribution TO ROLE attribution_reader;
-GRANT SELECT ON attribution.public.mv_won_revenue_by_account     TO ROLE attribution_reader;
+GRANT SELECT ON "attribution"."public"."mv_spend_by_channel"           TO ROLE "attribution_reader";
+GRANT SELECT ON "attribution"."public"."mv_funnel_by_category"         TO ROLE "attribution_reader";
+GRANT SELECT ON "attribution"."public"."mv_channel_touch_distribution" TO ROLE "attribution_reader";
+GRANT SELECT ON "attribution"."public"."mv_won_revenue_by_account"     TO ROLE "attribution_reader";
 
 -- 3. Mint the API token bound to the role. Copy the returned token into
 --    config.deltastream.api_token (or the DELTASTREAM_API_TOKEN env var).
 --    Brand/Events spend rows still live in mv_spend_by_channel, but the agent's
 --    own guardrails (not RBAC) exclude them from autonomy.
-CREATE API_TOKEN attribution_agent_token WITH ('token.role_name' = attribution_reader);
+CREATE API_TOKEN "attribution_agent_token" WITH ('token.role_name' = "attribution_reader");
 
 -- Verify the exposed tools (shell):
 --   curl -X POST "$DELTASTREAM_MCP_ENDPOINT" \

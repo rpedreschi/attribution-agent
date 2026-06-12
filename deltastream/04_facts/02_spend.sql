@@ -3,7 +3,7 @@
 -- topic by finance/manual export and unioned in here in production; for the
 -- demo the two ad platforms are the live spend sources.
 
-CREATE STREAM spend (
+CREATE STREAM "spend" (
     "spend_date"       VARCHAR,
     "channel"          VARCHAR,
     "program_category" VARCHAR,
@@ -11,17 +11,17 @@ CREATE STREAM spend (
     "spend_amount"     DOUBLE,
     "source_platform"  VARCHAR
 ) WITH (
-    'topic' = 'attribution.spend',
+    'topic' = 'attr_spend',
     'store' = 'confluent_cloud',
     'value.format' = 'json'
 );
 
-INSERT INTO spend
+INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
        "spend_amount", 'linkedin' AS "source_platform"
-FROM linkedin_ads;
+FROM "linkedin_ads";
 
-INSERT INTO spend
+INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
        "spend_amount", 'google_ads' AS "source_platform"
-FROM google_ads;
+FROM "google_ads";

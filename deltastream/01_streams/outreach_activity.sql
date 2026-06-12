@@ -2,7 +2,7 @@
 -- Carries the prospect email + (when known) the Salesforce contact id, so SDR
 -- touches attach to the right account during identity resolution.
 
-CREATE STREAM outreach_activity (
+CREATE STREAM "outreach_activity" (
     "event_time"   TIMESTAMP,
     "prospect_id"  VARCHAR,
     "email"        VARCHAR,

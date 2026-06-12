@@ -36,9 +36,21 @@ Validate:
 
 ```sql
 LIST STORES;                          -- confluent_cloud present
-PRINT STORE confluent_cloud;          -- lists the src.* topics => connectivity OK
+PRINT STORE "confluent_cloud";        -- lists the src.* topics => connectivity OK
 LIST DATABASES;                       -- attribution present
 ```
+
+> **Identifiers are quoted lowercase everywhere.** Every object and column name
+> in `deltastream/` is double-quoted lowercase (e.g. `"ga4_events"`,
+> `"event_time"`) so DeltaStream stores it exactly as written — matching the
+> JSON payload keys and the lowercase names in `config.deltastream`. When you
+> hand-write a query, quote names the same way (`SELECT * FROM "touchpoints";`),
+> or the unquoted name may fold to a different case and "not found".
+>
+> **Topic ownership convention:** every topic DeltaStream *creates* is prefixed
+> `attr_` (`attr_touchpoints`, `attr_conversions`, `attr_spend`,
+> `attr_funnel_events`, `attr_web_identity_map`) so ops can tell whose topics
+> they are. The `src.*` topics are datagen *inputs* and are not renamed.
 
 If `PRINT STORE` can't list topics, the store credentials/URI are wrong — fix
 before going further.
@@ -53,8 +65,8 @@ and runs until you stop it, Ctrl-C). That's exactly what you want here: you
 should see rows scroll, proving ingestion *and* timestamp parsing:
 
 ```sql
-SELECT * FROM ga4_events;             -- rows scroll => iso8601 event_time parsed
-SELECT * FROM linkedin_ads;
+SELECT * FROM "ga4_events";           -- rows scroll => iso8601 event_time parsed
+SELECT * FROM "linkedin_ads";
 ```
 
 If a stream returns nothing, the topic name in the DDL doesn't match the topic in
@@ -67,7 +79,7 @@ Run `salesforce_cdc.sql` (creates `sf_contacts`, `sf_accounts`, `sf_opportunitie
 
 ```sql
 LIST CHANGELOGS;
-SELECT * FROM sf_contacts;            -- the identity spine: email -> contact -> account
+SELECT * FROM "sf_contacts";          -- the identity spine: email -> contact -> account
 ```
 
 ## 4. Identity resolution — `03_identity/`
@@ -80,7 +92,7 @@ continuous `INSERT INTO` queries**. These run forever — check they reached
 
 ```sql
 LIST QUERIES;                         -- the INSERT INTO queries should be Running
-SELECT * FROM touchpoints WHERE "account_id" IS NOT NULL;   -- resolved touches appear
+SELECT * FROM "touchpoints" WHERE "account_id" IS NOT NULL;   -- resolved touches appear
 ```
 
 `account_id` is NULL for still-anonymous GA4 traffic and fills in once a contact
@@ -97,10 +109,10 @@ Unlike streams, **a `SELECT` on a materialized view returns a snapshot** of
 current state (bounded — it returns and exits):
 
 ```sql
-SELECT * FROM mv_won_revenue_by_account ORDER BY "revenue" DESC;
-SELECT * FROM mv_channel_touch_distribution LIMIT 20;
-SELECT * FROM mv_spend_by_channel;
-SELECT * FROM mv_funnel_by_category;
+SELECT * FROM "mv_won_revenue_by_account" ORDER BY "revenue" DESC;
+SELECT * FROM "mv_channel_touch_distribution" LIMIT 20;
+SELECT * FROM "mv_spend_by_channel";
+SELECT * FROM "mv_funnel_by_category";
 ```
 
 `mv_won_revenue_by_account` populates only after journeys reach `closed_won`. With
@@ -134,7 +146,7 @@ exposed MVs as tools), and the LLM backend.
 | `DESCRIBE QUERY <id>;` | why a specific query errored |
 | `SELECT * FROM <stream>;` | live ingestion + timestamp parsing (continuous) |
 | `SELECT * FROM <mv>;` | current aggregated state (snapshot) |
-| `PRINT STORE confluent_cloud;` | store connectivity / topic visibility |
+| `PRINT STORE "confluent_cloud";` | store connectivity / topic visibility |
 
 ## Teardown / redeploy
 

@@ -8,13 +8,13 @@
 -- impractical in streaming SQL, so the heavy arithmetic is deliberately pushed
 -- to the agent — DeltaStream serves the live aggregated state.
 
-CREATE MATERIALIZED VIEW mv_channel_touch_distribution AS
+CREATE MATERIALIZED VIEW "mv_channel_touch_distribution" AS
 SELECT
     "account_id",
     "channel",
     "program_category",
     COUNT(*)          AS "touch_count",
     MAX("event_time") AS "last_touch_time"
-FROM touchpoints
+FROM "touchpoints"
 WHERE "account_id" IS NOT NULL
 GROUP BY "account_id", "channel", "program_category";

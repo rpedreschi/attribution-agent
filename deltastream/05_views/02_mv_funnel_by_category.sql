@@ -1,7 +1,7 @@
 -- mv_funnel_by_category: the B2B funnel counts per program category, in one
 -- pivoted row each. touch -> conversation -> MQL -> SQL -> opp -> won.
 
-CREATE MATERIALIZED VIEW mv_funnel_by_category AS
+CREATE MATERIALIZED VIEW "mv_funnel_by_category" AS
 SELECT
     "program_category",
     COUNT(CASE WHEN "stage" = 'touch'        THEN 1 END) AS "touches",
@@ -10,5 +10,5 @@ SELECT
     COUNT(CASE WHEN "stage" = 'sql'          THEN 1 END) AS "sqls",
     COUNT(CASE WHEN "stage" = 'opp_created'  THEN 1 END) AS "opps",
     COUNT(CASE WHEN "stage" = 'closed_won'   THEN 1 END) AS "won"
-FROM funnel_events
+FROM "funnel_events"
 GROUP BY "program_category";

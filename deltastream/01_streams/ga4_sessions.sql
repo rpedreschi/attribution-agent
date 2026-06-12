@@ -3,7 +3,7 @@
 -- This is the anonymous-traffic stream that identity resolution later stitches
 -- to known Salesforce contacts.
 
-CREATE STREAM ga4_events (
+CREATE STREAM "ga4_events" (
     "event_time"    TIMESTAMP,
     "user_id"       VARCHAR,          -- GA4 client_id (anonymous) or user_id when set
     "session_id"    VARCHAR,

@@ -2,7 +2,7 @@
 -- Shaped like HubSpot's webhook/event payload. Carries an email, which is the
 -- join key into the Salesforce contacts changelog for identity resolution.
 
-CREATE STREAM hubspot_events (
+CREATE STREAM "hubspot_events" (
     "event_time"      TIMESTAMP,
     "vid"             VARCHAR,        -- HubSpot contact id
     "web_user_id"     VARCHAR,        -- hutk cookie == GA4 client_id; the anonymous->known bridge

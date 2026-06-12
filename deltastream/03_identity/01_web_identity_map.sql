@@ -10,14 +10,18 @@
 -- Join only — no aggregation (per conventions). Chained through this
 -- intermediate object rather than folded into the GA4 enrichment statement.
 
-CREATE CHANGELOG web_identity_map AS
+CREATE CHANGELOG "web_identity_map" WITH (
+    'topic' = 'attr_web_identity_map',
+    'store' = 'confluent_cloud',
+    'value.format' = 'json'
+) AS
 SELECT
     h."web_user_id"          AS "web_user_id",
     c."contact_id"           AS "contact_id",
     c."account_id"           AS "account_id",
     h."event_time"           AS "resolved_at"
-FROM hubspot_events h
-JOIN sf_contacts c
+FROM "hubspot_events" h
+JOIN "sf_contacts" c
     ON h."email" = c."email"
 WHERE h."event_type" = 'form_submission'
   AND h."web_user_id" IS NOT NULL;

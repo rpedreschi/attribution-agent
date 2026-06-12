@@ -7,7 +7,7 @@
 -- accounts: the account dimension (available for enrichment / future MVs).
 -- opportunities: stage transitions feed the conversions table.
 
-CREATE CHANGELOG sf_contacts (
+CREATE CHANGELOG "sf_contacts" (
     "contact_id" VARCHAR,
     "email"      VARCHAR,
     "account_id" VARCHAR,
@@ -23,7 +23,7 @@ CREATE CHANGELOG sf_contacts (
     'timestamp.format' = 'iso8601'
 );
 
-CREATE CHANGELOG sf_accounts (
+CREATE CHANGELOG "sf_accounts" (
     "account_id"     VARCHAR,
     "name"           VARCHAR,
     "industry"       VARCHAR,
@@ -41,7 +41,7 @@ CREATE CHANGELOG sf_accounts (
     'timestamp.format' = 'iso8601'
 );
 
-CREATE CHANGELOG sf_opportunities (
+CREATE CHANGELOG "sf_opportunities" (
     "opportunity_id" VARCHAR,
     "account_id"     VARCHAR,
     "stage_from"     VARCHAR,
