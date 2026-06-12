@@ -31,6 +31,7 @@ SELECT
     h."web_user_id"          AS "web_user_id",
     c."contact_id"           AS "contact_id",
     c."account_id"           AS "account_id",
+    c."email"                AS "email",
     h."event_time"           AS "resolved_at"
 FROM "hubspot_events" h
 JOIN "sf_contacts" c

@@ -280,6 +280,7 @@ SELECT
     h."web_user_id"          AS "web_user_id",
     c."contact_id"           AS "contact_id",
     c."account_id"           AS "account_id",
+    c."email"                AS "email",
     h."event_time"           AS "resolved_at"
 FROM "hubspot_events" h
 JOIN "sf_contacts" c
@@ -308,6 +309,7 @@ CREATE STREAM "touchpoints" (
     "user_id"          VARCHAR,
     "account_id"       VARCHAR,
     "contact_id"       VARCHAR,
+    "email"            VARCHAR,
     "session_id"       VARCHAR,
     "channel"          VARCHAR,
     "program_category" VARCHAR,
@@ -326,7 +328,8 @@ CREATE STREAM "touchpoints" (
 -- Resolved web touches.
 INSERT INTO "touchpoints"
 SELECT
-    g."event_time", g."user_id", m."account_id", m."contact_id", g."session_id",
+    g."event_time", g."user_id", m."account_id", m."contact_id",
+    m."email" AS "email", g."session_id",
     'Organic/Web' AS "channel", 'Organic/Web' AS "program_category",
     g."utm_campaign" AS "campaign", 'ga4' AS "source", 'ga4' AS "source_system"
 FROM "ga4_events" g
@@ -336,7 +339,7 @@ LEFT JOIN "web_identity_map" m ON g."user_id" = m."web_user_id";
 INSERT INTO "touchpoints"
 SELECT
     o."event_time", o."contact_id" AS "user_id", c."account_id", o."contact_id",
-    o."prospect_id" AS "session_id", 'Outbound SDR' AS "channel",
+    c."email" AS "email", o."prospect_id" AS "session_id", 'Outbound SDR' AS "channel",
     'Outbound SDR' AS "program_category", o."sequence" AS "campaign",
     'outreach' AS "source", 'outreach' AS "source_system"
 FROM "outreach_activity" o
@@ -346,7 +349,7 @@ JOIN "sf_contacts" c ON o."email" = c."email";
 INSERT INTO "touchpoints"
 SELECT
     h."event_time", h."vid" AS "user_id", c."account_id", c."contact_id",
-    h."vid" AS "session_id", 'Email Nurture' AS "channel",
+    c."email" AS "email", h."vid" AS "session_id", 'Email Nurture' AS "channel",
     'Email Nurture' AS "program_category", h."campaign" AS "campaign",
     'hubspot' AS "source", 'hubspot' AS "source_system"
 FROM "hubspot_events" h
@@ -369,6 +372,7 @@ CREATE STREAM "conversions" (
     "event_time"       TIMESTAMP,
     "account_id"       VARCHAR,
     "contact_id"       VARCHAR,
+    "email"            VARCHAR,
     "event_type"       VARCHAR,    -- conversation | mql | sql | opp_created | closed_won | closed_lost
     "opportunity_id"   VARCHAR,
     "revenue"          DOUBLE,
@@ -387,6 +391,7 @@ CREATE STREAM "conversions" (
 INSERT INTO "conversions"
 SELECT
     o."event_time", o."account_id", CAST(NULL AS VARCHAR) AS "contact_id",
+    CAST(NULL AS VARCHAR) AS "email",
     CASE o."stage_to"
         WHEN 'ClosedWon'  THEN 'closed_won'
         WHEN 'ClosedLost' THEN 'closed_lost'
@@ -402,6 +407,7 @@ FROM "sf_opportunities" o;
 INSERT INTO "conversions"
 SELECT
     h."event_time", c."account_id", c."contact_id",
+    c."email" AS "email",
     CASE h."lifecycle_to" WHEN 'mql' THEN 'mql' ELSE 'conversation' END AS "event_type",
     CAST(NULL AS VARCHAR) AS "opportunity_id", CAST(0 AS DOUBLE) AS "revenue",
     '' AS "deal_size", 'Email Nurture' AS "program_category"

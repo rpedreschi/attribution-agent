@@ -10,6 +10,7 @@ CREATE STREAM "conversions" (
     "event_time"       TIMESTAMP,
     "account_id"       VARCHAR,
     "contact_id"       VARCHAR,
+    "email"            VARCHAR,
     "event_type"       VARCHAR,    -- conversation | mql | sql | opp_created | closed_won | closed_lost
     "opportunity_id"   VARCHAR,
     "revenue"          DOUBLE,
@@ -28,6 +29,7 @@ CREATE STREAM "conversions" (
 INSERT INTO "conversions"
 SELECT
     o."event_time", o."account_id", CAST(NULL AS VARCHAR) AS "contact_id",
+    CAST(NULL AS VARCHAR) AS "email",
     CASE o."stage_to"
         WHEN 'ClosedWon'  THEN 'closed_won'
         WHEN 'ClosedLost' THEN 'closed_lost'
@@ -43,6 +45,7 @@ FROM "sf_opportunities" o;
 INSERT INTO "conversions"
 SELECT
     h."event_time", c."account_id", c."contact_id",
+    c."email" AS "email",
     CASE h."lifecycle_to" WHEN 'mql' THEN 'mql' ELSE 'conversation' END AS "event_type",
     CAST(NULL AS VARCHAR) AS "opportunity_id", CAST(0 AS DOUBLE) AS "revenue",
     '' AS "deal_size", 'Email Nurture' AS "program_category"
