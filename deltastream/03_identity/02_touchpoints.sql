@@ -32,13 +32,27 @@ CREATE STREAM "touchpoints" (
     'timestamp' = 'event_time'
 );
 
--- Resolved web touches.
+-- Resolved web touches. GA4 carries paid + organic traffic, so derive the
+-- channel from utm_medium (cpc -> Paid Search, paid-social -> Paid Social,
+-- brand -> Brand) rather than labelling everything Organic/Web — otherwise the
+-- paid channels get spend but no attributed revenue.
 INSERT INTO "touchpoints"
 SELECT
     g."event_time", g."user_id", m."web_user_id" AS "web_user_id",
     m."account_id", m."contact_id",
     m."email" AS "email", g."session_id",
-    'Organic/Web' AS "channel", 'Organic/Web' AS "program_category",
+    CAST(CASE g."utm_medium"
+        WHEN 'cpc'         THEN 'Paid Search'
+        WHEN 'paid-social' THEN 'Paid Social'
+        WHEN 'brand'       THEN 'Brand'
+        ELSE 'Organic/Web'
+    END AS VARCHAR) AS "channel",
+    CAST(CASE g."utm_medium"
+        WHEN 'cpc'         THEN 'Paid Search'
+        WHEN 'paid-social' THEN 'Paid Social'
+        WHEN 'brand'       THEN 'Brand'
+        ELSE 'Organic/Web'
+    END AS VARCHAR) AS "program_category",
     g."utm_campaign" AS "campaign", 'ga4' AS "source", 'ga4' AS "source_system"
 FROM "ga4_events" g
 LEFT JOIN "web_identity_map" m ON g."user_id" = m."web_user_id";
