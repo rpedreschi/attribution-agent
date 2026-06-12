@@ -12,7 +12,7 @@
 
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'attr_web_identity_map',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json'
 ) AS
 SELECT

@@ -17,7 +17,7 @@ CREATE STREAM "hubspot_events" (
     "utm_campaign"    VARCHAR
 ) WITH (
     'topic' = 'src.hubspot.events',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'

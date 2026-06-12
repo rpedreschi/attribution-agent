@@ -12,7 +12,7 @@ CREATE STREAM "outreach_activity" (
     "sdr"          VARCHAR
 ) WITH (
     'topic' = 'src.outreach.activity',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'

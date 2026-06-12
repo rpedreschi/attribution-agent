@@ -12,7 +12,7 @@ CREATE STREAM "spend" (
     "source_platform"  VARCHAR
 ) WITH (
     'topic' = 'attr_spend',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json'
 );
 

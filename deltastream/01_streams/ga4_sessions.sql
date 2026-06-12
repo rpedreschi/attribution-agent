@@ -17,7 +17,7 @@ CREATE STREAM "ga4_events" (
     "utm_content"   VARCHAR
 ) WITH (
     'topic' = 'src.ga4.events',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'

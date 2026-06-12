@@ -13,7 +13,7 @@ CREATE STREAM "conversions" (
     "program_category" VARCHAR
 ) WITH (
     'topic' = 'attr_conversions',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

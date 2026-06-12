@@ -19,7 +19,7 @@ CREATE STREAM "touchpoints" (
     "source_system"    VARCHAR
 ) WITH (
     'topic' = 'attr_touchpoints',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

@@ -11,32 +11,30 @@ Either way you run the same statements in the same order.
 
 - Events must already be in Confluent on the `src.*` topics. Confirm with the
   datagen run, or in the Confluent UI (each topic should have a message count).
-- You need an org-admin (or DDL-capable) role to create the store, database, and
+- The Kafka store already exists as `demo_confluent` (the default store); you do
+  not create one. You just need a DDL-capable role to create the database and
   objects. The `attribution_reader` role minted in step 6 is read-only and is
   only for the agent's MCP token.
 
-## 1. Store + database + session context  — `00_stores.sql`
+## 1. Database + session context  — `00_stores.sql`
 
-Edit the three placeholders in `00_stores.sql` first:
+The Kafka store already exists in this org as **`demo_confluent`** (the default
+store), so there is no store to create — the stream/changelog DDLs reference
+`'demo_confluent'` directly. Just run `00_stores.sql`: it creates the
+`attribution` database and sets the session context (`USE DATABASE / SCHEMA`).
 
-| placeholder | set to |
-|---|---|
-| `'uris'` | your `KAFKA_BOOTSTRAP_SERVERS` (e.g. `pkc-921jm.us-east-2.aws.confluent.cloud:9092`) |
-| `'availability_zone'` | the AZ/region your Confluent cluster runs in |
-| `'kafka.sasl.username'` / `'kafka.sasl.password'` | your Confluent API key / secret (inline for a demo, or `CREATE SECRET` first and reference by name) |
-
-Then run the file. It creates the store, the `attribution` database, and sets the
-session context (`USE DATABASE / SCHEMA / STORE`).
-
-> **Session context is per-connection.** If you reconnect (new CLI session, web
-> app refresh), re-run the three `USE` statements at the bottom of `00_stores.sql`
-> before running anything else, or your unqualified object names won't resolve.
+> **The session context is what puts every object in `attribution.public`.**
+> DeltaStream creates unqualified objects in the current database/schema, so
+> `USE DATABASE "attribution"; USE SCHEMA "public";` at the top of the session is
+> what guarantees the streams, changelogs, and MVs all land there. It's
+> per-connection — if you reconnect (new CLI session, web-app refresh), re-run
+> those two `USE` statements before running anything else.
 
 Validate:
 
 ```sql
-LIST STORES;                          -- confluent_cloud present
-PRINT STORE "confluent_cloud";        -- lists the src.* topics => connectivity OK
+LIST STORES;                          -- demo_confluent present (already exists)
+PRINT STORE "demo_confluent";         -- lists the src.* topics => connectivity OK
 LIST DATABASES;                       -- attribution present
 ```
 
@@ -146,7 +144,7 @@ exposed MVs as tools), and the LLM backend.
 | `DESCRIBE QUERY <id>;` | why a specific query errored |
 | `SELECT * FROM <stream>;` | live ingestion + timestamp parsing (continuous) |
 | `SELECT * FROM <mv>;` | current aggregated state (snapshot) |
-| `PRINT STORE "confluent_cloud";` | store connectivity / topic visibility |
+| `PRINT STORE "demo_confluent";` | store connectivity / topic visibility |
 
 ## Teardown / redeploy
 

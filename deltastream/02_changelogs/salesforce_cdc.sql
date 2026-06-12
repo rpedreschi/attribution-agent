@@ -17,7 +17,7 @@ CREATE CHANGELOG "sf_contacts" (
     PRIMARY KEY ("contact_id")
 ) WITH (
     'topic' = 'src.salesforce.cdc.contacts',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
     'timestamp.format' = 'iso8601'
@@ -35,7 +35,7 @@ CREATE CHANGELOG "sf_accounts" (
     PRIMARY KEY ("account_id")
 ) WITH (
     'topic' = 'src.salesforce.cdc.accounts',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
     'timestamp.format' = 'iso8601'
@@ -52,7 +52,7 @@ CREATE CHANGELOG "sf_opportunities" (
     PRIMARY KEY ("opportunity_id", "event_time")
 ) WITH (
     'topic' = 'src.salesforce.cdc.opportunities',
-    'store' = 'confluent_cloud',
+    'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
