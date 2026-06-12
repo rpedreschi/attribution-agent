@@ -56,18 +56,25 @@ def generate_observations(data: BoardPackData, claude: ClaudeClient) -> list[str
 
 
 def _fallback(data: BoardPackData, facts: dict) -> list[str]:
-    top = facts["top_roi"][0]
-    bottom = facts["bottom_roi"][-1]
     agree = facts["model_agreement"]
     agree_note = ("the three attribution models broadly agree on channel ranking"
                   if agree >= 0.8 else
                   "the attribution models disagree materially on channel ranking, "
                   "so model choice changes the budget answer")
-    return [
+    bullets = [
         f"Attributed revenue was ${data.total_attributed:,.0f} in {data.fiscal_period}, "
         f"{facts['revenue_qoq_pct']:+.1f}% versus the prior quarter, across {data.won_deals} closed-won deals.",
         f"Blended marketing ROI was {facts['blended_roi']:.2f}x at a blended CAC of "
         f"${facts['blended_cac']:,.0f} per new customer.",
-        f"{top[0]} led ROI at {top[1]:.2f}x; {bottom[0]} was lowest at {bottom[1]:.2f}x.",
-        f"Model-agreement coefficient is {agree:.2f} — {agree_note}.",
     ]
+    # Channel ROI ranking is only meaningful once spend and closed-won revenue
+    # have both landed; skip it on sparse data rather than indexing an empty list.
+    top_roi, bottom_roi = facts["top_roi"], facts["bottom_roi"]
+    if top_roi and bottom_roi:
+        top, bottom = top_roi[0], bottom_roi[-1]
+        bullets.append(f"{top[0]} led ROI at {top[1]:.2f}x; {bottom[0]} was lowest at {bottom[1]:.2f}x.")
+    else:
+        bullets.append("Channel-level ROI is not yet available — spend and/or "
+                       "closed-won revenue have not populated the materialized views.")
+    bullets.append(f"Model-agreement coefficient is {agree:.2f} — {agree_note}.")
+    return bullets
