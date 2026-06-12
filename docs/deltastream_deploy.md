@@ -19,8 +19,7 @@ Either way you run the same statements in the same order.
   datagen run, or in the Confluent UI (each topic should have a message count).
 - The Kafka store already exists as `demo_confluent` (the default store); you do
   not create one. You just need a DDL-capable role to create the database and
-  objects. The `attribution_reader` role minted in step 6 is read-only and is
-  only for the agent's MCP token.
+  objects.
 
 ## 1. Database + session context  — `00_stores.sql`
 
@@ -130,15 +129,13 @@ SELECT * FROM "mv_funnel_by_category";
 `--stream` defaults that's a couple minutes in; with `--backfill` the Q1 closes
 are immediate.
 
-## 6. Expose over MCP — `06_mcp/`
+## 6. Expose over MCP
 
-Run `01_expose_over_mcp.sql`. It creates the least-privilege `attribution_reader`
-role, grants it `SELECT` on the four MVs (each becomes an MCP tool), and mints an
-API token. **Copy the token** into `DELTASTREAM_API_TOKEN` (or
-`config/settings.yaml`).
-
-> If you created the MVs somewhere other than `attribution.public`, fix the
-> fully-qualified grant names in this file to match.
+Nothing to run. DeltaStream **auto-exposes** every materialized view your API
+token's role can `SELECT` as an MCP tool (named `<database>_<schema>_<mv>`, e.g.
+`attribution_public_mv_spend_by_channel`). Set `DELTASTREAM_API_TOKEN` to a
+DeltaStream API token that can read the MVs (or put it in `config/settings.yaml`)
+and the agent will discover them.
 
 ## 7. Confirm the agent can see it
 

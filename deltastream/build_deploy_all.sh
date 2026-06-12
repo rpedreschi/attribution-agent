@@ -21,7 +21,6 @@ FILES=(
   deltastream/05_views/02_mv_funnel_by_category.sql
   deltastream/05_views/03_mv_channel_touch_distribution.sql
   deltastream/05_views/04_mv_won_revenue_by_account.sql
-  deltastream/06_mcp/01_expose_over_mcp.sql
 )
 OUT=deltastream/deploy_all.sql
 

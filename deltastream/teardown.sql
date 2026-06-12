@@ -21,8 +21,6 @@
 -- hand or just use the single DROP DATABASE at the bottom, which removes every
 -- relation at once.
 
-USE ROLE orgadmin;
-
 -- Materialized views (consume the fact streams) ----------------------------
 DROP MATERIALIZED VIEW "attribution"."public"."mv_won_revenue_by_account";
 DROP MATERIALIZED VIEW "attribution"."public"."mv_channel_touch_distribution";
@@ -49,7 +47,3 @@ DROP STREAM    "attribution"."public"."google_ads";
 
 -- The (now empty) database -------------------------------------------------
 DROP DATABASE "attribution";
-
--- Org-level objects, outside the database ----------------------------------
-DROP API_TOKEN "attribution_agent_token";
-DROP ROLE "attribution_reader";

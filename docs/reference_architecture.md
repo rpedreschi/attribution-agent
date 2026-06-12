@@ -27,9 +27,9 @@ pack to Excel.
  │      mv_funnel_by_category                        │
  │      mv_channel_touch_distribution                │
  │      mv_won_revenue_by_account                    │
- │  • CREATE API_TOKEN (role with SELECT on the MVs) │
+ │  • MVs auto-exposed over MCP to the token's role  │
  └────────────────────────────────────────────────┘
-        │   DeltaStream MCP endpoint (Bearer token, RBAC)
+        │   DeltaStream MCP endpoint (Bearer token)
         │   every granted MV is auto-exposed as an MCP tool
         ▼
  ┌────────────────────────────────────────────────┐
@@ -84,12 +84,14 @@ Salesforce contacts CDC changelog yields `web_user_id → contact_id → account
 materialized as the `web_identity_map` changelog. GA4 touches temporal-join that
 map to attach an account.
 
-## Exposing the views (RBAC = exposure)
+## Exposing the views
 
-`deltastream/06_mcp/01_expose_over_mcp.sql`: create a least-privilege
-`attribution_reader` role, `GRANT SELECT` on exactly the four MVs, and
-`CREATE API_TOKEN` bound to that role. The agent sends
-`Authorization: Bearer <token>`; DeltaStream RBAC governs what it can see.
+DeltaStream auto-exposes every materialized view an API token's role can
+`SELECT` as an MCP tool — no extra DDL. The agent sends
+`Authorization: Bearer <token>` to the MCP endpoint and discovers the MVs as
+tools (`<database>_<schema>_<mv>`). To scope the agent down in a real
+deployment, mint a least-privilege role that can SELECT only these four MVs and
+bind the token to it; for the demo, any token that can read them works.
 
 ## Agent guardrails (v1)
 

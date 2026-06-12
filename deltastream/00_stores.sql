@@ -4,9 +4,10 @@
 -- (and is the default store), so there is NO CREATE STORE here. The stream and
 -- changelog DDLs reference 'demo_confluent' directly in their WITH clauses.
 --
--- NOTE: the attribution context is served from DeltaStream materialized views
--- over MCP (see 06_mcp/). DeltaStream uses ClickHouse internally to back MVs; we
--- do not manage it.
+-- NOTE: the attribution context is served from the DeltaStream materialized
+-- views (05_views/), which DeltaStream auto-exposes over its MCP endpoint to any
+-- API token that can SELECT them. DeltaStream uses ClickHouse internally to back
+-- MVs; we do not manage it.
 
 -- 1. The database (and its default `public` schema) that holds every stream,
 --    changelog, and materialized view. Must match config.deltastream.database

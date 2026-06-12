@@ -31,8 +31,7 @@ deltastream/
   02_changelogs/      Salesforce CDC changelogs (the identity spine)
   03_identity/        anon → known resolution, unified touchpoints stream
   04_facts/           conversions, spend, funnel_events streams
-  05_views/           the 4 materialized views (the MCP context)
-  06_mcp/             role + GRANTs + API_TOKEN (exposes the MVs over MCP)
+  05_views/           the 4 materialized views (auto-exposed over MCP)
 src/attribution_agent/
   config.py           YAML + env settings (Confluent + DeltaStream MCP)
   sample_data.py      canonical Acme Cloud figures (the demo source of truth)
@@ -108,8 +107,9 @@ deterministic, number-grounded templates so the artifact always builds.
 3. **Deploy the DeltaStream objects** in order: `00_stores.sql` (creates the
    `attribution` database + session context; the `demo_confluent` store already
    exists), `01_streams/`, `02_changelogs/`, `03_identity/`, `04_facts/`,
-   `05_views/`, then `06_mcp/01_expose_over_mcp.sql`. Copy the API token from the
-   last step into `DELTASTREAM_API_TOKEN`. See
+   `05_views/` — or just run `deltastream/deploy_all.sql`. DeltaStream
+   auto-exposes the materialized views over its MCP endpoint; set
+   `DELTASTREAM_API_TOKEN` to a DeltaStream API token that can SELECT them. See
    [docs/deltastream_deploy.md](docs/deltastream_deploy.md) for the step-by-step
    runbook with per-layer validation queries (web app or CLI).
 
