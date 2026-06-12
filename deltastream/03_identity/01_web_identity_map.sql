@@ -7,18 +7,19 @@
 -- materialized as a CHANGELOG so downstream stream-to-table temporal joins can
 -- look up an account for previously-anonymous web traffic.
 --
--- Join only — no aggregation (per conventions). Chained through this
--- intermediate object rather than folded into the GA4 enrichment statement.
-
 -- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
--- Built with CREATE CHANGELOG AS SELECT (a changelog cannot be the sink of an
--- INSERT INTO). Its primary key is set via the 'key.columns' sink property —
--- web_user_id — because downstream the touchpoints stream temporal-joins this
--- changelog on web_user_id, and DeltaStream requires that join to reference the
--- changelog's primary key.
+-- Built with CREATE CHANGELOG AS SELECT, keyed by web_user_id (the downstream
+-- touchpoints stream temporal-joins this changelog on web_user_id).
+--
+-- A stream->changelog join (hubspot_events JOIN sf_contacts) yields a STREAM, so
+-- it cannot directly back a CHANGELOG. Aggregating GROUP BY web_user_id gives the
+-- query upsert/changelog semantics: one current row per web cookie holding the
+-- resolved contact/account. MAX() collapses the (effectively single) matching
+-- contact per cookie. The 'key.columns' sink property names the key, matching the
+-- GROUP BY.
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'attr_web_identity_map',
     'topic.partitions' = 1,
@@ -28,13 +29,14 @@ CREATE CHANGELOG "web_identity_map" WITH (
     'key.columns' = 'web_user_id'
 ) AS
 SELECT
-    h."web_user_id"          AS "web_user_id",
-    c."contact_id"           AS "contact_id",
-    c."account_id"           AS "account_id",
-    c."email"                AS "email",
-    h."event_time"           AS "resolved_at"
+    h."web_user_id"       AS "web_user_id",
+    MAX(c."contact_id")   AS "contact_id",
+    MAX(c."account_id")   AS "account_id",
+    MAX(c."email")        AS "email",
+    MAX(h."event_time")   AS "resolved_at"
 FROM "hubspot_events" h
 JOIN "sf_contacts" c
     ON h."email" = c."email"
 WHERE h."event_type" = 'form_submission'
-  AND h."web_user_id" IS NOT NULL;
+  AND h."web_user_id" IS NOT NULL
+GROUP BY h."web_user_id";
