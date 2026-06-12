@@ -416,14 +416,14 @@ INSERT INTO "conversions"
 SELECT
     o."event_time", o."account_id", CAST(NULL AS VARCHAR) AS "contact_id",
     CAST(NULL AS VARCHAR) AS "email",
-    CASE o."stage_to"
+    CAST(CASE o."stage_to"
         WHEN 'ClosedWon'  THEN 'closed_won'
         WHEN 'ClosedLost' THEN 'closed_lost'
         WHEN 'SQL'        THEN 'sql'
         ELSE 'opp_created'
-    END AS "event_type",
+    END AS VARCHAR) AS "event_type",
     o."opportunity_id",
-    CASE WHEN o."stage_to" = 'ClosedWon' THEN o."amount" ELSE 0 END AS "revenue",
+    CAST(CASE WHEN o."stage_to" = 'ClosedWon' THEN o."amount" ELSE 0 END AS DOUBLE) AS "revenue",
     o."deal_size", 'Outbound SDR' AS "program_category"
 FROM "sf_opportunities" o;
 
@@ -432,7 +432,7 @@ INSERT INTO "conversions"
 SELECT
     h."event_time", c."account_id", c."contact_id",
     c."email" AS "email",
-    CASE h."lifecycle_to" WHEN 'mql' THEN 'mql' ELSE 'conversation' END AS "event_type",
+    CAST(CASE h."lifecycle_to" WHEN 'mql' THEN 'mql' ELSE 'conversation' END AS VARCHAR) AS "event_type",
     CAST(NULL AS VARCHAR) AS "opportunity_id", CAST(0 AS DOUBLE) AS "revenue",
     '' AS "deal_size", 'Email Nurture' AS "program_category"
 FROM "hubspot_events" h
