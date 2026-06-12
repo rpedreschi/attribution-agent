@@ -260,15 +260,16 @@ CREATE CHANGELOG "sf_opportunities" (
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
--- Built with CREATE CHANGELOG AS SELECT, keyed by web_user_id (the downstream
--- touchpoints stream temporal-joins this changelog on web_user_id).
+-- Built with CREATE CHANGELOG AS SELECT, keyed by web_user_id: a current
+-- web_user_id -> email row per web cookie. The account is NOT resolved here —
+-- touchpoints joins sf_contacts on this email to get the account.
 --
--- A stream->changelog join (hubspot_events JOIN sf_contacts) yields a STREAM, so
--- it cannot directly back a CHANGELOG. Aggregating GROUP BY web_user_id gives the
--- query upsert/changelog semantics: one current row per web cookie holding the
--- resolved contact/account. MAX() collapses the (effectively single) matching
--- contact per cookie. The 'key.columns' sink property names the key, matching the
--- GROUP BY.
+-- Why no sf_contacts join here: a stream->changelog join yields a STREAM (can't
+-- back a CHANGELOG), and the alternative — GROUP BY with the sf_contacts join —
+-- can't both satisfy "the joined changelog's key (email) must be projected" and
+-- keep web_user_id as the sole key. So this stage is hubspot-only: GROUP BY
+-- web_user_id gives changelog/upsert semantics, MAX() collapses the (single)
+-- form email per cookie, and 'key.columns' names the key.
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'attr_web_identity_map',
     'topic.partitions' = 1,
@@ -279,13 +280,9 @@ CREATE CHANGELOG "web_identity_map" WITH (
 ) AS
 SELECT
     h."web_user_id"       AS "web_user_id",
-    MAX(c."contact_id")   AS "contact_id",
-    MAX(c."account_id")   AS "account_id",
-    MAX(c."email")        AS "email",
+    MAX(h."email")        AS "email",
     MAX(h."event_time")   AS "resolved_at"
 FROM "hubspot_events" h
-JOIN "sf_contacts" c
-    ON h."email" = c."email"
 WHERE h."event_type" = 'form_submission'
   AND h."web_user_id" IS NOT NULL
 GROUP BY h."web_user_id";
@@ -332,12 +329,13 @@ CREATE STREAM "touchpoints" (
 INSERT INTO "touchpoints"
 SELECT
     g."event_time", g."user_id", m."web_user_id" AS "web_user_id",
-    m."account_id", m."contact_id",
-    m."email" AS "email", g."session_id",
+    c."account_id", c."contact_id",
+    c."email" AS "email", g."session_id",
     'Organic/Web' AS "channel", 'Organic/Web' AS "program_category",
     g."utm_campaign" AS "campaign", 'ga4' AS "source", 'ga4' AS "source_system"
 FROM "ga4_events" g
-LEFT JOIN "web_identity_map" m ON g."user_id" = m."web_user_id";
+LEFT JOIN "web_identity_map" m ON g."user_id" = m."web_user_id"
+LEFT JOIN "sf_contacts" c ON m."email" = c."email";
 
 -- Outbound SDR touches (already keyed to a Salesforce contact).
 INSERT INTO "touchpoints"

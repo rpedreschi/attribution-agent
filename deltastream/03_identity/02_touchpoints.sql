@@ -36,12 +36,13 @@ CREATE STREAM "touchpoints" (
 INSERT INTO "touchpoints"
 SELECT
     g."event_time", g."user_id", m."web_user_id" AS "web_user_id",
-    m."account_id", m."contact_id",
-    m."email" AS "email", g."session_id",
+    c."account_id", c."contact_id",
+    c."email" AS "email", g."session_id",
     'Organic/Web' AS "channel", 'Organic/Web' AS "program_category",
     g."utm_campaign" AS "campaign", 'ga4' AS "source", 'ga4' AS "source_system"
 FROM "ga4_events" g
-LEFT JOIN "web_identity_map" m ON g."user_id" = m."web_user_id";
+LEFT JOIN "web_identity_map" m ON g."user_id" = m."web_user_id"
+LEFT JOIN "sf_contacts" c ON m."email" = c."email";
 
 -- Outbound SDR touches (already keyed to a Salesforce contact).
 INSERT INTO "touchpoints"
