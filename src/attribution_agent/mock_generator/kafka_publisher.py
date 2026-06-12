@@ -94,10 +94,9 @@ class KafkaPublisher:
         self._producer.flush(30)
 
 
-def create_topics(settings: Settings, *, partitions: int = 6, replication: int = 3) -> None:
-    """Create the source topics on Confluent Cloud (auto-create is usually off).
-    Confluent Basic/Standard clusters require replication factor 3."""
-    from confluent_kafka.admin import AdminClient, NewTopic  # lazy import
+def _admin_client(settings: Settings):
+    """Build a confluent_kafka AdminClient from settings (lazy import)."""
+    from confluent_kafka.admin import AdminClient  # lazy import
 
     conf: dict[str, object] = {
         "bootstrap.servers": settings.kafka.bootstrap_servers,
@@ -109,7 +108,15 @@ def create_topics(settings: Settings, *, partitions: int = 6, replication: int =
             "sasl.username": settings.kafka.sasl_username,
             "sasl.password": settings.kafka.sasl_password,
         })
-    admin = AdminClient(conf)
+    return AdminClient(conf)
+
+
+def create_topics(settings: Settings, *, partitions: int = 6, replication: int = 3) -> None:
+    """Create the source topics on Confluent Cloud (auto-create is usually off).
+    Confluent Basic/Standard clusters require replication factor 3."""
+    from confluent_kafka.admin import NewTopic  # lazy import
+
+    admin = _admin_client(settings)
     topics = [NewTopic(t, num_partitions=partitions, replication_factor=replication)
               for t in settings.kafka.topics.values()]
     for topic, fut in admin.create_topics(topics).items():
@@ -118,6 +125,40 @@ def create_topics(settings: Settings, *, partitions: int = 6, replication: int =
             print(f"  created topic {topic}")
         except Exception as exc:  # noqa: BLE001 - already-exists is fine
             print(f"  topic {topic}: {exc}")
+
+
+def delete_topics(settings: Settings) -> None:
+    """Delete the source topics (and all their data) from Confluent Cloud."""
+    admin = _admin_client(settings)
+    names = list(settings.kafka.topics.values())
+    for topic, fut in admin.delete_topics(names, operation_timeout=30).items():
+        try:
+            fut.result()
+            print(f"  deleted topic {topic}")
+        except Exception as exc:  # noqa: BLE001 - not-found is fine
+            print(f"  topic {topic}: {exc}")
+
+
+def recreate_topics(settings: Settings, *, partitions: int = 6, replication: int = 3,
+                    poll_seconds: float = 3.0, max_polls: int = 20) -> None:
+    """Delete then recreate the source topics for a clean slate. Confluent Cloud
+    deletes asynchronously, so wait for the names to disappear before creating
+    (a create racing an in-flight delete fails)."""
+    import time
+
+    print("Deleting topics…")
+    delete_topics(settings)
+    names = set(settings.kafka.topics.values())
+    print("Waiting for deletion to propagate…")
+    for _ in range(max_polls):
+        time.sleep(poll_seconds)
+        existing = set(_admin_client(settings).list_topics(timeout=10).topics)
+        if not (names & existing):
+            break
+    else:
+        print("  warning: some topics still present; attempting create anyway")
+    print("Creating topics…")
+    create_topics(settings, partitions=partitions, replication=replication)
 
 
 def make_publisher(settings: Settings, *, dry_run: bool,

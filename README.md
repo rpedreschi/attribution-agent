@@ -89,6 +89,9 @@ deterministic, number-grounded templates so the artifact always builds.
    # One-shot Q1 backfill (creates topics, then publishes the fixed dataset):
    python -m attribution_agent.mock_generator --create-topics
 
+   # Clean slate: delete + recreate the topics (clears all data) first:
+   python -m attribution_agent.mock_generator --recreate-topics
+
    # Or run a live stream: new events with current timestamps, forever, so
    # DeltaStream keeps recomputing attribution (Ctrl-C to stop):
    python -m attribution_agent.mock_generator --stream

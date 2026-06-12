@@ -23,7 +23,7 @@ from pathlib import Path
 from ..config import load_settings
 from .generator import SEED, Generator
 from .kafka_publisher import (create_topics, make_publisher, publish_all,
-                              publish_event)
+                              publish_event, recreate_topics)
 from .live_generator import LiveGenerator
 
 
@@ -83,6 +83,9 @@ def main() -> None:
                         help="Directory for --dry-run JSONL output (default: events).")
     parser.add_argument("--create-topics", action="store_true",
                         help="Create the Confluent Cloud topics before publishing.")
+    parser.add_argument("--recreate-topics", action="store_true",
+                        help="Delete the topics (clearing all data) and recreate "
+                             "them before publishing — a clean slate.")
     parser.add_argument("--seed", type=int, default=SEED,
                         help=f"RNG seed for reproducibility (default: {SEED}).")
 
@@ -109,7 +112,9 @@ def main() -> None:
     args = parser.parse_args()
 
     settings = load_settings()
-    if args.create_topics and not args.dry_run:
+    if args.recreate_topics and not args.dry_run:
+        recreate_topics(settings)
+    elif args.create_topics and not args.dry_run:
         print("Creating topics…")
         create_topics(settings)
 
