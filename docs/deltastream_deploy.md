@@ -14,7 +14,8 @@ Either way you run the same statements in the same order.
 
 ## 0. Before you start
 
-- Events must already be in Confluent on the `src.*` topics. Confirm with the
+- Events must already be in Confluent on the `attr_*` source topics (e.g.
+  `attr_ga4_events`, `attr_salesforce_cdc_contacts`). Confirm with the
   datagen run, or in the Confluent UI (each topic should have a message count).
 - The Kafka store already exists as `demo_confluent` (the default store); you do
   not create one. You just need a DDL-capable role to create the database and
@@ -39,7 +40,7 @@ Validate:
 
 ```sql
 LIST STORES;                          -- demo_confluent present (already exists)
-PRINT STORE "demo_confluent";         -- lists the src.* topics => connectivity OK
+PRINT STORE "demo_confluent";         -- lists the attr_* topics => connectivity OK
 LIST DATABASES;                       -- attribution present
 ```
 
@@ -50,11 +51,14 @@ LIST DATABASES;                       -- attribution present
 > hand-write a query, quote names the same way (`SELECT * FROM "touchpoints";`),
 > or the unquoted name may fold to a different case and "not found".
 >
-> **Topic ownership convention:** every topic DeltaStream *creates* is prefixed
-> `attr_` (`attr_web_resolved`, `attr_web_identity_map`, `attr_touchpoints`,
-> `attr_conversions`, `attr_spend`, `attr_funnel_events`) so ops can tell whose
-> topics they are. The `src.*` topics are datagen *inputs* and are not renamed.
-> Because DeltaStream has to create those `attr_*` topics, each carries
+> **Topic ownership convention:** *every* topic in this project is prefixed
+> `attr_` so ops can tell whose topics they are. Datagen-produced source topics
+> (`attr_ga4_events`, `attr_hubspot_events`, `attr_outreach_activity`,
+> `attr_linkedin_ads`, `attr_google_ads`, `attr_salesforce_cdc_accounts`,
+> `attr_salesforce_cdc_contacts`, `attr_salesforce_cdc_opportunities`) and the
+> DeltaStream-created derived topics (`attr_web_resolved`,
+> `attr_web_identity_map`, `attr_touchpoints`, `attr_conversions`, `attr_spend`,
+> `attr_funnel_events`). Because DeltaStream has to create the derived topics, each carries
 > `'topic.partitions' = 1` and `'topic.replicas' = 3` (unquoted integers) in its
 > WITH clause (Confluent Cloud requires replication factor 3); adjust if your
 > cluster differs.

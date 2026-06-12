@@ -27,7 +27,7 @@ CREATE CHANGELOG "sf_contacts" (
     "updated_at" TIMESTAMP,
     PRIMARY KEY ("email")
 ) WITH (
-    'topic' = 'src.salesforce.cdc.contacts',
+    'topic' = 'attr_salesforce_cdc_contacts',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
@@ -45,7 +45,7 @@ CREATE CHANGELOG "sf_accounts" (
     "updated_at"     TIMESTAMP,
     PRIMARY KEY ("account_id")
 ) WITH (
-    'topic' = 'src.salesforce.cdc.accounts',
+    'topic' = 'attr_salesforce_cdc_accounts',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
@@ -61,7 +61,7 @@ CREATE STREAM "sf_opportunities" (
     "deal_size"      VARCHAR,
     "event_time"     TIMESTAMP
 ) WITH (
-    'topic' = 'src.salesforce.cdc.opportunities',
+    'topic' = 'attr_salesforce_cdc_opportunities',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',

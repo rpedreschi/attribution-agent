@@ -65,7 +65,7 @@ CREATE STREAM "ga4_events" (
     "utm_term"      VARCHAR,
     "utm_content"   VARCHAR
 ) WITH (
-    'topic' = 'src.ga4.events',
+    'topic' = 'attr_ga4_events',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -98,7 +98,7 @@ CREATE STREAM "hubspot_events" (
     "utm_medium"      VARCHAR,
     "utm_campaign"    VARCHAR
 ) WITH (
-    'topic' = 'src.hubspot.events',
+    'topic' = 'attr_hubspot_events',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -126,7 +126,7 @@ CREATE STREAM "outreach_activity" (
     "sequence"     VARCHAR,
     "sdr"          VARCHAR
 ) WITH (
-    'topic' = 'src.outreach.activity',
+    'topic' = 'attr_outreach_activity',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -153,7 +153,7 @@ CREATE STREAM "linkedin_ads" (
     "impressions"  BIGINT,
     "clicks"       BIGINT
 ) WITH (
-    'topic' = 'src.linkedin.ads',
+    'topic' = 'attr_linkedin_ads',
     'store' = 'demo_confluent',
     'value.format' = 'json'
 );
@@ -166,7 +166,7 @@ CREATE STREAM "google_ads" (
     "impressions"  BIGINT,
     "clicks"       BIGINT
 ) WITH (
-    'topic' = 'src.google.ads',
+    'topic' = 'attr_google_ads',
     'store' = 'demo_confluent',
     'value.format' = 'json'
 );
@@ -204,7 +204,7 @@ CREATE CHANGELOG "sf_contacts" (
     "updated_at" TIMESTAMP,
     PRIMARY KEY ("email")
 ) WITH (
-    'topic' = 'src.salesforce.cdc.contacts',
+    'topic' = 'attr_salesforce_cdc_contacts',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
@@ -222,7 +222,7 @@ CREATE CHANGELOG "sf_accounts" (
     "updated_at"     TIMESTAMP,
     PRIMARY KEY ("account_id")
 ) WITH (
-    'topic' = 'src.salesforce.cdc.accounts',
+    'topic' = 'attr_salesforce_cdc_accounts',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
@@ -238,7 +238,7 @@ CREATE STREAM "sf_opportunities" (
     "deal_size"      VARCHAR,
     "event_time"     TIMESTAMP
 ) WITH (
-    'topic' = 'src.salesforce.cdc.opportunities',
+    'topic' = 'attr_salesforce_cdc_opportunities',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',

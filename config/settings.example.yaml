@@ -20,14 +20,14 @@ kafka:
   sasl_username: "${KAFKA_API_KEY}"
   sasl_password: "${KAFKA_API_SECRET}"
   topics:
-    salesforce_accounts: "src.salesforce.cdc.accounts"
-    salesforce_contacts: "src.salesforce.cdc.contacts"
-    salesforce_opportunities: "src.salesforce.cdc.opportunities"
-    hubspot: "src.hubspot.events"
-    ga4: "src.ga4.events"
-    linkedin_ads: "src.linkedin.ads"
-    google_ads: "src.google.ads"
-    outreach: "src.outreach.activity"
+    salesforce_accounts: "attr_salesforce_cdc_accounts"
+    salesforce_contacts: "attr_salesforce_cdc_contacts"
+    salesforce_opportunities: "attr_salesforce_cdc_opportunities"
+    hubspot: "attr_hubspot_events"
+    ga4: "attr_ga4_events"
+    linkedin_ads: "attr_linkedin_ads"
+    google_ads: "attr_google_ads"
+    outreach: "attr_outreach_activity"
 
 deltastream:
   # DeltaStream MCP REST endpoint. Materialized views the token's role can

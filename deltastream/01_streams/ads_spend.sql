@@ -14,7 +14,7 @@ CREATE STREAM "linkedin_ads" (
     "impressions"  BIGINT,
     "clicks"       BIGINT
 ) WITH (
-    'topic' = 'src.linkedin.ads',
+    'topic' = 'attr_linkedin_ads',
     'store' = 'demo_confluent',
     'value.format' = 'json'
 );
@@ -27,7 +27,7 @@ CREATE STREAM "google_ads" (
     "impressions"  BIGINT,
     "clicks"       BIGINT
 ) WITH (
-    'topic' = 'src.google.ads',
+    'topic' = 'attr_google_ads',
     'store' = 'demo_confluent',
     'value.format' = 'json'
 );

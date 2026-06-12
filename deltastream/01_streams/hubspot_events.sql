@@ -20,7 +20,7 @@ CREATE STREAM "hubspot_events" (
     "utm_medium"      VARCHAR,
     "utm_campaign"    VARCHAR
 ) WITH (
-    'topic' = 'src.hubspot.events',
+    'topic' = 'attr_hubspot_events',
     'store' = 'demo_confluent',
     'value.format' = 'json',
     'timestamp' = 'event_time',
