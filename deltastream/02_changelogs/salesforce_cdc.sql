@@ -1,6 +1,9 @@
--- Salesforce CDC changelogs.
--- CHANGELOG (not STREAM) because these are upsert-semantics dimension tables
--- keyed by id; identity resolution joins against the latest version of each row.
+-- Salesforce CDC relations.
+-- contacts + accounts are CHANGELOGs (upsert-semantics dimension tables keyed by
+-- id; identity resolution joins against the latest version of each row).
+-- opportunities is a STREAM, not a changelog: stage transitions are append-only
+-- events, and it is only ever read as a source for the conversions stream (never
+-- joined as a lookup), so changelog semantics would wrongly collapse it.
 --
 -- contacts: the identity spine. Maps email -> contact_id -> account_id, which
 --           is how anonymous web/ad traffic gets attributed to an account.
@@ -9,7 +12,7 @@
 --           join to reference the changelog's primary key. email is 1:1 with
 --           contact_id here, so upsert semantics are unchanged.
 -- accounts: the account dimension (available for enrichment / future MVs).
--- opportunities: stage transitions feed the conversions table.
+-- opportunities: stage-transition events feed the conversions stream.
 
 -- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
@@ -49,15 +52,14 @@ CREATE CHANGELOG "sf_accounts" (
     'timestamp.format' = 'iso8601'
 );
 
-CREATE CHANGELOG "sf_opportunities" (
+CREATE STREAM "sf_opportunities" (
     "opportunity_id" VARCHAR,
     "account_id"     VARCHAR,
     "stage_from"     VARCHAR,
     "stage_to"       VARCHAR,
     "amount"         DOUBLE,
     "deal_size"      VARCHAR,
-    "event_time"     TIMESTAMP,
-    PRIMARY KEY ("opportunity_id", "event_time")
+    "event_time"     TIMESTAMP
 ) WITH (
     'topic' = 'src.salesforce.cdc.opportunities',
     'store' = 'demo_confluent',
