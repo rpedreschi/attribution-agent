@@ -263,25 +263,19 @@ CREATE CHANGELOG "sf_opportunities" (
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
--- Declared with an explicit PRIMARY KEY ("web_user_id"): downstream, the
--- touchpoints stream temporal-joins this changelog on web_user_id, and
--- DeltaStream requires that join to reference the changelog's primary key.
-CREATE CHANGELOG "web_identity_map" (
-    "web_user_id" VARCHAR,
-    "contact_id"  VARCHAR,
-    "account_id"  VARCHAR,
-    "resolved_at" TIMESTAMP,
-    PRIMARY KEY ("web_user_id")
-) WITH (
+-- Built with CREATE CHANGELOG AS SELECT (a changelog cannot be the sink of an
+-- INSERT INTO). Its primary key is set via the 'key.columns' sink property —
+-- web_user_id — because downstream the touchpoints stream temporal-joins this
+-- changelog on web_user_id, and DeltaStream requires that join to reference the
+-- changelog's primary key.
+CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'attr_web_identity_map',
     'topic.partitions' = '6',
     'topic.replicas' = '3',
     'store' = 'demo_confluent',
     'value.format' = 'json',
-    'timestamp' = 'resolved_at'
-);
-
-INSERT INTO "web_identity_map"
+    'key.columns' = 'web_user_id'
+) AS
 SELECT
     h."web_user_id"          AS "web_user_id",
     c."contact_id"           AS "contact_id",
