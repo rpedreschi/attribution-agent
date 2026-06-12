@@ -4,6 +4,10 @@
 --
 -- contacts: the identity spine. Maps email -> contact_id -> account_id, which
 --           is how anonymous web/ad traffic gets attributed to an account.
+--           Keyed by EMAIL (not contact_id): every downstream stream->changelog
+--           join resolves contacts on email, and DeltaStream requires such a
+--           join to reference the changelog's primary key. email is 1:1 with
+--           contact_id here, so upsert semantics are unchanged.
 -- accounts: the account dimension (available for enrichment / future MVs).
 -- opportunities: stage transitions feed the conversions table.
 
@@ -18,7 +22,7 @@ CREATE CHANGELOG "sf_contacts" (
     "first_name" VARCHAR,
     "last_name"  VARCHAR,
     "updated_at" TIMESTAMP,
-    PRIMARY KEY ("contact_id")
+    PRIMARY KEY ("email")
 ) WITH (
     'topic' = 'src.salesforce.cdc.contacts',
     'store' = 'demo_confluent',

@@ -181,6 +181,10 @@ CREATE STREAM "google_ads" (
 --
 -- contacts: the identity spine. Maps email -> contact_id -> account_id, which
 --           is how anonymous web/ad traffic gets attributed to an account.
+--           Keyed by EMAIL (not contact_id): every downstream stream->changelog
+--           join resolves contacts on email, and DeltaStream requires such a
+--           join to reference the changelog's primary key. email is 1:1 with
+--           contact_id here, so upsert semantics are unchanged.
 -- accounts: the account dimension (available for enrichment / future MVs).
 -- opportunities: stage transitions feed the conversions table.
 
@@ -195,7 +199,7 @@ CREATE CHANGELOG "sf_contacts" (
     "first_name" VARCHAR,
     "last_name"  VARCHAR,
     "updated_at" TIMESTAMP,
-    PRIMARY KEY ("contact_id")
+    PRIMARY KEY ("email")
 ) WITH (
     'topic' = 'src.salesforce.cdc.contacts',
     'store' = 'demo_confluent',
@@ -259,11 +263,23 @@ CREATE CHANGELOG "sf_opportunities" (
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
-CREATE CHANGELOG "web_identity_map" WITH (
+-- Declared with an explicit PRIMARY KEY ("web_user_id"): downstream, the
+-- touchpoints stream temporal-joins this changelog on web_user_id, and
+-- DeltaStream requires that join to reference the changelog's primary key.
+CREATE CHANGELOG "web_identity_map" (
+    "web_user_id" VARCHAR,
+    "contact_id"  VARCHAR,
+    "account_id"  VARCHAR,
+    "resolved_at" TIMESTAMP,
+    PRIMARY KEY ("web_user_id")
+) WITH (
     'topic' = 'attr_web_identity_map',
     'store' = 'demo_confluent',
-    'value.format' = 'json'
-) AS
+    'value.format' = 'json',
+    'timestamp' = 'resolved_at'
+);
+
+INSERT INTO "web_identity_map"
 SELECT
     h."web_user_id"          AS "web_user_id",
     c."contact_id"           AS "contact_id",

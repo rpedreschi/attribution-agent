@@ -14,11 +14,23 @@
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
-CREATE CHANGELOG "web_identity_map" WITH (
+-- Declared with an explicit PRIMARY KEY ("web_user_id"): downstream, the
+-- touchpoints stream temporal-joins this changelog on web_user_id, and
+-- DeltaStream requires that join to reference the changelog's primary key.
+CREATE CHANGELOG "web_identity_map" (
+    "web_user_id" VARCHAR,
+    "contact_id"  VARCHAR,
+    "account_id"  VARCHAR,
+    "resolved_at" TIMESTAMP,
+    PRIMARY KEY ("web_user_id")
+) WITH (
     'topic' = 'attr_web_identity_map',
     'store' = 'demo_confluent',
-    'value.format' = 'json'
-) AS
+    'value.format' = 'json',
+    'timestamp' = 'resolved_at'
+);
+
+INSERT INTO "web_identity_map"
 SELECT
     h."web_user_id"          AS "web_user_id",
     c."contact_id"           AS "contact_id",
