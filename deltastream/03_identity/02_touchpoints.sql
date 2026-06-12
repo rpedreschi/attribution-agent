@@ -13,6 +13,7 @@ USE SCHEMA "public";
 CREATE STREAM "touchpoints" (
     "event_time"       TIMESTAMP,
     "user_id"          VARCHAR,
+    "web_user_id"      VARCHAR,
     "account_id"       VARCHAR,
     "contact_id"       VARCHAR,
     "email"            VARCHAR,
@@ -34,7 +35,8 @@ CREATE STREAM "touchpoints" (
 -- Resolved web touches.
 INSERT INTO "touchpoints"
 SELECT
-    g."event_time", g."user_id", m."account_id", m."contact_id",
+    g."event_time", g."user_id", m."web_user_id" AS "web_user_id",
+    m."account_id", m."contact_id",
     m."email" AS "email", g."session_id",
     'Organic/Web' AS "channel", 'Organic/Web' AS "program_category",
     g."utm_campaign" AS "campaign", 'ga4' AS "source", 'ga4' AS "source_system"
@@ -44,7 +46,8 @@ LEFT JOIN "web_identity_map" m ON g."user_id" = m."web_user_id";
 -- Outbound SDR touches (already keyed to a Salesforce contact).
 INSERT INTO "touchpoints"
 SELECT
-    o."event_time", o."contact_id" AS "user_id", c."account_id", o."contact_id",
+    o."event_time", o."contact_id" AS "user_id", CAST(NULL AS VARCHAR) AS "web_user_id",
+    c."account_id", o."contact_id",
     c."email" AS "email", o."prospect_id" AS "session_id", 'Outbound SDR' AS "channel",
     'Outbound SDR' AS "program_category", o."sequence" AS "campaign",
     'outreach' AS "source", 'outreach' AS "source_system"
@@ -54,7 +57,8 @@ JOIN "sf_contacts" c ON o."email" = c."email";
 -- Email-nurture engagement touches.
 INSERT INTO "touchpoints"
 SELECT
-    h."event_time", h."vid" AS "user_id", c."account_id", c."contact_id",
+    h."event_time", h."vid" AS "user_id", CAST(NULL AS VARCHAR) AS "web_user_id",
+    c."account_id", c."contact_id",
     c."email" AS "email", h."vid" AS "session_id", 'Email Nurture' AS "channel",
     'Email Nurture' AS "program_category", h."campaign" AS "campaign",
     'hubspot' AS "source", 'hubspot' AS "source_system"
