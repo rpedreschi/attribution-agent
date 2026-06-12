@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
-# Regenerate deltastream/deploy_all.sql — every deltastream/ statement
-# concatenated in deploy order, for one-shot testing. Run from the repo root:
+# Regenerate deltastream/deploy_all.sql — a clean, COMMENT-FREE bundle of every
+# stream/changelog/MV statement in deploy order, so it runs/pastes through the
+# DeltaStream CLI without the REPL collapsing comments into the statements.
+#
+# Assumes the `attribution` database already exists (create it once with
+# 00_stores.sql). This bundle does NOT create or drop the database — it only
+# (re)builds the relations inside it. Run from the repo root:
 #   bash deltastream/build_deploy_all.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# 00_stores.sql is intentionally excluded: it creates the database (one-time),
+# which we don't want to repeat on every redeploy.
 FILES=(
-  deltastream/00_stores.sql
   deltastream/01_streams/ga4_sessions.sql
   deltastream/01_streams/hubspot_events.sql
   deltastream/01_streams/outreach_activity.sql
@@ -24,26 +30,17 @@ FILES=(
 )
 OUT=deltastream/deploy_all.sql
 
+# Strip `--` comments and trailing whitespace, squeeze blank lines — leaving pure
+# SQL. (Safe here: no `--` or `;` appears inside a string literal in these files.)
+strip() { sed 's/--.*$//' "$1" | sed 's/[[:space:]]*$//' | cat -s; }
+
 {
-  echo "-- =============================================================================="
-  echo "-- deploy_all.sql — GENERATED, every deltastream/ statement in deploy order."
-  echo "--"
-  echo "-- Convenience bundle for testing: run this one file instead of opening each"
-  echo "-- folder. Regenerate with deltastream/build_deploy_all.sh after editing any"
-  echo "-- source file — do not hand-edit this file."
-  echo "--"
-  echo "-- Prereqs: the demo_confluent store exists (default), datagen has published to"
-  echo "-- the src.* topics, and you run with a DDL-capable role. The repeated"
-  echo "-- USE DATABASE/SCHEMA headers are harmless."
-  echo "-- =============================================================================="
+  echo 'USE DATABASE "attribution";'
+  echo 'USE SCHEMA "public";'
   for f in "${FILES[@]}"; do
     echo
-    echo "-- ############################################################################"
-    echo "-- ## $f"
-    echo "-- ############################################################################"
-    echo
-    cat "$f"
+    strip "$f"
   done
 } > "$OUT"
 
-echo "wrote $OUT ($(wc -l < "$OUT") lines)"
+echo "wrote $OUT ($(wc -l < "$OUT") lines, $(grep -c ';' "$OUT") statements)"

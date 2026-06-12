@@ -158,7 +158,20 @@ exposed MVs as tools), and the LLM backend.
 
 ## Teardown / redeploy
 
-To rebuild, drop in reverse dependency order (MVs → fact/identity streams +
-their queries → changelogs → source streams), or drop the database. Terminate
-the continuous queries first (`TERMINATE QUERY <id>;`) — a stream with a running
-query attached to it can't be dropped.
+Run everything through `scripts/run_sql.py` (it strips comments and runs one
+statement at a time, so the CLI never collapses a comment into a statement):
+
+```bash
+export DS_TOKEN="<token>"; export DSQL_BIN="../../dscliv2"
+export DS_SERVER="https://api-kap822.deltastream.io/v2"
+
+python scripts/run_sql.py deltastream/teardown.sql --keep-going   # drop relations
+python scripts/run_sql.py deltastream/deploy_all.sql              # rebuild them
+```
+
+`teardown.sql` drops the relations in reverse dependency order **but keeps the
+`attribution` database**; `deploy_all.sql` rebuilds the relations and does **not**
+`CREATE DATABASE` (so re-running never errors on "already exists"). The database
+is created once by `00_stores.sql`. Dropping a relation terminates its
+continuous query; if a drop is ever refused, `TERMINATE QUERY <id>;` first
+(`LIST QUERIES;` for ids), then re-run.

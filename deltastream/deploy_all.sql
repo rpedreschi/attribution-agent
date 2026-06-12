@@ -1,63 +1,15 @@
--- ==============================================================================
--- deploy_all.sql — GENERATED, every deltastream/ statement in deploy order.
---
--- Convenience bundle for testing: run this one file instead of opening each
--- folder. Regenerate with deltastream/build_deploy_all.sh after editing any
--- source file — do not hand-edit this file.
---
--- Prereqs: the demo_confluent store exists (default), datagen has published to
--- the src.* topics, and you run with a DDL-capable role. The repeated
--- USE DATABASE/SCHEMA headers are harmless.
--- ==============================================================================
-
--- ############################################################################
--- ## deltastream/00_stores.sql
--- ############################################################################
-
--- Environment bootstrap: the database/schema that every later object lives in.
---
--- The Kafka store already exists in this DeltaStream org as `demo_confluent`
--- (and is the default store), so there is NO CREATE STORE here. The stream and
--- changelog DDLs reference 'demo_confluent' directly in their WITH clauses.
---
--- NOTE: the attribution context is served from the DeltaStream materialized
--- views (05_views/), which DeltaStream auto-exposes over its MCP endpoint to any
--- API token that can SELECT them. DeltaStream uses ClickHouse internally to back
--- MVs; we do not manage it.
-
--- 1. The database (and its default `public` schema) that holds every stream,
---    changelog, and materialized view. Must match config.deltastream.database
---    / schema_name (defaults: attribution / public). Quoted lowercase so the
---    name is stored exactly as the config and MCP layer expect it.
-CREATE DATABASE "attribution";
-
--- 2. Session context. DeltaStream creates unqualified objects in — and resolves
---    names against — the current database/schema, so set these at the start of
---    EVERY CLI or web-app session before running 01_streams/ onward (re-run if
---    you reconnect). This is what guarantees every object lands in
---    attribution.public. demo_confluent is already the default store, so no
---    USE STORE is required.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
--- ############################################################################
--- ## deltastream/01_streams/ga4_sessions.sql
--- ############################################################################
 
--- GA4 web sessions / page views / conversion events.
--- Shaped like the GA4 Measurement Protocol / BigQuery export event payload.
--- This is the anonymous-traffic stream that identity resolution later stitches
--- to known Salesforce contacts.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
 CREATE STREAM "ga4_events" (
     "event_time"    TIMESTAMP,
-    "user_id"       VARCHAR,          -- GA4 client_id (anonymous) or user_id when set
+    "user_id"       VARCHAR,
     "session_id"    VARCHAR,
-    "event_name"    VARCHAR,          -- session_start, page_view, generate_lead, ...
+    "event_name"    VARCHAR,
     "page_location" VARCHAR,
     "device_type"   VARCHAR,
     "utm_source"    VARCHAR,
@@ -73,26 +25,18 @@ CREATE STREAM "ga4_events" (
     'timestamp.format' = 'iso8601'
 );
 
--- ############################################################################
--- ## deltastream/01_streams/hubspot_events.sql
--- ############################################################################
 
--- HubSpot MAP: form fills, email engagement, lifecycle stage transitions.
--- Shaped like HubSpot's webhook/event payload. Carries an email, which is the
--- join key into the Salesforce contacts changelog for identity resolution.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
 CREATE STREAM "hubspot_events" (
     "event_time"      TIMESTAMP,
-    "vid"             VARCHAR,        -- HubSpot contact id
-    "web_user_id"     VARCHAR,        -- hutk cookie == GA4 client_id; the anonymous->known bridge
+    "vid"             VARCHAR,
+    "web_user_id"     VARCHAR,
     "email"           VARCHAR,
-    "event_type"      VARCHAR,        -- form_submission, email_open, email_click, lifecycle_change
+    "event_type"      VARCHAR,
     "lifecycle_from"  VARCHAR,
-    "lifecycle_to"    VARCHAR,        -- subscriber, lead, mql, sql, opportunity, customer
+    "lifecycle_to"    VARCHAR,
     "form_name"       VARCHAR,
     "campaign"        VARCHAR,
     "utm_source"      VARCHAR,
@@ -106,15 +50,7 @@ CREATE STREAM "hubspot_events" (
     'timestamp.format' = 'iso8601'
 );
 
--- ############################################################################
--- ## deltastream/01_streams/outreach_activity.sql
--- ############################################################################
 
--- Outreach SDR activity: dials, conversations, sequence enrollment.
--- Carries the prospect email + (when known) the Salesforce contact id, so SDR
--- touches attach to the right account during identity resolution.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -122,8 +58,8 @@ CREATE STREAM "outreach_activity" (
     "event_time"   TIMESTAMP,
     "prospect_id"  VARCHAR,
     "email"        VARCHAR,
-    "contact_id"   VARCHAR,           -- Salesforce contact id when synced
-    "activity"     VARCHAR,           -- dial, conversation, sequence_enroll, reply
+    "contact_id"   VARCHAR,
+    "activity"     VARCHAR,
     "sequence"     VARCHAR,
     "sdr"          VARCHAR
 ) WITH (
@@ -134,21 +70,13 @@ CREATE STREAM "outreach_activity" (
     'timestamp.format' = 'iso8601'
 );
 
--- ############################################################################
--- ## deltastream/01_streams/ads_spend.sql
--- ############################################################################
 
--- LinkedIn Ads + Google Ads spend/performance.
--- Both platforms publish the same shape into their own topics; we define one
--- stream per platform and UNION them at the sink. Daily granularity rows.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
 CREATE STREAM "linkedin_ads" (
-    "spend_date"   VARCHAR,           -- yyyy-mm-dd
-    "channel"      VARCHAR,           -- Paid Social
+    "spend_date"   VARCHAR,
+    "channel"      VARCHAR,
     "campaign"     VARCHAR,
     "spend_amount" DOUBLE,
     "impressions"  BIGINT,
@@ -161,7 +89,7 @@ CREATE STREAM "linkedin_ads" (
 
 CREATE STREAM "google_ads" (
     "spend_date"   VARCHAR,
-    "channel"      VARCHAR,           -- Paid Search
+    "channel"      VARCHAR,
     "campaign"     VARCHAR,
     "spend_amount" DOUBLE,
     "impressions"  BIGINT,
@@ -172,27 +100,7 @@ CREATE STREAM "google_ads" (
     'value.format' = 'json'
 );
 
--- ############################################################################
--- ## deltastream/02_changelogs/salesforce_cdc.sql
--- ############################################################################
 
--- Salesforce CDC relations.
--- contacts + accounts are CHANGELOGs (upsert-semantics dimension tables keyed by
--- id; identity resolution joins against the latest version of each row).
--- opportunities is a STREAM, not a changelog: stage transitions are append-only
--- events, and it is only ever read as a source for the conversions stream (never
--- joined as a lookup), so changelog semantics would wrongly collapse it.
---
--- contacts: the identity spine. Maps email -> contact_id -> account_id, which
---           is how anonymous web/ad traffic gets attributed to an account.
---           Keyed by EMAIL (not contact_id): every downstream stream->changelog
---           join resolves contacts on email, and DeltaStream requires such a
---           join to reference the changelog's primary key. email is 1:1 with
---           contact_id here, so upsert semantics are unchanged.
--- accounts: the account dimension (available for enrichment / future MVs).
--- opportunities: stage-transition events feed the conversions stream.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -246,32 +154,10 @@ CREATE STREAM "sf_opportunities" (
     'timestamp.format' = 'iso8601'
 );
 
--- ############################################################################
--- ## deltastream/03_identity/01_web_identity_map.sql
--- ############################################################################
 
--- Identity resolution, stage 1: build the anonymous -> account bridge as a
--- CHANGELOG keyed by web_user_id, so the touchpoints stream can look up an
--- account for previously-anonymous web traffic in a single temporal join.
---
--- A HubSpot form submission carries both the hutk web cookie (== the GA4
--- client_id on anonymous traffic) and the email; sf_contacts maps email ->
--- account. Resolving that in ONE object runs into two DeltaStream limits:
---   * a stream->changelog join yields a STREAM, so it can't directly back a
---     CHANGELOG; and
---   * doing the join under GROUP BY can't both project the join key (email, the
---     sf_contacts PK) AND keep web_user_id as the sole changelog key.
--- So it's split in two:
---   1. web_resolved (STREAM): the stream->changelog join, which as a stream sink
---      may project raw email and account — this is a normal enrichment.
---   2. web_identity_map (CHANGELOG): GROUP BY web_user_id over that stream (no
---      changelog join now), giving one current account per cookie.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
--- 1. Resolve each form submission to its account (stream-changelog enrichment).
 CREATE STREAM "web_resolved" WITH (
     'topic' = 'attr_web_resolved',
     'topic.partitions' = 1,
@@ -291,7 +177,6 @@ JOIN "sf_contacts" c ON h."email" = c."email"
 WHERE h."event_type" = 'form_submission'
   AND h."web_user_id" IS NOT NULL;
 
--- 2. Collapse to one current account per web cookie (GROUP BY => changelog).
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'attr_web_identity_map',
     'topic.partitions' = 1,
@@ -309,19 +194,7 @@ SELECT
 FROM "web_resolved"
 GROUP BY "web_user_id";
 
--- ############################################################################
--- ## deltastream/03_identity/02_touchpoints.sql
--- ############################################################################
 
--- Identity resolution, stage 2: one unified `touchpoints` stream that all
--- touch-producing sources feed, with account_id/contact_id attached.
---
--- GA4 web traffic temporal-joins web_identity_map on user_id (NULL while still
--- anonymous). Outreach and HubSpot touches resolve through sf_contacts on email.
--- The three INSERT INTO statements run as continuous queries into the same
--- backing topic, so the materialized views in 05_views read a single stream.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -347,7 +220,6 @@ CREATE STREAM "touchpoints" (
     'timestamp' = 'event_time'
 );
 
--- Resolved web touches.
 INSERT INTO "touchpoints"
 SELECT
     g."event_time", g."user_id", m."web_user_id" AS "web_user_id",
@@ -358,7 +230,6 @@ SELECT
 FROM "ga4_events" g
 LEFT JOIN "web_identity_map" m ON g."user_id" = m."web_user_id";
 
--- Outbound SDR touches (already keyed to a Salesforce contact).
 INSERT INTO "touchpoints"
 SELECT
     o."event_time", o."contact_id" AS "user_id", CAST(NULL AS VARCHAR) AS "web_user_id",
@@ -369,7 +240,6 @@ SELECT
 FROM "outreach_activity" o
 JOIN "sf_contacts" c ON o."email" = c."email";
 
--- Email-nurture engagement touches.
 INSERT INTO "touchpoints"
 SELECT
     h."event_time", h."vid" AS "user_id", CAST(NULL AS VARCHAR) AS "web_user_id",
@@ -381,15 +251,7 @@ FROM "hubspot_events" h
 JOIN "sf_contacts" c ON h."email" = c."email"
 WHERE h."event_type" IN ('email_open', 'email_click');
 
--- ############################################################################
--- ## deltastream/04_facts/01_conversions.sql
--- ############################################################################
 
--- Unified `conversions` stream: the B2B funnel-stage transitions, normalized
--- from Salesforce opportunity changes and HubSpot lifecycle changes. Feeds the
--- funnel + won-revenue materialized views in 05_views.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -398,7 +260,7 @@ CREATE STREAM "conversions" (
     "account_id"       VARCHAR,
     "contact_id"       VARCHAR,
     "email"            VARCHAR,
-    "event_type"       VARCHAR,    -- conversation | mql | sql | opp_created | closed_won | closed_lost
+    "event_type"       VARCHAR,
     "opportunity_id"   VARCHAR,
     "revenue"          DOUBLE,
     "deal_size"        VARCHAR,
@@ -412,7 +274,6 @@ CREATE STREAM "conversions" (
     'timestamp' = 'event_time'
 );
 
--- Salesforce opportunity transitions.
 INSERT INTO "conversions"
 SELECT
     o."event_time", o."account_id", CAST(NULL AS VARCHAR) AS "contact_id",
@@ -428,7 +289,6 @@ SELECT
     o."deal_size", 'Outbound SDR' AS "program_category"
 FROM "sf_opportunities" o;
 
--- HubSpot lifecycle transitions (conversation + MQL).
 INSERT INTO "conversions"
 SELECT
     h."event_time", c."account_id", c."contact_id",
@@ -441,16 +301,7 @@ JOIN "sf_contacts" c ON h."email" = c."email"
 WHERE h."event_type" = 'lifecycle_change'
   AND h."lifecycle_to" IN ('mql', 'sql', 'opportunity');
 
--- ############################################################################
--- ## deltastream/04_facts/02_spend.sql
--- ############################################################################
 
--- Unified `spend` stream: LinkedIn + Google Ads daily spend. Non-ad channel
--- cost (Outbound SDR loaded cost, Events, Brand) is published to its own Kafka
--- topic by finance/manual export and unioned in here in production; for the
--- demo the two ad platforms are the live spend sources.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -479,15 +330,7 @@ SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
        "spend_amount", 'google_ads' AS "source_platform"
 FROM "google_ads";
 
--- ############################################################################
--- ## deltastream/04_facts/03_funnel_events.sql
--- ############################################################################
 
--- `funnel_events`: touches + conversion stages normalized to (program_category,
--- stage) rows so the funnel materialized view is a single GROUP BY. Touches come
--- from the touchpoints stream; the other stages from the conversions stream.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -513,14 +356,7 @@ SELECT "event_time", "program_category", "event_type" AS "stage"
 FROM "conversions"
 WHERE "event_type" IN ('conversation', 'mql', 'sql', 'opp_created', 'closed_won');
 
--- ############################################################################
--- ## deltastream/05_views/01_mv_spend_by_channel.sql
--- ############################################################################
 
--- mv_spend_by_channel: trailing spend per channel. Exposed over MCP as the
--- denominator for the agent's CAC and ROI math.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -532,14 +368,7 @@ SELECT
 FROM "spend"
 GROUP BY "channel", "program_category";
 
--- ############################################################################
--- ## deltastream/05_views/02_mv_funnel_by_category.sql
--- ############################################################################
 
--- mv_funnel_by_category: the B2B funnel counts per program category, in one
--- pivoted row each. touch -> conversation -> MQL -> SQL -> opp -> won.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -555,21 +384,7 @@ SELECT
 FROM "funnel_events"
 GROUP BY "program_category";
 
--- ############################################################################
--- ## deltastream/05_views/03_mv_channel_touch_distribution.sql
--- ############################################################################
 
--- mv_channel_touch_distribution: per resolved account, the touch count and most
--- recent touch time on each channel. This is the attribution *context* the agent
--- needs: joined to mv_won_revenue_by_account it lets the agent compute all three
--- models (last touch = channel with the latest touch; linear = touch-count
--- share; time decay = recency-weighted from last_touch_time vs close_time).
---
--- Full per-touch journey reconstruction with normalized window functions is
--- impractical in streaming SQL, so the heavy arithmetic is deliberately pushed
--- to the agent — DeltaStream serves the live aggregated state.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
@@ -584,15 +399,7 @@ FROM "touchpoints"
 WHERE "account_id" IS NOT NULL
 GROUP BY "account_id", "channel", "program_category";
 
--- ############################################################################
--- ## deltastream/05_views/04_mv_won_revenue_by_account.sql
--- ############################################################################
 
--- mv_won_revenue_by_account: closed-won revenue and close time per account.
--- The numerator the agent distributes across channels using the touch
--- distribution. Summed across accounts it is the total attributed revenue.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
