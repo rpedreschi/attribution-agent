@@ -7,6 +7,11 @@ Everything is driven from SQL — run it in the **web app** SQL editor or the
 **CLI** (`deltastream`, see [Starting with the CLI](https://docs.deltastream.io/getting-started/starting-with-cli)).
 Either way you run the same statements in the same order.
 
+> **Quick test shortcut:** `deltastream/deploy_all.sql` is every statement below
+> concatenated in order — run that one file instead of opening each folder.
+> It's generated; regenerate with `bash deltastream/build_deploy_all.sh` after
+> editing any source file. The numbered files below remain the source of truth.
+
 ## 0. Before you start
 
 - Events must already be in Confluent on the `src.*` topics. Confirm with the
