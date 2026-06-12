@@ -105,10 +105,12 @@ deterministic, number-grounded templates so the artifact always builds.
    `--new-journey-rate`, and `--ambient-per-tick`; bound a run with
    `--max-events` or `--duration`.
 
-3. **Deploy the DeltaStream objects** in order: `00_stores.sql`, `01_streams/`,
-   `02_changelogs/`, `03_identity/`, `04_facts/`, `05_views/`, then
-   `06_mcp/01_expose_over_mcp.sql`. Copy the API token from the last step into
-   `DELTASTREAM_API_TOKEN`.
+3. **Deploy the DeltaStream objects** in order: `00_stores.sql` (store +
+   database + session context), `01_streams/`, `02_changelogs/`, `03_identity/`,
+   `04_facts/`, `05_views/`, then `06_mcp/01_expose_over_mcp.sql`. Copy the API
+   token from the last step into `DELTASTREAM_API_TOKEN`. See
+   [docs/deltastream_deploy.md](docs/deltastream_deploy.md) for the step-by-step
+   runbook with per-layer validation queries (web app or CLI).
 
 4. **Check the bring-up** — config, Confluent topics, the live MCP handshake
    (lists the exposed MVs), and the LLM backend, in one command:
