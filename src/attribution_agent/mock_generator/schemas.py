@@ -13,7 +13,11 @@ Event = tuple[str, dict[str, Any]]
 
 
 def _ts(dt: datetime) -> str:
-    return dt.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    # ISO-8601 *local* datetime, no zone suffix. DeltaStream parses these into
+    # TIMESTAMP (without time zone) columns under 'timestamp.format'='iso8601',
+    # and a trailing 'Z' (only valid for with-zone types) raises
+    # DateTimeParseException at ingest. Times are UTC by construction.
+    return dt.strftime("%Y-%m-%dT%H:%M:%S.000")
 
 
 # --- Salesforce CDC (changelogs) --------------------------------------------

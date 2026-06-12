@@ -32,8 +32,8 @@ def test_live_timestamps_are_iso8601_and_track_now():
     for topic_key, payload in LiveGenerator(seed=1).tick(base):
         for field in ISO_FIELDS & payload.keys():
             val = payload[field]
-            assert val.endswith("Z"), f"{field}={val!r} not ISO-8601 Z"
-            parsed = datetime.fromisoformat(val.replace("Z", "+00:00")).replace(tzinfo=None)
+            assert not val.endswith("Z"), f"{field}={val!r} must not carry a zone suffix"
+            parsed = datetime.fromisoformat(val)
             # Events fire at or after the tick's now, within the journey span.
             assert base - timedelta(seconds=1) <= parsed <= base + timedelta(seconds=200)
 

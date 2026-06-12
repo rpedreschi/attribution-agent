@@ -23,9 +23,10 @@ def test_all_timestamps_are_iso8601():
         for p in payloads:
             for field in ISO_FIELDS & p.keys():
                 val = p[field]
-                assert val.endswith("Z"), f"{field}={val!r} not ISO-8601 Z"
-                # Parses as a real datetime.
-                datetime.fromisoformat(val.replace("Z", "+00:00"))
+                # DeltaStream TIMESTAMP (no zone) under iso8601 rejects a trailing
+                # 'Z', so the contract is a zoneless ISO-8601 local datetime.
+                assert not val.endswith("Z"), f"{field}={val!r} must not carry a zone suffix"
+                datetime.fromisoformat(val)   # parses 2026-06-12T00:46:43.000
 
 
 def test_deterministic_volumes_and_topics():
