@@ -1,26 +1,45 @@
--- Identity resolution, stage 1: build the anonymous -> account bridge.
+-- Identity resolution, stage 1: build the anonymous -> account bridge as a
+-- CHANGELOG keyed by web_user_id, so the touchpoints stream can look up an
+-- account for previously-anonymous web traffic in a single temporal join.
 --
 -- A HubSpot form submission carries both the hutk web cookie (== the GA4
--- client_id we see on anonymous traffic) and the email. Joining that email to
--- the Salesforce contacts changelog yields a mapping:
---     web_user_id  ->  contact_id  ->  account_id
--- materialized as a CHANGELOG so downstream stream-to-table temporal joins can
--- look up an account for previously-anonymous web traffic.
---
+-- client_id on anonymous traffic) and the email; sf_contacts maps email ->
+-- account. Resolving that in ONE object runs into two DeltaStream limits:
+--   * a stream->changelog join yields a STREAM, so it can't directly back a
+--     CHANGELOG; and
+--   * doing the join under GROUP BY can't both project the join key (email, the
+--     sf_contacts PK) AND keep web_user_id as the sole changelog key.
+-- So it's split in two:
+--   1. web_resolved (STREAM): the stream->changelog join, which as a stream sink
+--      may project raw email and account — this is a normal enrichment.
+--   2. web_identity_map (CHANGELOG): GROUP BY web_user_id over that stream (no
+--      changelog join now), giving one current account per cookie.
+
 -- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
--- Built with CREATE CHANGELOG AS SELECT, keyed by web_user_id: a current
--- web_user_id -> email row per web cookie. The account is NOT resolved here —
--- touchpoints joins sf_contacts on this email to get the account.
---
--- Why no sf_contacts join here: a stream->changelog join yields a STREAM (can't
--- back a CHANGELOG), and the alternative — GROUP BY with the sf_contacts join —
--- can't both satisfy "the joined changelog's key (email) must be projected" and
--- keep web_user_id as the sole key. So this stage is hubspot-only: GROUP BY
--- web_user_id gives changelog/upsert semantics, MAX() collapses the (single)
--- form email per cookie, and 'key.columns' names the key.
+-- 1. Resolve each form submission to its account (stream-changelog enrichment).
+CREATE STREAM "web_resolved" WITH (
+    'topic' = 'attr_web_resolved',
+    'topic.partitions' = 1,
+    'topic.replicas' = 3,
+    'store' = 'demo_confluent',
+    'value.format' = 'json',
+    'timestamp' = 'event_time'
+) AS
+SELECT
+    h."web_user_id"  AS "web_user_id",
+    c."email"        AS "email",
+    c."account_id"   AS "account_id",
+    c."contact_id"   AS "contact_id",
+    h."event_time"   AS "event_time"
+FROM "hubspot_events" h
+JOIN "sf_contacts" c ON h."email" = c."email"
+WHERE h."event_type" = 'form_submission'
+  AND h."web_user_id" IS NOT NULL;
+
+-- 2. Collapse to one current account per web cookie (GROUP BY => changelog).
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'attr_web_identity_map',
     'topic.partitions' = 1,
@@ -30,10 +49,10 @@ CREATE CHANGELOG "web_identity_map" WITH (
     'key.columns' = 'web_user_id'
 ) AS
 SELECT
-    h."web_user_id"       AS "web_user_id",
-    MAX(h."email")        AS "email",
-    MAX(h."event_time")   AS "resolved_at"
-FROM "hubspot_events" h
-WHERE h."event_type" = 'form_submission'
-  AND h."web_user_id" IS NOT NULL
-GROUP BY h."web_user_id";
+    "web_user_id"       AS "web_user_id",
+    MAX("account_id")   AS "account_id",
+    MAX("contact_id")   AS "contact_id",
+    MAX("email")        AS "email",
+    MAX("event_time")   AS "resolved_at"
+FROM "web_resolved"
+GROUP BY "web_user_id";

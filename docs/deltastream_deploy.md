@@ -51,9 +51,9 @@ LIST DATABASES;                       -- attribution present
 > or the unquoted name may fold to a different case and "not found".
 >
 > **Topic ownership convention:** every topic DeltaStream *creates* is prefixed
-> `attr_` (`attr_touchpoints`, `attr_conversions`, `attr_spend`,
-> `attr_funnel_events`, `attr_web_identity_map`) so ops can tell whose topics
-> they are. The `src.*` topics are datagen *inputs* and are not renamed.
+> `attr_` (`attr_web_resolved`, `attr_web_identity_map`, `attr_touchpoints`,
+> `attr_conversions`, `attr_spend`, `attr_funnel_events`) so ops can tell whose
+> topics they are. The `src.*` topics are datagen *inputs* and are not renamed.
 > Because DeltaStream has to create those `attr_*` topics, each carries
 > `'topic.partitions' = 1` and `'topic.replicas' = 3` (unquoted integers) in its
 > WITH clause (Confluent Cloud requires replication factor 3); adjust if your
