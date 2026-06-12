@@ -42,14 +42,14 @@ class DeltaStreamConfig(BaseModel):
     role: str = "attribution_reader"
     database: str = "attribution"
     schema_name: str = "public"
-    # MV names exposed as MCP tools (must match the deltastream/ SQL). These
-    # serve the real-time *context*; the agent computes the three attribution
-    # models from the per-account touch distribution + won revenue.
+    # MV names as exposed over MCP. DeltaStream names each tool fully-qualified
+    # as <database>_<schema>_<mv> (e.g. attribution_public_mv_spend_by_channel),
+    # so these must carry the attribution_public_ prefix to match the live tools.
     views: dict[str, str] = Field(default_factory=lambda: {
-        "spend_by_channel": "mv_spend_by_channel",
-        "funnel_by_category": "mv_funnel_by_category",
-        "channel_touch_distribution": "mv_channel_touch_distribution",
-        "won_revenue_by_account": "mv_won_revenue_by_account",
+        "spend_by_channel": "attribution_public_mv_spend_by_channel",
+        "funnel_by_category": "attribution_public_mv_funnel_by_category",
+        "channel_touch_distribution": "attribution_public_mv_channel_touch_distribution",
+        "won_revenue_by_account": "attribution_public_mv_won_revenue_by_account",
     })
 
 
