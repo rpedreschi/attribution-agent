@@ -241,7 +241,7 @@ class AgentCLI:
             return
         try:
             tool = self.settings.deltastream.views.get(name, name)
-            rows = self.mcp.call_tool(tool)
+            rows = self.mcp.query_tool(tool)
         except DeltaStreamMCPError as exc:
             print(f"\nMCP error: {exc}")
             return
@@ -263,7 +263,7 @@ class AgentCLI:
             return
         try:
             tool = self.settings.deltastream.views.get(name, name)
-            result = self.mcp.call_tool_raw(tool)
+            result = self.mcp.call_tool_raw(tool, {"clickhouse_sql": self.mcp.select_sql(tool)})
         except DeltaStreamMCPError as exc:
             print(f"\nMCP error: {exc}")
             return

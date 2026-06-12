@@ -84,12 +84,38 @@ class DeltaStreamMCPClient:
 
     # -- convenience --------------------------------------------------------
 
-    def query_view(self, view_key: str, arguments: dict | None = None) -> list[dict[str, Any]]:
+    def query_view(self, view_key: str) -> list[dict[str, Any]]:
         """Query a materialized view by its logical key (config.deltastream.views)."""
         tool = self.cfg.views.get(view_key)
         if not tool:
             raise DeltaStreamMCPError(f"Unknown view key '{view_key}'.")
-        return self.call_tool(tool, arguments)
+        return self.query_tool(tool)
+
+    def query_tool(self, tool: str) -> list[dict[str, Any]]:
+        """SELECT * from the MV behind an MCP tool, paginated.
+
+        DeltaStream's MV tools take a `clickhouse_sql` SELECT argument, reference
+        the relation fully-qualified + double-quoted (DeltaStream is
+        case-sensitive), and cap each call at 100 rows — so page with LIMIT/OFFSET.
+        """
+        rows: list[dict[str, Any]] = []
+        page, offset = 100, 0
+        while True:
+            batch = self.call_tool(tool, {"clickhouse_sql": self.select_sql(tool, page, offset)})
+            rows.extend(batch)
+            if len(batch) < page:
+                break
+            offset += page
+        return rows
+
+    def select_sql(self, tool: str, limit: int = 100, offset: int = 0) -> str:
+        """Build a fully-qualified, double-quoted SELECT for an MV tool. The tool
+        name is <database>_<schema>_<relation>; the relation is the remainder
+        after the database/schema prefix from config."""
+        prefix = f"{self.cfg.database}_{self.cfg.schema_name}_"
+        mv = tool[len(prefix):] if tool.startswith(prefix) else tool
+        return (f'SELECT * FROM "{self.cfg.database}"."{self.cfg.schema_name}"."{mv}" '
+                f'LIMIT {limit} OFFSET {offset}')
 
     @property
     def available(self) -> bool:
