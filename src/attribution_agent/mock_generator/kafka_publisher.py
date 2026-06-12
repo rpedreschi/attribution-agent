@@ -33,21 +33,29 @@ def _key_for(topic_key: str, payload: dict) -> str:
 
 
 class FilePublisher:
-    """Writes one JSONL file per topic under <out_dir>. No Kafka required."""
+    """Writes one JSONL file per topic under <out_dir>. No Kafka required.
 
-    def __init__(self, out_dir: Path) -> None:
+    `mode` is the file open mode: "w" (truncate, for a one-shot batch) or "a"
+    (append, so a streaming run does not clobber a preceding backfill)."""
+
+    def __init__(self, out_dir: Path, mode: str = "w") -> None:
         self.out_dir = out_dir
         self.out_dir.mkdir(parents=True, exist_ok=True)
+        self._mode = mode
         self._handles: dict[str, object] = {}
         self.counts: dict[str, int] = {}
 
     def publish(self, topic: str, key: str, payload: dict) -> None:
         fh = self._handles.get(topic)
         if fh is None:
-            fh = (self.out_dir / f"{topic}.jsonl").open("w")
+            fh = (self.out_dir / f"{topic}.jsonl").open(self._mode)
             self._handles[topic] = fh
         fh.write(json.dumps({"key": key, "value": payload}) + "\n")  # type: ignore[union-attr]
         self.counts[topic] = self.counts.get(topic, 0) + 1
+
+    def flush(self, timeout: float = 0) -> None:
+        for fh in self._handles.values():
+            fh.flush()  # type: ignore[union-attr]
 
     def close(self) -> None:
         for fh in self._handles.values():
@@ -77,6 +85,10 @@ class KafkaPublisher:
         self._producer.produce(topic, key=key.encode(), value=json.dumps(payload).encode())
         self.counts[topic] = self.counts.get(topic, 0) + 1
         self._producer.poll(0)
+
+    def flush(self, timeout: float = 0) -> None:
+        # Serve delivery callbacks; with timeout>0 block for outstanding acks.
+        self._producer.flush(timeout) if timeout else self._producer.poll(0)
 
     def close(self) -> None:
         self._producer.flush(30)
@@ -108,18 +120,28 @@ def create_topics(settings: Settings, *, partitions: int = 6, replication: int =
             print(f"  topic {topic}: {exc}")
 
 
+def make_publisher(settings: Settings, *, dry_run: bool,
+                   out_dir: Path | None = None, mode: str = "w"):
+    """Construct the right publisher for the run (file in dry-run, else Kafka)."""
+    if dry_run:
+        return FilePublisher(out_dir or Path("events"), mode=mode)
+    return KafkaPublisher(settings)
+
+
+def publish_event(publisher, topics: dict, topic_key: str, payload: dict) -> None:
+    """Route one event to its topic and publish it on the given publisher."""
+    topic = topics.get(topic_key, topic_key)
+    publisher.publish(topic, _key_for(topic_key, payload), payload)
+
+
 def publish_all(events: Iterable[Event], settings: Settings, *, dry_run: bool,
                 out_dir: Path | None = None) -> dict[str, int]:
     """Route each event to its topic and publish. Returns per-topic counts."""
     topics = settings.kafka.topics
-    publisher = (
-        FilePublisher(out_dir or Path("events"))
-        if dry_run else KafkaPublisher(settings)
-    )
+    publisher = make_publisher(settings, dry_run=dry_run, out_dir=out_dir)
     try:
         for topic_key, payload in events:
-            topic = topics.get(topic_key, topic_key)
-            publisher.publish(topic, _key_for(topic_key, payload), payload)
+            publish_event(publisher, topics, topic_key, payload)
     finally:
         publisher.close()
     return publisher.counts

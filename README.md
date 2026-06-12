@@ -86,8 +86,21 @@ deterministic, number-grounded templates so the artifact always builds.
 
 2. **Create topics and publish events** from your machine:
    ```bash
+   # One-shot Q1 backfill (creates topics, then publishes the fixed dataset):
    python -m attribution_agent.mock_generator --create-topics
+
+   # Or run a live stream: new events with current timestamps, forever, so
+   # DeltaStream keeps recomputing attribution (Ctrl-C to stop):
+   python -m attribution_agent.mock_generator --stream
+
+   # Backfill Q1 first, then keep streaming live events on top of it:
+   python -m attribution_agent.mock_generator --stream --backfill
    ```
+   The stream emits coherent, compressed journeys (anonymous touch → known
+   contact → funnel → closed-won within a few minutes) so channel credit
+   updates live. Tune it with `--interval`, `--journey-seconds`,
+   `--new-journey-rate`, and `--ambient-per-tick`; bound a run with
+   `--max-events` or `--duration`.
 
 3. **Deploy the DeltaStream objects** in order: `00_stores.sql`, `01_streams/`,
    `02_changelogs/`, `03_identity/`, `04_facts/`, `05_views/`, then
