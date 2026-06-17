@@ -122,7 +122,10 @@ class RecommendationEngine:
             try:
                 self._llm_rationale(recs, data, blended)
                 return
-            except BedrockUnavailable:
+            except Exception:
+                # LLM rationale is a best-effort enhancement (bad JSON, fences,
+                # API/network hiccup) — never let it break the artifact; fall
+                # back to deterministic, number-grounded prose below.
                 pass
         for r in recs:
             verb = "below" if r.action == "Decrease" else "above"
@@ -152,6 +155,13 @@ class RecommendationEngine:
             "estimated revenue impact. Return a JSON array of strings, one per move, "
             "in the same order. No preamble.")
         text = self.claude.complete(system, json.dumps(payload, indent=2), max_tokens=800)
-        rationales = json.loads(text)
+        # Claude may wrap the array in ```json fences or a sentence; extract the
+        # array between the first '[' and last ']' before parsing.
+        i, j = text.find("["), text.rfind("]")
+        if i == -1 or j <= i:
+            raise ValueError("LLM rationale output was not a JSON array")
+        rationales = json.loads(text[i:j + 1])
+        if not isinstance(rationales, list) or len(rationales) < len(recs):
+            raise ValueError("LLM returned fewer rationales than moves")
         for r, sentence in zip(recs, rationales):
             r.rationale = str(sentence)
