@@ -148,13 +148,16 @@ def _exec_summary(wb: Workbook, d: BoardPackData) -> None:
     ws.cell(r, 3, "Bottom 3 Programs by ROI").font = LABEL_FONT
     r += 1
     bottom = list(reversed(ranked[-3:]))
-    for i in range(3):
+    for i in range(min(3, len(ranked))):
         t = ranked[i]
         ws.cell(r + i, 1, t.program_category).font = BODY_FONT
         c = ws.cell(r + i, 2, t.roi); c.number_format = MULT; c.font = Font(size=10, bold=True, color=GREEN); c.alignment = RIGHT
+    for i in range(min(3, len(bottom))):
         b = bottom[i]
         ws.cell(r + i, 3, b.program_category).font = BODY_FONT
         c = ws.cell(r + i, 4, b.roi); c.number_format = MULT; c.font = Font(size=10, bold=True, color=RED); c.alignment = RIGHT
+    if not ranked:
+        ws.cell(r, 1, "No channels with spend yet — ROI ranking unavailable.").font = BODY_FONT
     ws.sheet_view.showGridLines = False
 
 
@@ -298,6 +301,12 @@ def build_workbook(data: BoardPackData, out_path: Path) -> Path:
     _funnel(wb, data)
     _cac_roi(wb, data)
     _data_assumptions(wb, data)
+    # Tolerate a directory path (e.g. "." or "out/") by dropping a named file in it.
+    if out_path.is_dir() or str(out_path).endswith(("/", "\\")):
+        fname = f"{data.customer_name}_{data.fiscal_period}.xlsx".replace(" ", "_")
+        out_path = out_path / fname
+    elif out_path.suffix.lower() != ".xlsx":
+        out_path = out_path.with_suffix(".xlsx")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(out_path)
     return out_path
