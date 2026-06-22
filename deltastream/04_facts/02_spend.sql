@@ -23,13 +23,17 @@ CREATE STREAM "spend" (
     'value.format' = 'json'
 );
 
--- The finance loaded-cost feed (non-ad channels).
+-- The finance loaded-cost feed (non-ad channels). Carries topic.partitions/
+-- replicas because attr_channel_cost is new — DeltaStream creates it here rather
+-- than waiting on the datagen to publish it first.
 CREATE STREAM "channel_cost" (
     "spend_date"   VARCHAR,
     "channel"      VARCHAR,
     "spend_amount" DOUBLE
 ) WITH (
     'topic' = 'attr_channel_cost',
+    'topic.partitions' = 1,
+    'topic.replicas' = 3,
     'store' = 'demo_confluent',
     'value.format' = 'json'
 );

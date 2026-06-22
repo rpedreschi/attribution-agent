@@ -337,6 +337,8 @@ CREATE STREAM "channel_cost" (
     "spend_amount" DOUBLE
 ) WITH (
     'topic' = 'attr_channel_cost',
+    'topic.partitions' = 1,
+    'topic.replicas' = 3,
     'store' = 'demo_confluent',
     'value.format' = 'json'
 );
