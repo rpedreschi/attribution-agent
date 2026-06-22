@@ -47,7 +47,11 @@ class RecommendationEngine:
         self.claude = claude
 
     def _trailing_conversions(self, data: BoardPackData) -> dict[str, int]:
-        return {f.program_category: f.conversions_total for f in data.funnel}
+        # Per-channel won-deal counts — a real per-channel volume signal. (The
+        # funnel's conversation/mql counts are pinned to Email Nurture / Outbound
+        # SDR upstream, so they can't gate the other channels; attributed_deals
+        # is correctly distributed across every channel.)
+        return {r.program_category: r.attributed_deals for r in data.cac_roi}
 
     def propose(self, data: BoardPackData) -> list[Recommendation]:
         conversions = self._trailing_conversions(data)
