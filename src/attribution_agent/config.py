@@ -55,7 +55,7 @@ class DeltaStreamConfig(BaseModel):
 
 class GuardrailConfig(BaseModel):
     max_weekly_reallocation_pct: float = 0.20
-    min_conversions_trailing_90d: int = 30
+    min_conversions_trailing_90d: int = 3   # min trailing won deals to act on a channel
     excluded_channels: list[str] = Field(default_factory=lambda: ["Brand", "Events"])
     attribution_model_for_decisions: str = "time_decay"
 

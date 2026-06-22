@@ -14,7 +14,8 @@ def test_excluded_channels_blocked():
 
 def test_thin_channel_blocked():
     g = _g()
-    eligible, _ = g.is_channel_eligible("Paid Search", trailing_conversions=10)
+    # Below the min trailing-deals gate (default 3) -> too thin to act on.
+    eligible, _ = g.is_channel_eligible("Paid Search", trailing_conversions=2)
     assert not eligible
 
 
