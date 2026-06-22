@@ -1,18 +1,33 @@
-# Demo Script — DeltaStream Attribution Agent
+# Demo Script — DeltaStream Pulse
 
-**Audience:** B2B CMO (and whoever they bring — often a marketing-ops lead or a
-data engineer; there's a section for each objection below).
+**Audience:** the B2B CMO — and, crucially, whoever they need to convince: the
+**CFO and CRO**. Often they bring a marketing-ops lead or a data engineer too;
+there's an objection section for each below. (Background and the buyer story:
+`positioning.md`.)
+
 **Length:** ~12 minutes + Q&A.
-**Demo persona:** Acme Cloud, Series C SaaS — a CMO defending marketing spend to
-the board every quarter.
+**Demo persona:** Acme Cloud, Series C SaaS — a CMO who re-defends marketing
+spend to the board every quarter and wants to stop.
 
-**The one-sentence pitch:** *An AI agent can only be as smart as the freshness
-of what it can see — DeltaStream is how you give an agent live context instead
-of last night's snapshot.*
+**Who you're really selling:** not the CMO alone — the CMO as **the one who
+finally gets the CFO and CRO to believe the number.** The win is the moment all
+three look at *one live source of truth*, drill into it together, and the budget
+fight ends.
+
+**The one-sentence pitch:** *DeltaStream Pulse turns your marketing data into
+one live source of truth an AI agent can act on — so the number you bring to the
+board is one the CFO and CRO already believe.*
+
+**Two things the buyer says (lead with their words):**
+- *"The data is old by the time you see it."* — batch reporting, one stale model.
+- *"The tools tell you what happened, not what to do next."* — dashboards are
+  analysis; the agent proposes the action.
 
 **What this demo is NOT:** a claim that revenue attribution itself is
 "real-time." Closed-won lags your sales cycle no matter what pipeline you build.
-We say that out loud (beat 5) — it's what makes the rest credible.
+We say that out loud (beat 5) — naming the limit is what makes the rest
+credible. This is a **trust problem first, a technology problem second**; the
+tech earns the trust, it doesn't replace it.
 
 ---
 
@@ -50,16 +65,24 @@ You'll point at them growing later.
 ## 1. The pain (1 min) — say this, show nothing yet
 
 > "Every quarter you present a marketing number to the board, and every quarter
-> you half-defend it. The pipeline behind it is batch: the number was computed
-> last night, from one attribution model, picked years ago. Between now and the
-> board meeting, a campaign can break, spend can run hot, a tracking tag can die
-> — and your reporting won't notice until the next batch run.
+> you half-defend it. Not because the work is bad — because the number isn't
+> *believed*. The CFO can't tie it to revenue. The CRO isn't sure the leads were
+> good. So the budget is never safe; it's an annual fight you re-fight from zero.
+>
+> And the pipeline behind that number makes it worse: it's batch. The data is
+> old by the time you see it, from one attribution model picked years ago.
+> Between now and the board meeting a campaign can break, spend can run hot, a
+> tracking tag can die — and your reporting won't notice until the next run. The
+> tools tell you what *happened*, never what to do next.
 >
 > And here's the new problem: you're about to put **AI agents** on top of that
-> data. Everyone is. An agent answering questions from a stale snapshot isn't
-> cautious — it's **confidently wrong**, in fluent English."
+> data. Everyone is. An agent answering from a stale snapshot isn't cautious —
+> it's **confidently wrong**, in fluent English. You can't take that to a board
+> that's already skeptical."
 
-That last line is the thesis. Everything in the demo proves it.
+The thesis: this is a **trust problem first.** The rest of the demo is about
+getting the CFO and CRO to believe one number — and giving an agent context
+honest enough to act on.
 
 ---
 
@@ -82,9 +105,17 @@ Then the conversational beat:
 agent> ask which channel has the best ROI and why?
 ```
 
-> "I didn't click through a dashboard to get that. I asked. The answer is
-> grounded in the live views — every figure traces to data, not to the model's
-> imagination."
+> "I didn't click through a dashboard to get that. I asked, and I got a one-line
+> answer — which is exactly what a board wants. And every figure traces back to a
+> source view; nothing is the model's imagination.
+>
+> Picture this beat with your CFO and CRO in the room. This is **one source of
+> truth, straight from your systems — Salesforce, HubSpot, the ad platforms.**
+> When the CFO asks 'where does that number come from,' you don't promise to
+> follow up after the meeting — you drill in, live, right there. That's the
+> moment the questioning stops and the CRO starts defending the number *with*
+> you, because it's their pipeline data too. Alignment isn't a meeting; it's all
+> three of you looking at the same live data and trusting it."
 
 ---
 
@@ -189,20 +220,30 @@ agent> export
 
 ---
 
-## 7. Close (1 min)
+## 7. Close (1 min) — make it about the budget
 
-> "Here's the summary. The attribution math isn't the magic — your team could
-> build these models in a warehouse. What they can't get from a warehouse is
-> **an agent with live context**: streaming identity resolution, continuously
-> maintained views, exposed to AI over MCP with zero API work. This demo — the
-> full pipeline, sources to agent — was stood up in about a day on DeltaStream.
-> The do-it-yourself version is Kafka plus Flink plus a serving database plus an
-> API layer, measured in months, and your team operates it forever.
+> "Let me land where this actually matters to you. The attribution math isn't the
+> magic — your team could build these models in a warehouse. What a warehouse
+> *can't* give you is what we just did: **one live source of truth your CFO and
+> CRO will believe in the room**, and an agent that turns it into a defensible,
+> one-line answer with a human on the approve button.
 >
-> You're going to put agents on your marketing data within a year. The only
-> question is whether they see *now* or *yesterday*."
+> And here's why that's worth doing. **Proven ROI protects the budget.** The day
+> the CFO can drill into your number live and it holds, the budget stops being an
+> annual fight — it becomes 'can I give you more?' That's the return on this. Not
+> a nicer dashboard. A number that survives scrutiny, so your spend is safe.
+>
+> The whole pipeline — sources to agent — was stood up in about a day on
+> DeltaStream. The do-it-yourself version is Kafka plus Flink plus a serving
+> database plus an API layer, measured in months, and your team operates it
+> forever. And you're going to put agents on your marketing data within a year
+> regardless. The only question is whether they see *now* or *yesterday* — and
+> whether the number they produce is one the whole leadership team will stand
+> behind."
 
-Ask for the next step (design-partner / pilot — whatever the motion is).
+Ask for the next step (design-partner / pilot — whatever the motion is). If Ops
+is in the room, name them: this is also the end of the endless data-cleanup and
+integration battle — SQL in, agent-ready context out, no API layer to own.
 
 ---
 
@@ -230,6 +271,20 @@ burden isn't."
 **"Is the AI deciding where my budget goes?"**
 "No. It drafts; you approve; everything is capped, scoped, and logged. The
 autonomy dial is yours, and v1 ships with it turned low on purpose."
+
+**"How do I know I can trust the number — that it's not AI making things up?"**
+(the CFO/board question) "Because it isn't AI magic — it's verifiable. Every
+figure traces to a live source view you can drill into, in the room. The agent
+doesn't invent numbers; it reads the same streaming data your systems produce
+and explains its reasoning. The trust comes from the single source of truth
+underneath, not from believing the model. That's the whole point: defensible,
+not impressive."
+
+**"My CFO and CRO don't believe my numbers today — how does this change that?"**
+"It puts all three of you on one live view you can interrogate together. The CFO
+stops re-deriving their own number; the CRO sees it's their pipeline data too.
+Alignment stops being a negotiation and becomes a shared scoreboard — and proven
+ROI is what protects your budget."
 
 **"Are these my real numbers?"**
 "Demo data — a realistic B2B funnel with seeded randomness. The production

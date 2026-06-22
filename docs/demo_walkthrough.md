@@ -28,12 +28,16 @@ stream run a bit longer. Then you're set.
 
 **Open — say, don't type (15 sec)**
 > "This is an AI agent sitting on our marketing data — Salesforce, HubSpot, GA4,
-> ad platforms — streaming live through DeltaStream. Not a dashboard. Watch."
+> ad platforms — streaming live through DeltaStream. **One source of truth, not a
+> dashboard.** The point isn't prettier charts — it's a number your CFO and CRO
+> will believe in the room. Watch."
 
 **1. `summary`**
-> "Here's the quarter, live. Attributed revenue, blended ROI, CAC. And model
-> agreement — these three attribution models only agree ~75% of the time, which
-> is the whole problem: pick the wrong one and you cut the wrong channel."
+> "Here's the quarter, live. Attributed revenue, blended ROI, CAC — straight from
+> your systems. This is the number, and the CFO can drill into where every dollar
+> came from. And model agreement — these three attribution models only agree ~75%
+> of the time, which is the whole problem: pick the wrong one and you cut the
+> wrong channel."
 
 **2. `channels`**
 > "Same revenue, three lenses — last-touch, linear, time-decay. Last-touch
@@ -66,9 +70,11 @@ stream run a bit longer. Then you're set.
 **Close (15 sec)**
 > "Built in a day on DeltaStream — the data team writes SQL, the agent gets live
 > context over MCP automatically. The honest catch: revenue itself lags your
-> sales cycle, no pipeline changes that. But the leading signals — spend, leads,
-> a campaign breaking — move hourly, and the moment an *agent* acts on your data,
-> it has to see *now*, not yesterday. That's the bet."
+> sales cycle, no pipeline changes that — and saying that out loud is what makes
+> the rest credible. But the leading signals move hourly, and the moment an
+> *agent* acts on your data it has to see *now*. The payoff isn't the dashboard —
+> it's a number the CFO and CRO believe. **Proven ROI is what protects the
+> budget.** That's the bet."
 
 ---
 
@@ -80,6 +86,7 @@ stream run a bit longer. Then you're set.
 | spend `$0` / no ROI | spend batch was missed — run `python -m attribution_agent.mock_generator` once, then `refresh` |
 | can't reach DeltaStream | fall back: `python -m attribution_agent.agent.cli --source sample` (offline canonical figures; say it's the offline mode) |
 
-## Don't show
-- The **Funnel tab** of the export — mql/sql counts only populate for two
-  channels (known cosmetic gap). Drive from `cac`/`recs`/`channels` instead.
+---
+
+The *why* behind every line above — buyer, trust story, budget-protection close —
+is in `positioning.md`. The full timed version is `demo_script.md`.
