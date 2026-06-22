@@ -50,7 +50,7 @@ agent:
   bedrock_model_id: "us.anthropic.claude-sonnet-4-6-v1:0"
   guardrails:
     max_weekly_reallocation_pct: 0.20
-    min_conversions_trailing_90d: 30
+    min_conversions_trailing_90d: 10
     excluded_channels: ["Brand", "Events"]
     attribution_model_for_decisions: "time_decay"
 
