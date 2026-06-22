@@ -90,6 +90,17 @@ When the number is live, single-source, and survives a CFO drilling into it, the
 budget stops being an annual fight. That's the value — not the dashboard, the
 *defensibility*.
 
+**The north star — move budget like Amazon does.** Amazon runs a multi-billion-
+dollar acquisition budget and is smart enough to **shift it across platforms on
+an hourly basis** as the signal moves. A normal CMO can't — their agencies report
+back *monthly, barely*, and by then the campaign that was burning money already
+burned it. DeltaStream Pulse gives the rest of the market that same reflex: see
+the signal live, move the budget today, not next quarter. That's the story —
+"be the thing that lets you reallocate like Amazon."
+
+> "Amazon… is smart enough on an hourly basis to move budget across platforms.
+> That's the story and concept you guys could bring to your customers." — advisor
+
 ---
 
 ## Who's in the room
@@ -99,10 +110,21 @@ budget stops being an annual fight. That's the value — not the dashboard, the
 | **CMO** (champion) | Stop re-defending the spend; protect the budget | A number the CFO and CRO will believe |
 | **CFO** (verifier) | Defensible numbers tied to revenue | Live drill-down into the source of truth |
 | **CRO** (ally) | Are these good leads? Same scoreboard? | One shared, current view of pipeline |
+| **VP of E-commerce** (parallel buyer) | Same budget-shifting pain across Amazon / Walmart / D2C / TikTok Shop; storefront data arrives monthly via agencies | Live signal to move spend across channels — the same reflex, outside the CMO org |
+| **VP RevOps / Demand Gen** (operator) | Owns the pipeline number the board grades marketing on | One current, shared revenue view instead of stitched exports |
+| **VP MarTech** (builder) | A data engineer hand-writing JDBC/API connectors that aren't built for real-time | Real-time signal collection without a custom-connector project |
 | **Marketing / Sales Ops** (builder) | The endless data-cleanup and integration battle | SQL in, agent-ready context out — no API layer to own |
 
-Win the CMO by arming them for the CFO and CRO. Win Ops by removing the
-integration tax.
+Win the CMO by arming them for the CFO and CRO. The VP of E-commerce is the same
+sale in a different org. Win the operators (RevOps / MarTech / Ops) by removing
+the integration tax.
+
+**How it's bought (and how to keep the cycle short).** This lands as **SaaS the
+marketing org can buy on its own** — priced simply (per seat, or by streams /
+volume), connecting to the SaaS systems they already own without dragging in IT.
+The moment a deal routes through data engineering and IT it becomes a six-month
+cycle; selling the business buyer a self-serve SaaS keeps it short. (The VPC / IT
+path is only for shops whose CRM is buried in an SAP or Oracle ERP.)
 
 ---
 

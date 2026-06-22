@@ -233,17 +233,29 @@ agent> export
 > annual fight — it becomes 'can I give you more?' That's the return on this. Not
 > a nicer dashboard. A number that survives scrutiny, so your spend is safe.
 >
-> The whole pipeline — sources to agent — was stood up in about a day on
-> DeltaStream. The do-it-yourself version is Kafka plus Flink plus a serving
-> database plus an API layer, measured in months, and your team operates it
-> forever. And you're going to put agents on your marketing data within a year
-> regardless. The only question is whether they see *now* or *yesterday* — and
-> whether the number they produce is one the whole leadership team will stand
-> behind."
+> Think about how Amazon runs marketing: a multi-billion-dollar budget it shifts
+> across platforms **hourly**, because it sees the signal live. You can't —
+> your agencies report back monthly, barely, and the campaign that's burning
+> money already burned it by the time you find out. This gives you that same
+> reflex: see it now, move the budget today, not next quarter.
+>
+> And you adopt it the way you bought the rest of your stack — **as software your
+> team turns on, not a data-engineering project.** It connects to the SaaS you
+> already run; there's no six-month IT build in the middle. You're going to put
+> agents on your marketing data within a year regardless. The only question is
+> whether they see *now* or *yesterday* — and whether the number they produce is
+> one the whole leadership team will stand behind."
 
-Ask for the next step (design-partner / pilot — whatever the motion is). If Ops
-is in the room, name them: this is also the end of the endless data-cleanup and
-integration battle — SQL in, agent-ready context out, no API layer to own.
+Ask for the next step (design-partner / pilot — whatever the motion is).
+
+**Reading the room — who's the buyer:**
+- **VP of E-commerce** instead of a CMO? Same demo, same story — they live the
+  budget-shifting pain across Amazon / Walmart / D2C / TikTok Shop.
+- **RevOps / Demand Gen / MarTech** in the room? They feel the integration tax —
+  lean on "SQL in, agent-ready context out, no custom connectors to own."
+- **Keep it out of IT's lane.** This is bought as SaaS by the marketing org;
+  routing it through data engineering is how a fast deal becomes a slow one. Only
+  the SAP/Oracle-ERP shops need the VPC/IT path.
 
 ---
 

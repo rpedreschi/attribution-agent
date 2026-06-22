@@ -68,13 +68,14 @@ stream run a bit longer. Then you're set.
 > to live in."
 
 **Close (15 sec)**
-> "Built in a day on DeltaStream — the data team writes SQL, the agent gets live
-> context over MCP automatically. The honest catch: revenue itself lags your
-> sales cycle, no pipeline changes that — and saying that out loud is what makes
-> the rest credible. But the leading signals move hourly, and the moment an
-> *agent* acts on your data it has to see *now*. The payoff isn't the dashboard —
-> it's a number the CFO and CRO believe. **Proven ROI is what protects the
-> budget.** That's the bet."
+> "Amazon shifts its budget across platforms *hourly* because it sees the signal
+> live. Your agencies report back monthly — this gives you that same reflex.
+> The honest catch: revenue itself lags your sales cycle, no pipeline changes
+> that — and saying so is what makes the rest credible. But the leading signals
+> move hourly, and the moment an *agent* acts on your data it has to see *now*.
+> The payoff isn't the dashboard — it's a number the CFO and CRO believe, and
+> **proven ROI is what protects the budget.** You turn it on like SaaS — no
+> six-month IT project. That's the bet."
 
 ---
 
