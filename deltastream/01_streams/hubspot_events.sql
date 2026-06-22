@@ -18,7 +18,8 @@ CREATE STREAM "hubspot_events" (
     "campaign"        VARCHAR,
     "utm_source"      VARCHAR,
     "utm_medium"      VARCHAR,
-    "utm_campaign"    VARCHAR
+    "utm_campaign"    VARCHAR,
+    "program_category" VARCHAR        -- source channel, set on lifecycle_change events
 ) WITH (
     'topic' = 'attr_hubspot_events',
     'store' = 'demo_confluent',

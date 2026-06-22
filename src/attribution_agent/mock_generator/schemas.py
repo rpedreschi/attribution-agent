@@ -40,11 +40,13 @@ def sf_contact(contact_id: str, email: str, account_id: str,
 
 
 def sf_opportunity(opp_id: str, account_id: str, stage_from: str, stage_to: str,
-                   amount: float, deal_size: str, when: datetime) -> Event:
+                   amount: float, deal_size: str, when: datetime,
+                   program_category: str = "") -> Event:
     return ("salesforce_opportunities", {
         "opportunity_id": opp_id, "account_id": account_id,
         "stage_from": stage_from, "stage_to": stage_to,
         "amount": round(amount, 2), "deal_size": deal_size, "event_time": _ts(when),
+        "program_category": program_category,   # source channel (Salesforce lead source)
     })
 
 
@@ -61,12 +63,13 @@ def hubspot_form(vid: str, web_user_id: str, email: str, form: str,
     })
 
 
-def hubspot_lifecycle(vid: str, email: str, frm: str, to: str, when: datetime) -> Event:
+def hubspot_lifecycle(vid: str, email: str, frm: str, to: str, when: datetime,
+                      program_category: str = "") -> Event:
     return ("hubspot", {
         "event_time": _ts(when), "vid": vid, "web_user_id": "", "email": email,
         "event_type": "lifecycle_change", "lifecycle_from": frm, "lifecycle_to": to,
         "form_name": "", "campaign": "", "utm_source": "", "utm_medium": "",
-        "utm_campaign": "",
+        "utm_campaign": "", "program_category": program_category,  # source channel
     })
 
 

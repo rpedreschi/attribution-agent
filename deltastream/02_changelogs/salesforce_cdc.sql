@@ -59,7 +59,8 @@ CREATE STREAM "sf_opportunities" (
     "stage_to"       VARCHAR,
     "amount"         DOUBLE,
     "deal_size"      VARCHAR,
-    "event_time"     TIMESTAMP
+    "event_time"     TIMESTAMP,
+    "program_category" VARCHAR        -- source channel (lead source)
 ) WITH (
     'topic' = 'attr_salesforce_cdc_opportunities',
     'store' = 'demo_confluent',

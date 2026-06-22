@@ -199,23 +199,26 @@ class Generator:
     def _funnel_transitions(self, acct: dict) -> list[Event]:
         close = acct["close_dt"]
         cid, email, aid = acct["contact_id"], acct["email"], acct["account_id"]
+        pc = acct["primary_channel"]          # source channel for the funnel
         opp_id = self._new_opp_id()
         t_conv = close - timedelta(days=self.rng.randint(45, 70))
         t_mql = close - timedelta(days=self.rng.randint(30, 44))
         t_sql = close - timedelta(days=self.rng.randint(18, 29))
         t_opp = close - timedelta(days=self.rng.randint(8, 17))
         return [
-            schemas.hubspot_lifecycle(cid, email, "subscriber", "lead", t_conv),
-            schemas.hubspot_lifecycle(cid, email, "lead", "mql", t_mql),
-            schemas.sf_opportunity(opp_id, aid, "MQL", "SQL", acct["amount"], acct["deal_size"], t_sql),
-            schemas.sf_opportunity(opp_id, aid, "SQL", "Discovery", acct["amount"], acct["deal_size"], t_opp),
-            schemas.sf_opportunity(opp_id, aid, "Negotiation", "ClosedWon", acct["amount"], acct["deal_size"], close),
+            schemas.hubspot_lifecycle(cid, email, "subscriber", "lead", t_conv, pc),
+            schemas.hubspot_lifecycle(cid, email, "lead", "mql", t_mql, pc),
+            schemas.sf_opportunity(opp_id, aid, "MQL", "SQL", acct["amount"], acct["deal_size"], t_sql, pc),
+            schemas.sf_opportunity(opp_id, aid, "SQL", "Discovery", acct["amount"], acct["deal_size"], t_opp, pc),
+            schemas.sf_opportunity(opp_id, aid, "Negotiation", "ClosedWon", acct["amount"], acct["deal_size"], close, pc),
         ]
 
     def emit_open_opportunities(self, count: int) -> list[Event]:
         """Opportunities that reached opp_created but are still open or lost,
         bringing the opportunity count to TOTAL_OPPORTUNITIES."""
         events: list[Event] = []
+        channels = [c.name for c in sd.CHANNELS]
+        weights = [c.attributed_deals for c in sd.CHANNELS]
         for _ in range(count):
             aid = self._new_account_id()
             opp_id = self._new_opp_id()
@@ -223,8 +226,9 @@ class Generator:
             size = self.rng.choice(["SMB", "MidMarket", "Enterprise"])
             t_opp = self._rand_dt(PERIOD_START, PERIOD_END - timedelta(days=5))
             stage_to = self.rng.choice(["Discovery", "ClosedLost"])
+            pc = self.rng.choices(channels, weights=weights, k=1)[0]
             events.append(schemas.sf_opportunity(
-                opp_id, aid, "SQL", stage_to, amount, size, t_opp))
+                opp_id, aid, "SQL", stage_to, amount, size, t_opp, pc))
         return events
 
     def emit_ambient_touches(self) -> list[Event]:

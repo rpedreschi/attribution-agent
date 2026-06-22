@@ -160,19 +160,19 @@ class LiveGenerator:
             frac = 0.1 + 0.8 * (i / njourney) + self.rng.uniform(-0.03, 0.03)
             for ev in self._touch(acct, channel, now + dur * max(frac, 0.0)):
                 at(max(frac, 0.0), ev)
-        # Funnel stage transitions.
-        at(0.30, schemas.hubspot_lifecycle(cid, email, "subscriber", "lead", now))
-        at(0.45, schemas.hubspot_lifecycle(cid, email, "lead", "mql", now))
-        at(0.60, schemas.sf_opportunity(oid, aid, "MQL", "SQL", amount, size, now))
-        at(0.78, schemas.sf_opportunity(oid, aid, "SQL", "Discovery", amount, size, now))
+        # Funnel stage transitions, tagged with the journey's source channel.
+        at(0.30, schemas.hubspot_lifecycle(cid, email, "subscriber", "lead", now, primary))
+        at(0.45, schemas.hubspot_lifecycle(cid, email, "lead", "mql", now, primary))
+        at(0.60, schemas.sf_opportunity(oid, aid, "MQL", "SQL", amount, size, now, primary))
+        at(0.78, schemas.sf_opportunity(oid, aid, "SQL", "Discovery", amount, size, now, primary))
         if won:
             at(1.0, schemas.sf_opportunity(oid, aid, "Negotiation", "ClosedWon",
-                                           amount, size, now))
+                                           amount, size, now, primary))
             at(1.0, schemas.sf_account(aid, name, industry, self.rng.randint(50, 8000),
                                        band, region, is_customer=True, updated=now))
         else:
             at(1.0, schemas.sf_opportunity(oid, aid, "Discovery", "ClosedLost",
-                                           amount, size, now))
+                                           amount, size, now, primary))
 
         # Stamp each scheduled event with its own wall-clock time so the payload
         # timestamp matches when it is actually published.
