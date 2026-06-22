@@ -19,3 +19,4 @@ DROP STREAM "attribution"."public"."hubspot_events";
 DROP STREAM "attribution"."public"."outreach_activity";
 DROP STREAM "attribution"."public"."linkedin_ads";
 DROP STREAM "attribution"."public"."google_ads";
+DROP STREAM "attribution"."public"."channel_cost";

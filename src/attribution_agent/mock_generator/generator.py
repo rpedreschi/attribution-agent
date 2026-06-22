@@ -245,8 +245,10 @@ class Generator:
         return events
 
     def emit_spend(self) -> list[Event]:
-        """Daily spend for the two ad platforms. Non-ad channel cost is loaded
-        as its own Kafka topic by finance/manual export and is not emitted here."""
+        """Daily spend per channel. The two ad platforms publish rich
+        impressions/clicks rows; the other channels publish a loaded-cost row via
+        the finance/manual-export feed (channel_cost) so every channel has spend
+        and the agent can compute CAC/ROI across all of them."""
         events: list[Event] = []
         for ch_name, builder, campaigns in (
             ("Paid Social", schemas.linkedin_spend,
@@ -264,6 +266,16 @@ class Generator:
                 impr = int(spend * self.rng.uniform(20, 60))
                 clicks = int(impr * self.rng.uniform(0.01, 0.04))
                 events.append(builder(day, campaign, spend, impr, clicks))
+        # Loaded cost for the non-ad channels (finance export -> channel_cost).
+        # Skip the ad platforms (above) and Events (no live attributed touches, so
+        # it would show spend with no revenue).
+        for ch in sd.CHANNELS:
+            if ch.name in ("Paid Social", "Paid Search", "Events"):
+                continue
+            daily = ch.spend / (PERIOD_DAYS + 1)
+            for d in range(PERIOD_DAYS + 1):
+                day = (PERIOD_START + timedelta(days=d)).strftime("%Y-%m-%d")
+                events.append(schemas.channel_cost(day, ch.name, daily * self.rng.uniform(0.8, 1.2)))
         return events
 
     # -- orchestration -------------------------------------------------------

@@ -331,6 +331,16 @@ CREATE STREAM "spend" (
     'value.format' = 'json'
 );
 
+CREATE STREAM "channel_cost" (
+    "spend_date"   VARCHAR,
+    "channel"      VARCHAR,
+    "spend_amount" DOUBLE
+) WITH (
+    'topic' = 'attr_channel_cost',
+    'store' = 'demo_confluent',
+    'value.format' = 'json'
+);
+
 INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
        "spend_amount", 'linkedin' AS "source_platform"
@@ -340,6 +350,11 @@ INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
        "spend_amount", 'google_ads' AS "source_platform"
 FROM "google_ads";
+
+INSERT INTO "spend"
+SELECT "spend_date", "channel", "channel" AS "program_category",
+       '' AS "campaign", "spend_amount", 'finance' AS "source_platform"
+FROM "channel_cost";
 
 
 USE DATABASE "attribution";

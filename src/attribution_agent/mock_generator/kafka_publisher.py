@@ -24,6 +24,7 @@ _KEY_FIELD = {
     "linkedin_ads": "campaign",
     "google_ads": "campaign",
     "outreach": "contact_id",
+    "channel_cost": "channel",
 }
 
 

@@ -33,7 +33,7 @@ def test_deterministic_volumes_and_topics():
     by_topic = _events_by_topic()
     # All eight source topic keys are produced.
     assert set(by_topic) == {
-        "ga4", "hubspot", "outreach", "linkedin_ads", "google_ads",
+        "ga4", "hubspot", "outreach", "linkedin_ads", "google_ads", "channel_cost",
         "salesforce_accounts", "salesforce_contacts", "salesforce_opportunities",
     }
     # Seeded => stable total across runs.

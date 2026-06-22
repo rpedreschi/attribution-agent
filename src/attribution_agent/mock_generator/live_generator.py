@@ -219,6 +219,19 @@ class LiveGenerator:
             events.append(builder(day, campaign, round(spend, 2), impr, clicks))
         return events
 
+    def _cost_slice(self, won_rev: float, now: datetime) -> list[Event]:
+        """Loaded cost for the non-ad channels (finance export -> channel_cost),
+        proportional to revenue at each channel's sample spend ratio, so every
+        channel — not just the two ad platforms — shows CAC/ROI in the demo."""
+        events: list[Event] = []
+        day = now.strftime("%Y-%m-%d")
+        for ch in sd.CHANNELS:
+            if ch.name in ("Paid Social", "Paid Search", "Events"):
+                continue
+            cost = max(won_rev * (ch.spend / sd.TOTAL_ATTRIBUTED_REVENUE), 50.0)
+            events.append(schemas.channel_cost(day, ch.name, round(cost, 2)))
+        return events
+
     # -- the tick ------------------------------------------------------------
 
     def tick(self, now: datetime | None = None) -> list[Event]:
@@ -245,5 +258,6 @@ class LiveGenerator:
         won_rev = sum(p.get("amount", 0) for k, p in events
                       if k == "salesforce_opportunities" and p.get("stage_to") == "ClosedWon")
         events += self._spend_slice(max(won_rev * SPEND_RATIO, 500.0), now)
+        events += self._cost_slice(won_rev, now)
 
         return events

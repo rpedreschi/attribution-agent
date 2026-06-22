@@ -1,7 +1,8 @@
--- Unified `spend` stream: LinkedIn + Google Ads daily spend. Non-ad channel
--- cost (Outbound SDR loaded cost, Events, Brand) is published to its own Kafka
--- topic by finance/manual export and unioned in here in production; for the
--- demo the two ad platforms are the live spend sources.
+-- Unified `spend` stream: LinkedIn + Google Ads daily spend (rich impressions/
+-- clicks rows) UNION the finance/manual loaded-cost export (channel_cost) for the
+-- non-ad channels (Outbound SDR, Email Nurture, Events, Brand, Organic/Web). With
+-- all three feeds, every channel has spend so the agent computes CAC/ROI across
+-- the whole mix, not just the two ad platforms.
 
 -- Ensure objects land in attribution.public even if run in a fresh session.
 USE DATABASE "attribution";
@@ -22,6 +23,17 @@ CREATE STREAM "spend" (
     'value.format' = 'json'
 );
 
+-- The finance loaded-cost feed (non-ad channels).
+CREATE STREAM "channel_cost" (
+    "spend_date"   VARCHAR,
+    "channel"      VARCHAR,
+    "spend_amount" DOUBLE
+) WITH (
+    'topic' = 'attr_channel_cost',
+    'store' = 'demo_confluent',
+    'value.format' = 'json'
+);
+
 INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
        "spend_amount", 'linkedin' AS "source_platform"
@@ -31,3 +43,8 @@ INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
        "spend_amount", 'google_ads' AS "source_platform"
 FROM "google_ads";
+
+INSERT INTO "spend"
+SELECT "spend_date", "channel", "channel" AS "program_category",
+       '' AS "campaign", "spend_amount", 'finance' AS "source_platform"
+FROM "channel_cost";

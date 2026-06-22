@@ -28,6 +28,7 @@ kafka:
     linkedin_ads: "attr_linkedin_ads"
     google_ads: "attr_google_ads"
     outreach: "attr_outreach_activity"
+    channel_cost: "attr_channel_cost"
 
 deltastream:
   # DeltaStream MCP REST endpoint. Materialized views the token's role can

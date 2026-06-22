@@ -108,6 +108,18 @@ def google_spend(day: str, campaign: str, spend: float, impr: int, clicks: int) 
     })
 
 
+# --- Finance loaded cost (non-ad channels) ----------------------------------
+# The "manual export" feed: per-channel loaded cost for SDR, Email, Events,
+# Brand, Organic — channels that don't run through an ad platform but still cost
+# money. Lets the agent compute CAC/ROI for every channel, not just the two
+# ad platforms.
+
+def channel_cost(day: str, channel: str, spend_amount: float) -> Event:
+    return ("channel_cost", {
+        "spend_date": day, "channel": channel, "spend_amount": round(spend_amount, 2),
+    })
+
+
 # --- Outreach ---------------------------------------------------------------
 
 def outreach_activity(prospect_id: str, email: str, contact_id: str, activity: str,
