@@ -17,6 +17,7 @@ FILES=(
   deltastream/01_streams/hubspot_events.sql
   deltastream/01_streams/outreach_activity.sql
   deltastream/01_streams/ads_spend.sql
+  deltastream/01_streams/share_of_model.sql
   deltastream/02_changelogs/salesforce_cdc.sql
   deltastream/03_identity/01_web_identity_map.sql
   deltastream/03_identity/02_touchpoints.sql
@@ -27,6 +28,7 @@ FILES=(
   deltastream/05_views/02_mv_funnel_by_category.sql
   deltastream/05_views/03_mv_channel_touch_distribution.sql
   deltastream/05_views/04_mv_won_revenue_by_account.sql
+  deltastream/05_views/05_mv_share_of_model.sql
 )
 OUT=deltastream/deploy_all.sql
 

@@ -29,6 +29,7 @@ kafka:
     google_ads: "attr_google_ads"
     outreach: "attr_outreach_activity"
     channel_cost: "attr_channel_cost"
+    share_of_model: "attr_share_of_model"
 
 deltastream:
   # DeltaStream MCP REST endpoint. Materialized views the token's role can
@@ -51,7 +52,7 @@ agent:
   guardrails:
     max_weekly_reallocation_pct: 0.20
     min_conversions_trailing_90d: 3   # min trailing won deals to reallocate a channel
-    excluded_channels: ["Brand", "Events"]
+    excluded_channels: ["Brand", "Events", "AI Assistant"]   # AI Assistant has no media lever to reallocate
     attribution_model_for_decisions: "time_decay"
 
 output:

@@ -25,6 +25,7 @@ _KEY_FIELD = {
     "google_ads": "campaign",
     "outreach": "contact_id",
     "channel_cost": "channel",
+    "share_of_model": "buyer_query",
 }
 
 

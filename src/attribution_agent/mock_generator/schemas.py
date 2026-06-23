@@ -123,6 +123,22 @@ def channel_cost(day: str, channel: str, spend_amount: float) -> Event:
     })
 
 
+# --- Share of model (LLM answer-space visibility) ---------------------------
+# A scheduled "probe" feed: we ask the assistants (ChatGPT / Perplexity / Gemini)
+# the buyer-intent prompts that matter and record whether the brand was named,
+# cited, and where it ranked. This is the leading indicator for the AI Assistant
+# channel — the place you can lose overnight when a model updates.
+
+def share_of_model(when: datetime, buyer_query: str, assistant: str, mentioned: bool,
+                   cited: bool, brand_rank: int, top_competitor: str, sentiment: str) -> Event:
+    return ("share_of_model", {
+        "event_time": _ts(when), "buyer_query": buyer_query, "assistant": assistant,
+        "mentioned": 1 if mentioned else 0, "cited": 1 if cited else 0,
+        "brand_rank": brand_rank,       # 1 = first; 99 = unranked / absent
+        "top_competitor": top_competitor, "sentiment": sentiment,
+    })
+
+
 # --- Outreach ---------------------------------------------------------------
 
 def outreach_activity(prospect_id: str, email: str, contact_id: str, activity: str,

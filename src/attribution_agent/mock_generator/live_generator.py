@@ -36,10 +36,24 @@ _TOUCH_SOURCE = {
     "Paid Social": "ga4",
     "Organic/Web": "ga4",
     "Brand": "ga4",
+    "AI Assistant": "ga4",
     "Events": "hubspot_form",
     "Email Nurture": "hubspot_email",
     "Outbound SDR": "outreach",
 }
+
+# Buyer-intent prompts we probe across the assistants for "share of model", each
+# with its baseline rank and the competitor that tends to top the answer. The
+# last one is the query that drops out mid-stream (see som_degrade_seconds).
+_SOM_QUERIES: list[tuple[str, int, str]] = [
+    ("best cloud cost optimization platform", 1, "CloudZero"),
+    ("FinOps tools for enterprise",           2, "Apptio Cloudability"),
+    ("how to reduce our AWS bill",            3, "Vantage"),
+    ("Acme Cloud alternatives",               2, "Densify"),
+    ("cloud cost anomaly detection",          2, "Kubecost"),     # drops out mid-stream
+]
+_SOM_DROP_QUERY = "cloud cost anomaly detection"
+_SOM_ASSISTANTS = ["chatgpt", "perplexity", "gemini"]
 
 _AD_CAMPAIGNS = {
     "Paid Social": ["ABM Tier 1 - Sponsored", "ABM Tier 2 - InMail", "Retargeting - Display"],
@@ -79,15 +93,21 @@ class LiveGenerator:
     """Stateful generator driven one ``tick(now)`` at a time."""
 
     def __init__(self, *, seed: int = 42, journey_seconds: float = 180.0,
-                 new_journey_rate: float = 0.15, ambient_per_tick: int = 2) -> None:
+                 new_journey_rate: float = 0.15, ambient_per_tick: int = 2,
+                 som_degrade_seconds: float = 120.0) -> None:
         self.rng = random.Random(seed)
         self.journey_seconds = journey_seconds
         self.new_journey_rate = new_journey_rate
         self.ambient_per_tick = ambient_per_tick
+        # After this many seconds of streaming, the designated buyer query drops
+        # out of the LLM answers — the live "you slipped out of the answer" beat.
+        self.som_degrade_seconds = som_degrade_seconds
         self._seq = 0
         self._inflight: list[_Journey] = []
         self._channels = [c.name for c in sd.CHANNELS]
         self._weights = [c.attributed_deals for c in sd.CHANNELS]
+        self._som_t0: datetime | None = None
+        self._som_seq = 0
 
     @property
     def inflight(self) -> int:
@@ -98,6 +118,12 @@ class LiveGenerator:
     def _touch(self, acct: dict, channel: str, when: datetime) -> list[Event]:
         kind = _TOUCH_SOURCE[channel]
         web_id = f"web-{acct['account_id']}"
+        if kind == "ga4" and channel == "AI Assistant":
+            src = self.rng.choice(["chatgpt", "perplexity", "gemini"])
+            return [schemas.ga4_event(
+                web_id, f"sess-{acct['account_id']}-{when:%j%H%M}", "page_view",
+                "https://acme.cloud/solutions", self.rng.choice(_DEVICES),
+                src, "ai-referral", "AI Assistant Campaign", when)]
         if kind == "ga4":
             utm = {"Paid Search": ("google", "cpc"), "Paid Social": ("linkedin", "paid-social"),
                    "Organic/Web": ("google", "organic"), "Brand": ("direct", "brand")}[channel]
@@ -232,6 +258,30 @@ class LiveGenerator:
             events.append(schemas.channel_cost(day, ch.name, round(cost, 2)))
         return events
 
+    def _share_of_model_slice(self, now: datetime) -> list[Event]:
+        """One probe per buyer query this tick (rotating which assistant we asked),
+        recording the brand's standing in the answer. The designated drop query
+        falls out of the answers after ``som_degrade_seconds`` — so a live
+        ``aishare`` watch shows the slip happen, the way a model update would."""
+        if self._som_t0 is None:
+            self._som_t0 = now
+        elapsed = (now - self._som_t0).total_seconds()
+        assistant = _SOM_ASSISTANTS[self._som_seq % len(_SOM_ASSISTANTS)]
+        self._som_seq += 1
+        events: list[Event] = []
+        for query, base_rank, competitor in _SOM_QUERIES:
+            dropped = query == _SOM_DROP_QUERY and elapsed >= self.som_degrade_seconds
+            if dropped:
+                mentioned, cited, rank, sentiment = False, False, 99, "absent"
+            else:
+                mentioned = True
+                rank = max(1, base_rank + self.rng.choice([-1, 0, 0, 1]))
+                cited = self.rng.random() < (0.8 if rank <= 2 else 0.5)
+                sentiment = "positive" if rank <= 2 else "neutral"
+            events.append(schemas.share_of_model(
+                now, query, assistant, mentioned, cited, rank, competitor, sentiment))
+        return events
+
     # -- the tick ------------------------------------------------------------
 
     def tick(self, now: datetime | None = None) -> list[Event]:
@@ -259,5 +309,6 @@ class LiveGenerator:
                       if k == "salesforce_opportunities" and p.get("stage_to") == "ClosedWon")
         events += self._spend_slice(max(won_rev * SPEND_RATIO, 500.0), now)
         events += self._cost_slice(won_rev, now)
+        events += self._share_of_model_slice(now)
 
         return events

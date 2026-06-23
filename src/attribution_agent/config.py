@@ -50,13 +50,17 @@ class DeltaStreamConfig(BaseModel):
         "funnel_by_category": "attribution_public_mv_funnel_by_category",
         "channel_touch_distribution": "attribution_public_mv_channel_touch_distribution",
         "won_revenue_by_account": "attribution_public_mv_won_revenue_by_account",
+        "share_of_model": "attribution_public_mv_share_of_model",
     })
 
 
 class GuardrailConfig(BaseModel):
     max_weekly_reallocation_pct: float = 0.20
     min_conversions_trailing_90d: int = 3   # min trailing won deals to act on a channel
-    excluded_channels: list[str] = Field(default_factory=lambda: ["Brand", "Events"])
+    # Brand/Events: policy exclusion. AI Assistant: no media lever exists, so
+    # there is nothing to reallocate — the agent watches share-of-model instead.
+    excluded_channels: list[str] = Field(
+        default_factory=lambda: ["Brand", "Events", "AI Assistant"])
     attribution_model_for_decisions: str = "time_decay"
 
 

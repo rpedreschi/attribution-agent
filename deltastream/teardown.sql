@@ -1,6 +1,7 @@
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
+DROP MATERIALIZED VIEW "attribution"."public"."mv_share_of_model";
 DROP MATERIALIZED VIEW "attribution"."public"."mv_won_revenue_by_account";
 DROP MATERIALIZED VIEW "attribution"."public"."mv_channel_touch_distribution";
 DROP MATERIALIZED VIEW "attribution"."public"."mv_funnel_by_category";
@@ -20,3 +21,4 @@ DROP STREAM "attribution"."public"."outreach_activity";
 DROP STREAM "attribution"."public"."linkedin_ads";
 DROP STREAM "attribution"."public"."google_ads";
 DROP STREAM "attribution"."public"."channel_cost";
+DROP STREAM "attribution"."public"."share_of_model";

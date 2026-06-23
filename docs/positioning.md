@@ -79,6 +79,40 @@ a live, trustworthy answer to an **agent** that's about to *act* on it.
 
 ---
 
+## The wedge competitors can't copy — LLM influence
+
+Every CMO is panicking about the same new question: *"How much of my pipeline is
+ChatGPT now, and am I still in the answer?"* Nobody can measure it, because LLM
+influence is **zero-click and invisible** — the buyer asks an assistant, gets
+pointed at you, and shows up as "direct." Batch attribution mis-credits it; a
+warehouse can't see it at all.
+
+We turn it into a channel and a live signal:
+
+- **AI Assistant as a first-class channel.** Deals the assistants influenced,
+  surfaced three ways — the referral, a self-report, the multi-touch journey.
+  In the demo it's the **highest-ROI channel** and, tellingly, last-touch *hides*
+  it (the credit defaults to the direct visit that follows) — only the live
+  multi-touch view catches it.
+- **The agent won't fund it — on purpose.** You can't buy an LLM recommendation.
+  A naive optimizer would dump budget into the high-ROI channel and accomplish
+  nothing; ours flags it and refuses, because there's no media lever. That's the
+  difference between a channel you *buy* and one you *earn*.
+- **Share of model — the leading indicator.** We probe the assistants on the
+  buyer queries that matter and track whether you're named, cited, and where you
+  rank. When a model update drops you out of the answer overnight, the agent
+  catches it **live** — something no ad dashboard can show.
+
+Be honest about the limit (it's the credibility move): nobody attributes LLM
+influence to the dollar yet, so we **triangulate** — the referral we can see, the
+self-report, and share-of-model as the leading indicator. Anyone selling a clean
+deterministic "ChatGPT sourced $X" is selling the tip and hiding the iceberg.
+
+This is the part a batch warehouse structurally cannot do, and the part that
+makes the live-streaming story matter to a CMO *today* rather than next year.
+
+---
+
 ## ROI = budget protection (the close)
 
 We don't sell "marketing efficiency." We sell the thing the buyer actually

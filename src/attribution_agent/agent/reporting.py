@@ -13,7 +13,7 @@ from datetime import datetime
 from statistics import mean
 
 from .. import sample_data as sd
-from .deltastream_mcp import DeltaStreamMCPClient
+from .deltastream_mcp import DeltaStreamMCPClient, DeltaStreamMCPError
 
 
 @dataclass
@@ -89,6 +89,35 @@ class CampaignRow:
 
 
 @dataclass
+class ShareOfModelRow:
+    """The brand's standing in LLM answers for one buyer query — the leading
+    indicator for the (un-buyable) AI Assistant channel."""
+    buyer_query: str
+    probes: int
+    mentions: int
+    citations: int
+    best_rank: int
+    avg_rank: float
+
+    @property
+    def mention_rate(self) -> float:
+        return self.mentions / self.probes if self.probes else 0.0
+
+    @property
+    def citation_rate(self) -> float:
+        return self.citations / self.probes if self.probes else 0.0
+
+    @property
+    def status(self) -> str:
+        """strong / slipping / at risk — drives the 'you dropped out' flag."""
+        if self.mention_rate < 0.35 or self.avg_rank >= 6:
+            return "at risk"
+        if self.mention_rate < 0.7 or self.avg_rank >= 3.5:
+            return "slipping"
+        return "strong"
+
+
+@dataclass
 class BoardPackData:
     customer_name: str
     fiscal_period: str
@@ -103,6 +132,8 @@ class BoardPackData:
     prior_spend: float
     won_deals: int
     prior_won_deals: int
+    # LLM answer-space visibility (leading indicator for the AI Assistant channel)
+    share_of_model: list[ShareOfModelRow] = field(default_factory=list)
     # filled in by the agent layer
     observations: list[str] = field(default_factory=list)
     recommendations: list = field(default_factory=list)
@@ -152,6 +183,9 @@ class BoardPackData:
                              c.attributed_deals) for c in sd.CHANNELS]
         campaigns = [CampaignRow(c.name, c.channel, c.spend, c.attributed_revenue,
                                  c.attributed_deals) for c in sd.CAMPAIGNS]
+        share_of_model = [ShareOfModelRow(m.buyer_query, m.probes, m.mentions,
+                                          m.citations, m.best_rank, m.avg_rank)
+                          for m in sd.SHARE_OF_MODEL]
         return cls(
             customer_name=sd.CUSTOMER_NAME, fiscal_period=sd.FISCAL_PERIOD,
             channels=channels, funnel=funnel, cac_roi=cac_roi, campaigns=campaigns,
@@ -159,6 +193,7 @@ class BoardPackData:
             prior_attributed=sd.PRIOR_ATTRIBUTED_REVENUE,
             total_spend=sd.total_spend(), prior_spend=sd.PRIOR_TOTAL_SPEND,
             won_deals=sd.TOTAL_WON_DEALS, prior_won_deals=sd.PRIOR_WON_DEALS,
+            share_of_model=share_of_model,
         )
 
     @classmethod
@@ -174,6 +209,12 @@ class BoardPackData:
         funnel_rows = client.query_view("funnel_by_category")
         dist_rows = client.query_view("channel_touch_distribution")
         won_rows = client.query_view("won_revenue_by_account")
+        # share-of-model only populates once the live probe stream runs; tolerate
+        # its absence (backfill-only deploys) rather than failing the whole pull.
+        try:
+            som_rows = client.query_view("share_of_model")
+        except DeltaStreamMCPError:
+            som_rows = []
 
         spend_by_channel = {r["channel"]: float(r.get("spend") or 0) for r in spend_rows}
         attr, deals = _attribution_from_context(dist_rows, won_rows)
@@ -193,6 +234,8 @@ class BoardPackData:
         # sample mode. Live mode leaves it empty rather than fabricate it.
         campaigns: list[CampaignRow] = []
 
+        share_of_model = _share_of_model_from_rows(som_rows)
+
         total_attr = sum(c.time_decay for c in channels)
         total_spend = sum(spend_by_channel.values())
         won = len(won_rows) or sum(f.won for f in funnel)
@@ -204,6 +247,7 @@ class BoardPackData:
             total_attributed=total_attr, prior_attributed=sd.PRIOR_ATTRIBUTED_REVENUE,
             total_spend=total_spend, prior_spend=sd.PRIOR_TOTAL_SPEND,
             won_deals=won, prior_won_deals=sd.PRIOR_WON_DEALS,
+            share_of_model=share_of_model,
         )
 
 
@@ -215,6 +259,25 @@ class _Attr:
 
 
 _Z = _Attr()  # zero sentinel for channels with no attribution
+
+
+def _share_of_model_from_rows(rows: list[dict]) -> list[ShareOfModelRow]:
+    """Map mv_share_of_model rows to ShareOfModelRow, ordered worst-standing
+    first so the slipping/at-risk queries surface at the top of the watch."""
+    out: list[ShareOfModelRow] = []
+    for r in rows:
+        probes = int(r.get("probes") or 0)
+        mentions = int(r.get("mentions") or 0)
+        avg_rank = float(r.get("avg_rank") or 0.0)
+        out.append(ShareOfModelRow(
+            buyer_query=str(r.get("buyer_query") or ""),
+            probes=probes, mentions=mentions,
+            citations=int(r.get("citations") or 0),
+            best_rank=int(r.get("best_rank") or 99),
+            avg_rank=avg_rank,
+        ))
+    out.sort(key=lambda s: (s.mention_rate, -s.avg_rank))
+    return out
 
 
 def _parse_ts(value) -> datetime | None:

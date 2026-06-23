@@ -105,6 +105,29 @@ CREATE STREAM "google_ads" (
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
+CREATE STREAM "share_of_model" (
+    "event_time"     TIMESTAMP,
+    "buyer_query"    VARCHAR,
+    "assistant"      VARCHAR,
+    "mentioned"      INTEGER,
+    "cited"          INTEGER,
+    "brand_rank"     INTEGER,
+    "top_competitor" VARCHAR,
+    "sentiment"      VARCHAR
+) WITH (
+    'topic' = 'attr_share_of_model',
+    'topic.partitions' = 1,
+    'topic.replicas' = 3,
+    'store' = 'demo_confluent',
+    'value.format' = 'json',
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
+);
+
+
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
 CREATE CHANGELOG "sf_contacts" (
     "contact_id" VARCHAR,
     "email"      VARCHAR,
@@ -228,15 +251,17 @@ SELECT
     m."account_id", m."contact_id",
     m."email" AS "email", g."session_id",
     CAST(CASE g."utm_medium"
-        WHEN 'cpc'         THEN 'Paid Search'
-        WHEN 'paid-social' THEN 'Paid Social'
-        WHEN 'brand'       THEN 'Brand'
+        WHEN 'cpc'          THEN 'Paid Search'
+        WHEN 'paid-social'  THEN 'Paid Social'
+        WHEN 'brand'        THEN 'Brand'
+        WHEN 'ai-referral'  THEN 'AI Assistant'
         ELSE 'Organic/Web'
     END AS VARCHAR) AS "channel",
     CAST(CASE g."utm_medium"
-        WHEN 'cpc'         THEN 'Paid Search'
-        WHEN 'paid-social' THEN 'Paid Social'
-        WHEN 'brand'       THEN 'Brand'
+        WHEN 'cpc'          THEN 'Paid Search'
+        WHEN 'paid-social'  THEN 'Paid Social'
+        WHEN 'brand'        THEN 'Brand'
+        WHEN 'ai-referral'  THEN 'AI Assistant'
         ELSE 'Organic/Web'
     END AS VARCHAR) AS "program_category",
     g."utm_campaign" AS "campaign", 'ga4' AS "source", 'ga4' AS "source_system"
@@ -441,3 +466,19 @@ SELECT
 FROM "conversions"
 WHERE "event_type" = 'closed_won'
 GROUP BY "account_id";
+
+
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
+CREATE MATERIALIZED VIEW "mv_share_of_model" AS
+SELECT
+    "buyer_query",
+    COUNT(*)                              AS "probes",
+    SUM("mentioned")                      AS "mentions",
+    SUM("cited")                          AS "citations",
+    MIN("brand_rank")                     AS "best_rank",
+    AVG(CAST("brand_rank" AS DOUBLE))     AS "avg_rank",
+    MAX("event_time")                     AS "last_checked"
+FROM "share_of_model"
+GROUP BY "buyer_query";

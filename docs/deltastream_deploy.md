@@ -67,8 +67,12 @@ before going further.
 
 ## 2. Source streams — `01_streams/`
 
-Run all four: `ga4_sessions.sql`, `hubspot_events.sql`, `outreach_activity.sql`,
-`ads_spend.sql` (creates `linkedin_ads` + `google_ads`).
+Run all five: `ga4_sessions.sql`, `hubspot_events.sql`, `outreach_activity.sql`,
+`ads_spend.sql` (creates `linkedin_ads` + `google_ads`), and
+`share_of_model.sql` (the LLM answer-space probe feed — reads `attr_share_of_model`,
+which DeltaStream creates, so it carries `topic.partitions`/`topic.replicas`).
+`share_of_model` is populated only by the **live** datagen (`--stream`), not the
+batch backfill, since share-of-model is a live monitoring signal.
 
 Validate — **a `SELECT` on a stream is a continuous query** (it tails the topic
 and runs until you stop it, Ctrl-C). That's exactly what you want here: you
@@ -113,7 +117,8 @@ you should see resolved rows within a minute or two.
 
 Run `04_facts/` in order (`01_conversions.sql`, `02_spend.sql`,
 `03_funnel_events.sql`) — each adds more continuous queries. Then `05_views/`
-(the four `mv_*`). Re-check `LIST QUERIES;` — everything should be `Running`.
+(the five `mv_*`, including `05_mv_share_of_model.sql`). Re-check `LIST QUERIES;` —
+everything should be `Running`.
 
 Unlike streams, **a `SELECT` on a materialized view returns a snapshot** of
 current state (bounded — it returns and exits):
@@ -123,7 +128,13 @@ SELECT * FROM "mv_won_revenue_by_account" ORDER BY "revenue" DESC;
 SELECT * FROM "mv_channel_touch_distribution" LIMIT 20;
 SELECT * FROM "mv_spend_by_channel";
 SELECT * FROM "mv_funnel_by_category";
+SELECT * FROM "mv_share_of_model";   -- LLM answer-space visibility (needs --stream)
 ```
+
+`mv_share_of_model` populates only once the live probe feed is flowing
+(`--stream`); the designated buyer query drops out of the answers ~2 minutes in
+(`som_degrade_seconds`), which is the agent's `aishare` "you slipped out of the
+answer" beat.
 
 `mv_won_revenue_by_account` populates only after journeys reach `closed_won`. With
 `--stream` defaults that's a couple minutes in; with `--backfill` the Q1 closes
@@ -133,7 +144,8 @@ are immediate.
 
 Nothing to run. DeltaStream **auto-exposes** every materialized view your API
 token's role can `SELECT` as an MCP tool (named `<database>_<schema>_<mv>`, e.g.
-`attribution_public_mv_spend_by_channel`). Set `DELTASTREAM_API_TOKEN` to a
+`attribution_public_mv_spend_by_channel`, `attribution_public_mv_share_of_model`).
+Set `DELTASTREAM_API_TOKEN` to a
 DeltaStream API token that can read the MVs (or put it in `config/settings.yaml`)
 and the agent will discover them.
 
@@ -143,7 +155,7 @@ and the agent will discover them.
 python -m attribution_agent.agent.cli doctor
 ```
 
-This checks config, Confluent topics, the live MCP handshake (lists the four
+This checks config, Confluent topics, the live MCP handshake (lists the five
 exposed MVs as tools), and the LLM backend.
 
 ## Health-check cheat sheet

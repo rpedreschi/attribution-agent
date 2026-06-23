@@ -48,6 +48,7 @@ _TOUCH_SOURCE = {
     "Paid Social": "ga4",
     "Organic/Web": "ga4",
     "Brand": "ga4",
+    "AI Assistant": "ga4",          # assistant referral lands as a web session
     "Events": "hubspot_form",
     "Email Nurture": "hubspot_email",
     "Outbound SDR": "outreach",
@@ -175,8 +176,11 @@ class Generator:
         kind = _TOUCH_SOURCE[channel]
         web_id = f"web-{acct['account_id']}"
         if kind == "ga4":
-            utm = {"Paid Search": ("google", "cpc"), "Paid Social": ("linkedin", "paid-social"),
-                   "Organic/Web": ("google", "organic"), "Brand": ("direct", "brand")}[channel]
+            if channel == "AI Assistant":
+                utm = (self.rng.choice(["chatgpt", "perplexity", "gemini"]), "ai-referral")
+            else:
+                utm = {"Paid Search": ("google", "cpc"), "Paid Social": ("linkedin", "paid-social"),
+                       "Organic/Web": ("google", "organic"), "Brand": ("direct", "brand")}[channel]
             return [schemas.ga4_event(
                 web_id, f"sess-{acct['account_id']}-{when:%j%H}", "page_view",
                 "https://acme.cloud/solutions", self.rng.choice(_DEVICES),

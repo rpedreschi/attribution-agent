@@ -128,14 +128,57 @@ class AgentCLI:
         recs = self.data.recommendations
         if not recs:
             print("\nNo material change this period — no reallocation proposed.")
+        else:
+            print("\nAgent recommendations (pending human approval):")
+            for i, r in enumerate(recs):
+                status = self._status_of(i)
+                print(f"\n  [{i}] {r.action} {r.channel}  {_money(r.delta)}/wk "
+                      f"→ {_money(r.proposed_spend)}   est. impact {_money(r.expected_revenue_impact)}   [{status}]")
+                print(f"      {r.rationale}")
+            print("\n  approve <n> / reject <n> [reason]   to act")
+        self._print_unbuyable_note()
+
+    def _print_unbuyable_note(self) -> None:
+        """Flag channels the agent deliberately won't reallocate because they
+        out-earn the blend yet have no media lever — chiefly AI Assistant."""
+        excluded = set(self.settings.agent.guardrails.excluded_channels)
+        blended = self.data.blended_roi
+        flagged = [r for r in self.data.cac_roi
+                   if r.program_category in excluded and r.roi and r.roi >= blended]
+        if not flagged:
             return
-        print("\nAgent recommendations (pending human approval):")
-        for i, r in enumerate(recs):
-            status = self._status_of(i)
-            print(f"\n  [{i}] {r.action} {r.channel}  {_money(r.delta)}/wk "
-                  f"→ {_money(r.proposed_spend)}   est. impact {_money(r.expected_revenue_impact)}   [{status}]")
-            print(f"      {r.rationale}")
-        print("\n  approve <n> / reject <n> [reason]   to act")
+        print("\n  Not reallocable — out-earns the blend but has no spend lever:")
+        for r in sorted(flagged, key=lambda r: r.roi or 0, reverse=True):
+            print(f"    • {r.program_category}: {r.roi:.1f}x ROI (blended {blended:.2f}x), "
+                  f"excluded from autonomy.")
+        if any(r.program_category == "AI Assistant" for r in flagged):
+            print("      AI Assistant has no media buy — you can't spend into an LLM's "
+                  "recommendation. Watch share-of-model (aishare), don't fund it.")
+
+    def cmd_aishare(self, _: str) -> None:
+        som = self.data.share_of_model
+        print("\nShare of model — where you stand when an AI assistant answers a "
+              "buyer's question:")
+        if not som:
+            print("  (no share-of-model data — live mode needs the streaming probe "
+                  "feed; run the datagen with --stream)")
+            return
+        rows = [[s.buyer_query, f"{s.mention_rate:.0%}", f"{s.citation_rate:.0%}",
+                 str(s.best_rank) if s.best_rank < 99 else "—",
+                 f"{s.avg_rank:.1f}", s.status]
+                for s in sorted(som, key=lambda s: (s.status != "at risk",
+                                                    s.status != "slipping", s.avg_rank),
+                                reverse=False)]
+        print("\n" + _table(
+            ["Buyer query", "Mention", "Cited", "Best", "Avg rank", "Status"],
+            rows, aligns=["<", ">", ">", ">", ">", "<"]))
+        at_risk = [s for s in som if s.status == "at risk"]
+        if at_risk:
+            q = at_risk[0]
+            print(f"\n  ⚠ You've slipped out of the answer on \"{q.buyer_query}\" "
+                  f"(mention {q.mention_rate:.0%}, avg rank {q.avg_rank:.1f}). "
+                  "No ad dashboard would show this — it's the AI Assistant channel "
+                  "leaking, live.")
 
     # -- human-in-the-loop --------------------------------------------------
 
@@ -209,6 +252,11 @@ class AgentCLI:
                          "roi": round(r.roi, 2) if r.roi else None} for r in d.cac_roi],
             "funnel": [{"program": f.program_category, "touches": f.touches, "won": f.won}
                        for f in d.funnel],
+            "share_of_model": [{"buyer_query": s.buyer_query,
+                                "mention_rate": round(s.mention_rate, 2),
+                                "citation_rate": round(s.citation_rate, 2),
+                                "best_rank": s.best_rank, "avg_rank": round(s.avg_rank, 1),
+                                "status": s.status} for s in d.share_of_model],
             "recommendations": [{"channel": r.channel, "action": r.action, "delta": r.delta,
                                  "rationale": r.rationale} for r in d.recommendations],
         }, indent=2)
@@ -297,6 +345,7 @@ class AgentCLI:
         "channels": "cmd_channels", "attribution": "cmd_channels",
         "funnel": "cmd_funnel",
         "cac": "cmd_cac", "roi": "cmd_cac",
+        "aishare": "cmd_aishare", "som": "cmd_aishare", "model": "cmd_aishare",
         "recs": "cmd_recs", "recommendations": "cmd_recs",
         "approve": "cmd_approve", "reject": "cmd_reject",
         "ask": "cmd_ask", "tools": "cmd_tools", "query": "cmd_query",
@@ -336,6 +385,7 @@ def _help_text() -> str:
         "  channels           attribution by channel (3 models)\n"
         "  funnel             funnel metrics by program\n"
         "  cac | roi          CAC / ROI / payback by program\n"
+        "  aishare | som      share of model — LLM answer-space visibility\n"
         "  recs               agent reallocation recommendations\n"
         "  approve <n> [why]  approve a recommendation (logged)\n"
         "  reject <n> [why]   reject a recommendation (logged)\n"

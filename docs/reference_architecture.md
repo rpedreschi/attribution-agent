@@ -27,6 +27,7 @@ pack to Excel.
  │      mv_funnel_by_category                        │
  │      mv_channel_touch_distribution                │
  │      mv_won_revenue_by_account                    │
+ │      mv_share_of_model  (LLM answer-space)        │
  │  • MVs auto-exposed over MCP to the token's role  │
  └────────────────────────────────────────────────┘
         │   DeltaStream MCP endpoint (Bearer token)
@@ -62,7 +63,11 @@ impractical in streaming SQL. So the split is deliberate:
 
 - **DeltaStream** maintains the live aggregated *context*: spend per channel,
   the funnel counts, **per-account channel touch distribution** (touch count +
-  most-recent touch time per channel), and **won revenue per account**.
+  most-recent touch time per channel), **won revenue per account**, and
+  **share of model** — the brand's live standing in LLM answers (mention rate,
+  citation rate, rank) for the buyer queries that matter. The last one is the
+  leading indicator for the **AI Assistant** channel: LLM-influenced deals you
+  can earn but not buy, so the agent tracks visibility instead of funding it.
 - **The agent** does the final attribution arithmetic from that context
   (`reporting._attribution_from_context`):
 
@@ -98,6 +103,10 @@ bind the token to it; for the demo, any token that can read them works.
 - Agent recommends, human approves — no autonomous spend changes (the CLI
   `approve`/`reject` commands log every decision to `out/decisions.jsonl`).
 - Reallocation capped at ±20% of current channel spend per week.
-- Channels with <30 conversions in the trailing 90 days are excluded.
-- Brand and Events are excluded from agent autonomy entirely.
+- Channels with fewer than `min_conversions_trailing_90d` (default 3) trailing
+  won deals are excluded as too thin to act on.
+- Brand and Events are excluded from agent autonomy entirely. **AI Assistant** is
+  excluded too — not by policy but by economics: there is no media lever to
+  reallocate (you can't buy an LLM recommendation), so the agent flags it as top
+  ROI and refuses to fund it, and watches **share of model** instead.
 - Every recommendation is logged with rationale and source-data references.

@@ -192,7 +192,56 @@ Say this unprompted. It's the credibility move of the whole demo:
 
 ---
 
-## 6. The agent on a leash (2 min)
+## 6. The channel you can't buy — AI influence (2 min)
+
+This is the beat nobody else can show. Start with the channel table:
+
+```
+agent> cac
+```
+
+> "Look at the top of that list. **AI Assistant** — 17x ROI, the best in your
+> mix. These are deals where the buyer asked ChatGPT or Perplexity 'who's best
+> for this,' got pointed at you, and showed up already sold. We catch it three
+> ways: the assistant referral, a self-report on the form, and the journey. And
+> here's the kicker — last-touch *hides* it, because the assistant nudge is
+> invisible and the credit defaults to the direct visit that follows. Only the
+> multi-touch view surfaces it."
+
+Then the twist — what the agent does *not* do:
+
+```
+agent> recs
+```
+
+> "Notice the agent's footer: it flags AI Assistant as your highest-ROI channel
+> and then refuses to fund it. Why? **There's no media buy.** You can't spend
+> your way into an LLM's recommendation. A naive optimizer would dump budget
+> here and accomplish nothing. This one knows the difference between a channel
+> you can *buy* and a channel you can only *earn*."
+
+So what *do* you do about it? You watch your standing in the answer:
+
+```
+agent> aishare
+```
+
+> "This is **share of model** — when an assistant answers a buyer's question,
+> are you in the answer, are you cited, where do you rank. And watch this one:
+> on *'cloud cost anomaly detection'* you've **slipped out of the answer** — from
+> ranked-and-cited to absent. A model updated overnight and you fell off. No ad
+> dashboard on earth shows you that. The agent caught it live, and that's the
+> early warning for a channel that's quietly driving your best-fit deals."
+
+The honest caveat (say it — it's the credibility move): "Nobody attributes LLM
+influence to the dollar yet; it's zero-click and invisible. So we triangulate —
+the referral we can see, the self-report, and share of model as the leading
+indicator. Anyone claiming a clean deterministic 'ChatGPT sourced $X' is selling
+you the tip and hiding the iceberg."
+
+---
+
+## 7. The agent on a leash (2 min)
 
 ```
 agent> recs
@@ -220,7 +269,7 @@ agent> export
 
 ---
 
-## 7. Close (1 min) — make it about the budget
+## 8. Close (1 min) — make it about the budget
 
 > "Let me land where this actually matters to you. The attribution math isn't the
 > magic — your team could build these models in a warehouse. What a warehouse
@@ -312,7 +361,10 @@ python -m attribution_agent.agent.cli --source sample
 ```
 
 Runs the whole agent on the deterministic sample (canonical figures: $4.28M
-attributed, 36 deals, model agreement 0.76). You lose beats 3–4 (the live
-moment), so reframe: "this is the artifact; the live pipeline is what keeps it
-honest" — and lean on beats 2, 5, 6. Do not pretend sample is live; if asked,
-say it's the offline mode.
+attributed, 36 deals, model agreement 0.76). You lose beats 4 (the live revenue
+move) and the *live* slip in beat 6, so reframe: "this is the artifact; the live
+pipeline is what keeps it honest" — and lean on beats 2, 5, 6, 7. The AI-influence
+beat (6) still mostly lands offline: `cac` shows AI Assistant at 17x, `recs`
+shows the won't-fund footer, and `aishare` shows a query already slipped to "at
+risk" — you just can't show it dropping in real time. Do not pretend sample is
+live; if asked, say it's the offline mode.

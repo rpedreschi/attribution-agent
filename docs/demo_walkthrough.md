@@ -46,24 +46,32 @@ stream run a bit longer. Then you're set.
 
 **3. `cac`**
 > "Now bring in spend. Per-channel ROI. Paid Social is underwater — under a
-> dollar back per dollar in. Email and Organic are printing at 13x. *That's* the
-> insight you can't get from a batch report that's a day stale."
+> dollar back per dollar in. And look at the top: **AI Assistant, 17x** — deals
+> where an LLM pointed the buyer at us. Highest ROI in the mix, and a batch
+> report a day stale can't see it."
 
-**4. `recs`**  ← the money beat
+**4. `aishare`**  ← the differentiator nobody else has
+> "Here's the catch with that channel: you can't *buy* an LLM recommendation. So
+> the agent won't reallocate into it — it watches **share of model** instead. And
+> right now we've **slipped out of the answer** on 'cloud cost anomaly detection'
+> — ranked and cited yesterday, gone today. A model updated and we fell off. No
+> ad dashboard shows you that. We caught it live."
+
+**5. `recs`**  ← the money beat
 > "So the agent proposes a reallocation: trim Paid Social and Paid Search, move
 > that budget to Email, Organic, SDR. Every move is **capped at 20% a week**,
-> each line has its rationale and the numbers it came from — and nothing moves
-> until I approve it. It drafts; I decide."
+> each line has its rationale — and note the footer: it flags AI Assistant as
+> top ROI but refuses to fund it (no media lever). It drafts; I decide."
 
-**5. `reject 0 not this quarter` then `approve 2`**
+**6. `reject 0 not this quarter` then `approve 2`**
 > "Human in the loop. I reject the Paid Social cut, approve the Email increase —
 > both logged for the audit trail. No autonomous spend changes."
 
-**6. `ask how would revenue change if I took the increases but skipped the cuts?`**
+**7. `ask how would revenue change if I took the increases but skipped the cuts?`**
 > "And I can just ask it, in plain English — grounded in the live numbers, not
 > made up."
 
-**7. `export`**
+**8. `export`**
 > "And it ends as the spreadsheet I already forward to the CFO. No new dashboard
 > to live in."
 
@@ -84,6 +92,8 @@ stream run a bit longer. Then you're set.
 | symptom | quick recovery |
 |---|---|
 | `recs` empty | data too thin — `refresh`, or it needs more stream time. Pivot to `cac` (the ROI spread still lands) |
+| `aishare` empty | needs the live probe feed — make sure datagen is running with `--stream` (not just `--backfill`), then `refresh` |
+| `aishare` not slipped yet | the drop fires ~2 min into the stream; `refresh` after a moment, or just narrate the "strong/slipping" rows |
 | spend `$0` / no ROI | spend batch was missed — run `python -m attribution_agent.mock_generator` once, then `refresh` |
 | can't reach DeltaStream | fall back: `python -m attribution_agent.agent.cli --source sample` (offline canonical figures; say it's the offline mode) |
 
