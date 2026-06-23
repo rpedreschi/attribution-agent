@@ -23,8 +23,10 @@ import time
 MARKERS = (
     '"touchpoints"', '"conversions"', '"spend"', '"funnel_events"',
     '"web_resolved"', '"web_identity_map"', '"channel_cost"',
+    '"share_of_model"',
     '"mv_spend_by_channel"', '"mv_funnel_by_category"',
     '"mv_channel_touch_distribution"', '"mv_won_revenue_by_account"',
+    '"mv_share_of_model"',
 )
 
 
