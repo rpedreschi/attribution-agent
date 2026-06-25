@@ -93,11 +93,17 @@ agent> summary
 agent> channels
 ```
 
-> "This is not a dashboard. It's an agent sitting on live marketing data —
+> "This is not a dashboard — and that's deliberate. You've spent years buying
+> dashboards nobody opens; the data team builds them and someone still has to pull
+> the answer off them for you. This is an agent sitting on live marketing data —
 > Salesforce, HubSpot, GA4, ad platforms — streaming through DeltaStream right
 > now. Same revenue, three attribution models side by side: last-touch, linear,
 > time-decay. They disagree — they always do — and that disagreement is the whole
 > game: pick the wrong model and you cut the wrong channel."
+
+(If a data/analytics veteran is in the room, this lands hard — the universal
+truth is dashboard adoption is near zero and the CMO always needed a human to
+extract the answer. The agent *is* that human, on call.)
 
 Then the conversational beat:
 

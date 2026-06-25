@@ -31,8 +31,11 @@ to *"can I give you more money?"* That is the outcome we sell.
    runs hot, a tracking tag dies — and reporting doesn't notice until the next
    batch run.
 2. **"The tools tell you what happened, not what to do next."** Dashboards are
-   analysis; the executive answer to analysis is *"so what?"* Nobody needs more
-   charts — they need the next action.
+   analysis; the executive answer to analysis is *"so what?"* And nobody actually
+   *uses* the dashboard — operators say adoption is near zero, the CMO always
+   needed someone to "pull the data off it," and that someone is the bottleneck.
+   The agent removes that layer: it gives the next action in one line, no
+   dashboard to live in.
 3. **"It comes back to trust."** The board wants **defensible, credible numbers,
    in one-line answers** — tied directly to revenue. Most marketing reporting
    can't survive a CFO drilling into it, so it doesn't get believed, so the
@@ -60,6 +63,27 @@ A live agentic pipeline on the CMO's own marketing data:
 
 The wedge is the middle word. A warehouse can do *see*. What it can't do is serve
 a live, trustworthy answer to an **agent** that's about to *act* on it.
+
+---
+
+## The data scientist you can't hire
+
+The veterans who actually do this — stand up the data lake, normalize the sources,
+resolve identity, wire the joins — say the same thing: **"the modeling is easy;
+assembling the data is the hard part."** Building the agent on top is trivial once
+the data is in shape. The entire job is the plumbing underneath.
+
+That plumbing is exactly what DeltaStream automates — streaming ingestion,
+identity resolution, continuously-maintained views — so the agent on top becomes
+**the data scientist a mid-market company can't hire.** Enterprises keep a team of
+them; everyone else can't, because the hyperscalers scoop that talent up and never
+let go. We package the judgment as software: the company gets the "what do I do
+next" answer without the six-month data-lake project and the data-science hire
+they'll never win.
+
+> "Building the agents is actually pretty easy. The modeling's pretty easy
+> compared to putting the data together — that's the hard thing." — data-science
+> advisor (ex-Pure, Hitachi, EMC, Cisco)
 
 ---
 
@@ -136,6 +160,18 @@ the signal live, move the budget today, not next quarter. That's the story —
 > That's the story and concept you guys could bring to your customers." — advisor
 
 ---
+
+## Where we fish — mid-market
+
+The sweet spot is **mid-market**: big enough to have real data and real spend,
+forced to compete with hyperscalers who are "all over machine learning," but
+*not* big enough to hire and keep a data-science team — that talent goes to
+Amazon and Google and never comes back. Enterprises (Oracle, AWS, the Hitachis)
+already have analytics departments; the unicorns and mid-market companies are the
+ones doing multi-touch attribution by hand in a spreadsheet, hoping the campaigns
+were labeled right. They feel the pain most and have no in-house cure — so they
+buy. Land with one quick-hit use case (attribution / budget reallocation), then
+expand the footprint from there.
 
 ## Who's in the room
 
