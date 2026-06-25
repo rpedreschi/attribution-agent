@@ -263,19 +263,28 @@ _Z = _Attr()  # zero sentinel for channels with no attribution
 
 def _share_of_model_from_rows(rows: list[dict]) -> list[ShareOfModelRow]:
     """Map mv_share_of_model rows to ShareOfModelRow, ordered worst-standing
-    first so the slipping/at-risk queries surface at the top of the watch."""
-    out: list[ShareOfModelRow] = []
+    first so the slipping/at-risk queries surface at the top of the watch.
+
+    DeltaStream can serve an aggregating MV as several *partial* rows per group
+    key (un-merged parts), so fold them by buyer_query: sum the counts, keep the
+    best rank, and probe-weight the average rank — otherwise the same query shows
+    up two or three times with different partial averages."""
+    agg: dict[str, dict] = {}
     for r in rows:
+        q = str(r.get("buyer_query") or "")
         probes = int(r.get("probes") or 0)
-        mentions = int(r.get("mentions") or 0)
-        avg_rank = float(r.get("avg_rank") or 0.0)
-        out.append(ShareOfModelRow(
-            buyer_query=str(r.get("buyer_query") or ""),
-            probes=probes, mentions=mentions,
-            citations=int(r.get("citations") or 0),
-            best_rank=int(r.get("best_rank") or 99),
-            avg_rank=avg_rank,
-        ))
+        a = agg.setdefault(q, {"probes": 0, "mentions": 0, "citations": 0,
+                               "best_rank": 99, "rank_weight": 0.0})
+        a["probes"] += probes
+        a["mentions"] += int(r.get("mentions") or 0)
+        a["citations"] += int(r.get("citations") or 0)
+        a["best_rank"] = min(a["best_rank"], int(r.get("best_rank") or 99))
+        a["rank_weight"] += float(r.get("avg_rank") or 0.0) * probes
+    out = [ShareOfModelRow(
+        buyer_query=q, probes=a["probes"], mentions=a["mentions"],
+        citations=a["citations"], best_rank=a["best_rank"],
+        avg_rank=(a["rank_weight"] / a["probes"]) if a["probes"] else 0.0,
+    ) for q, a in agg.items()]
     out.sort(key=lambda s: (s.mention_rate, -s.avg_rank))
     return out
 
