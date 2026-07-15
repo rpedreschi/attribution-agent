@@ -15,37 +15,37 @@
     "revenue": [
       {
         "t": "2026-01-01T09:00:00+00:00",
-        "revenue": 35667,
-        "deals": 1
+        "revenue": 242837,
+        "deals": 2
       },
       {
         "t": "2026-01-01T09:01:00+00:00",
-        "revenue": 71333,
-        "deals": 1
+        "revenue": 248908,
+        "deals": 2
       },
       {
         "t": "2026-01-01T09:02:00+00:00",
-        "revenue": 107000,
-        "deals": 1
+        "revenue": 254979,
+        "deals": 2
       },
       {
         "t": "2026-01-01T09:03:00+00:00",
-        "revenue": 142667,
-        "deals": 1
+        "revenue": 261050,
+        "deals": 2
       },
       {
         "t": "2026-01-01T09:04:00+00:00",
-        "revenue": 178333,
+        "revenue": 267121,
         "deals": 2
       },
       {
         "t": "2026-01-01T09:05:00+00:00",
-        "revenue": 214000,
+        "revenue": 273191,
         "deals": 2
       },
       {
         "t": "2026-01-01T09:06:00+00:00",
-        "revenue": 249667,
+        "revenue": 279262,
         "deals": 2
       },
       {
@@ -55,38 +55,38 @@
       },
       {
         "t": "2026-01-01T09:08:00+00:00",
-        "revenue": 321000,
-        "deals": 3
+        "revenue": 291404,
+        "deals": 2
       },
       {
         "t": "2026-01-01T09:09:00+00:00",
-        "revenue": 356667,
+        "revenue": 297475,
         "deals": 3
       },
       {
         "t": "2026-01-01T09:10:00+00:00",
-        "revenue": 392333,
+        "revenue": 303546,
         "deals": 3
       },
       {
         "t": "2026-01-01T09:11:00+00:00",
-        "revenue": 428000,
-        "deals": 4
+        "revenue": 309617,
+        "deals": 3
       },
       {
         "t": "2026-01-01T09:12:00+00:00",
-        "revenue": 463667,
-        "deals": 4
+        "revenue": 315688,
+        "deals": 3
       },
       {
         "t": "2026-01-01T09:13:00+00:00",
-        "revenue": 499333,
-        "deals": 4
+        "revenue": 321759,
+        "deals": 3
       },
       {
         "t": "2026-01-01T09:14:00+00:00",
-        "revenue": 535000,
-        "deals": 4
+        "revenue": 327830,
+        "deals": 3
       }
     ],
     "touches_by_channel": {
@@ -1442,7 +1442,7 @@
       {
         "kind": "new",
         "title": "Revenue pace shifted",
-        "body": "Closed-won over the latest buckets is +600% vs the start of the window \u2014 recomputed live, no nightly job.",
+        "body": "Closed-won over the latest buckets is +29% vs the start of the window \u2014 recomputed live, no nightly job.",
         "real": true
       },
       {

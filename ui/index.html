@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DeltaStream Pulse — Attribution</title>
+<style>
+  :root{
+    --nav:#0a1024; --nav-2:#111a33; --nav-text:#9aa3ba; --nav-label:#5b6580;
+    --blue:#2f6bff; --blue-ink:#1f49c9;
+    --ink:#161d2b; --ink-2:#5a6478; --line:#e9ebf1; --bg:#ffffff; --card:#ffffff;
+    --soft:#f4f6fb; --green:#15a34a; --amber:#b9791a; --amber-bg:#fdf1dd;
+    --green-bg:#e7f6ec; --gray-bg:#eef0f5; --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+  .app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+  /* sidebar */
+  .side{background:var(--nav);color:var(--nav-text);padding:22px 16px;display:flex;flex-direction:column}
+  .brand{color:#fff;font-weight:700;font-size:15px;letter-spacing:.2px;padding:0 8px 22px}
+  .brand small{display:block;color:var(--nav-label);font-weight:500;font-size:11px;margin-top:2px}
+  .navlabel{color:var(--nav-label);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:16px 8px 8px}
+  .navitem{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;color:var(--nav-text);
+    font-size:13.5px;cursor:pointer;user-select:none}
+  .navitem .dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.6}
+  .navitem:hover{background:var(--nav-2);color:#cfd6e6}
+  .navitem.active{background:var(--blue);color:#fff}
+  .navitem.active .dot{opacity:1}
+  .side .foot{margin-top:auto;color:var(--nav-label);font-size:11.5px;line-height:1.5;padding:12px 8px 0}
+  /* main */
+  .main{min-width:0;display:flex;flex-direction:column}
+  .top{display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid var(--line)}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--line);
+    border-radius:999px;padding:7px 13px;font-size:12.5px;color:var(--ink-2)}
+  .chip .live{width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px rgba(47,107,255,.18)}
+  .spark{display:flex;align-items:flex-end;gap:2px;height:20px}
+  .spark i{width:3px;background:#c3ccdd;border-radius:1px}
+  .top .right{margin-left:auto;display:flex;align-items:center;gap:12px;color:var(--ink-2);font-size:12.5px}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 13px;font-size:13px;
+    cursor:pointer;color:var(--ink)}
+  .btn.pri{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+  .btn.sm{padding:6px 11px;font-size:12.5px}
+  .content{padding:26px 30px;max-width:1180px}
+  .eyebrow{color:var(--blue);font-weight:700;font-size:12px;letter-spacing:.13em;text-transform:uppercase}
+  h1{font-size:30px;margin:6px 0 6px;letter-spacing:-.02em}
+  .sub{color:var(--ink-2);font-size:14.5px;margin:0 0 22px}
+  .section{margin-top:30px}
+  .section h2{font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
+  .section .note{color:var(--ink-2);font-size:13.5px;margin:0 0 14px}
+  /* kpis */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .kpi{border:1px solid var(--line);border-radius:14px;padding:18px}
+  .kpi .lab{color:var(--ink-2);font-size:13px}
+  .kpi .val{font-size:31px;font-weight:700;letter-spacing:-.02em;margin:8px 0 6px}
+  .kpi .delta{font-family:var(--mono);font-size:12.5px}
+  .kpi .delta.up{color:var(--green)} .kpi .delta.down{color:var(--amber)}
+  .kpi .st{font-family:var(--mono);color:var(--ink-2);font-size:12px;margin-top:8px}
+  /* change cards */
+  .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .ccard{border:1px solid var(--line);border-radius:14px;padding:18px}
+  .badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.1em;padding:4px 8px;border-radius:6px}
+  .b-drift{background:#eaf0ff;color:var(--blue-ink)} .b-new{background:#eaf0ff;color:var(--blue-ink)}
+  .b-low{background:var(--gray-bg);color:#555f73}
+  .ccard p{margin:12px 0 0;font-size:13.5px;line-height:1.5;color:#333c4d}
+  .ill{font-size:10.5px;color:var(--amber);border:1px solid var(--amber-bg);background:var(--amber-bg);
+    border-radius:5px;padding:1px 6px;margin-left:6px}
+  /* money bars */
+  .bars{border:1px solid var(--line);border-radius:14px;padding:8px 18px}
+  .bar{display:grid;grid-template-columns:150px 1fr 70px;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--soft)}
+  .bar:last-child{border-bottom:0}
+  .bar .nm{font-weight:600;font-size:13.5px}
+  .track{height:9px;background:#eef1f7;border-radius:6px;overflow:hidden}
+  .track>i{display:block;height:100%;background:linear-gradient(90deg,#5b8bff,#2f6bff);border-radius:6px}
+  .bar .amt{text-align:right;font-variant-numeric:tabular-nums;font-size:13.5px;color:#2a3243}
+  /* model compare */
+  table{width:100%;border-collapse:collapse}
+  .mtable{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .mhead{background:var(--soft);color:var(--ink-2);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    padding:12px 18px;display:grid;grid-template-columns:210px 1fr;gap:14px}
+  .mrow{display:grid;grid-template-columns:210px 1fr;gap:14px;padding:16px 18px;border-top:1px solid var(--line)}
+  .mrow .ch{font-weight:700;font-size:14px;display:flex;flex-direction:column;gap:8px}
+  .tag{align-self:flex-start;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px}
+  .t-spread{background:var(--amber-bg);color:var(--amber)} .t-agree{background:var(--green-bg);color:var(--green)}
+  .t-thin{background:var(--gray-bg);color:#5b6274}
+  .mmodels{display:flex;flex-direction:column;gap:9px}
+  .mm{display:grid;grid-template-columns:120px 1fr 46px;align-items:center;gap:12px;color:var(--ink-2);font-size:12.5px}
+  .mm .mt{height:8px;background:#eef1f7;border-radius:5px;overflow:hidden}
+  .mm .mt>i{display:block;height:100%;background:#9db4f2;border-radius:5px}
+  .mm b{color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+  .tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:6px 0 20px}
+  .tab{padding:10px 2px;font-size:14px;color:var(--ink-2);cursor:pointer;border-bottom:2px solid transparent}
+  .tab.active{color:var(--blue);border-color:var(--blue);font-weight:600}
+  /* agent */
+  .rec{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:12px;padding:18px 20px;
+    margin-bottom:16px;display:grid;grid-template-columns:1fr 170px;gap:16px}
+  .rec.hold{border-left-color:var(--amber)}
+  .rec h3{margin:0 0 6px;font-size:16px}
+  .rec p{margin:0;color:#333c4d;font-size:13.5px;line-height:1.5}
+  .basis{font-family:var(--mono);font-size:12px;background:var(--soft);border-radius:8px;padding:10px 12px;
+    margin-top:12px;color:#39435a;line-height:1.5}
+  .rec .side2{display:flex;flex-direction:column;align-items:flex-end;gap:9px}
+  .conf{font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+  .rec .btn{width:150px;text-align:center}
+  .auto{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .auto h3{margin:0 0 6px;color:var(--blue-ink);font-size:16px}
+  .auto p{margin:0 0 14px;color:#333c4d;font-size:13.5px;line-height:1.5}
+  /* ledger */
+  .ltable{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .ltable th{ text-align:left;background:#fff;color:var(--ink-2);font-size:11px;letter-spacing:.09em;
+    text-transform:uppercase;font-weight:600;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .ltable td{padding:15px 18px;border-top:1px solid var(--soft);font-size:13.5px;vertical-align:top}
+  .ltable td.when{font-family:var(--mono);color:var(--ink-2);font-size:12.5px;white-space:nowrap}
+  .ltable td.ev{font-weight:600}
+  .actor{font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:6px;background:#eaf0ff;color:var(--blue-ink)}
+  .actor.SYSTEM{background:var(--gray-bg);color:#556}
+  .actor.HUMAN{background:var(--green-bg);color:var(--green)}
+  .hide{display:none}
+  @media(max-width:900px){.app{grid-template-columns:1fr}.side{display:none}.kpis,.cards3{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">DeltaStream Pulse<small id="brandSub">Acme Corp</small></div>
+    <div class="navlabel">Attribution</div>
+    <div class="navitem active" data-screen="live"><span class="dot"></span>Live board</div>
+    <div class="navitem" data-screen="model"><span class="dot"></span>Model compare</div>
+    <div class="navitem" data-screen="agent"><span class="dot"></span>Reallocation agent</div>
+    <div class="navitem" data-screen="ledger"><span class="dot"></span>Decision ledger</div>
+    <div class="navlabel">Sources</div>
+    <div class="navitem" data-screen="live"><span class="dot"></span>Connections</div>
+    <div class="navitem" data-screen="live"><span class="dot"></span>Identity resolution</div>
+    <div class="foot" id="foot"></div>
+  </aside>
+  <main class="main">
+    <div class="top">
+      <span class="chip"><span class="live"></span><span id="recomputed">recomputed…</span></span>
+      <span class="spark" id="spark"></span>
+      <div class="right">
+        <span id="eps"></span>
+        <button class="btn sm">Last 30 days ▾</button>
+        <button class="btn pri sm">Export board pack</button>
+      </div>
+    </div>
+    <div class="content" id="view"></div>
+  </main>
+</div>
+<script>
+const FALLBACK = {"meta": {"customer": "Acme Cloud", "period_label": "2026-Q1 to date", "recomputed_at": "2026-07-15T10:42:07+00:00", "events_per_sec": 2000, "events_per_sec_illustrative": true, "window": "period_to_date", "trend_buckets": 15, "sources_streaming": 8, "environment": "production"}, "trends": {"bucket": "minute", "revenue": [{"t": "2026-01-01T09:00:00+00:00", "revenue": 242837, "deals": 2}, {"t": "2026-01-01T09:01:00+00:00", "revenue": 248908, "deals": 2}, {"t": "2026-01-01T09:02:00+00:00", "revenue": 254979, "deals": 2}, {"t": "2026-01-01T09:03:00+00:00", "revenue": 261050, "deals": 2}, {"t": "2026-01-01T09:04:00+00:00", "revenue": 267121, "deals": 2}, {"t": "2026-01-01T09:05:00+00:00", "revenue": 273191, "deals": 2}, {"t": "2026-01-01T09:06:00+00:00", "revenue": 279262, "deals": 2}, {"t": "2026-01-01T09:07:00+00:00", "revenue": 285333, "deals": 2}, {"t": "2026-01-01T09:08:00+00:00", "revenue": 291404, "deals": 2}, {"t": "2026-01-01T09:09:00+00:00", "revenue": 297475, "deals": 3}, {"t": "2026-01-01T09:10:00+00:00", "revenue": 303546, "deals": 3}, {"t": "2026-01-01T09:11:00+00:00", "revenue": 309617, "deals": 3}, {"t": "2026-01-01T09:12:00+00:00", "revenue": 315688, "deals": 3}, {"t": "2026-01-01T09:13:00+00:00", "revenue": 321759, "deals": 3}, {"t": "2026-01-01T09:14:00+00:00", "revenue": 327830, "deals": 3}], "touches_by_channel": {"Paid Search": [{"t": "2026-01-01T09:00:00+00:00", "touches": 8}, {"t": "2026-01-01T09:01:00+00:00", "touches": 8}, {"t": "2026-01-01T09:02:00+00:00", "touches": 8}, {"t": "2026-01-01T09:03:00+00:00", "touches": 8}, {"t": "2026-01-01T09:04:00+00:00", "touches": 8}, {"t": "2026-01-01T09:05:00+00:00", "touches": 8}, {"t": "2026-01-01T09:06:00+00:00", "touches": 8}, {"t": "2026-01-01T09:07:00+00:00", "touches": 8}, {"t": "2026-01-01T09:08:00+00:00", "touches": 8}, {"t": "2026-01-01T09:09:00+00:00", "touches": 8}, {"t": "2026-01-01T09:10:00+00:00", "touches": 8}, {"t": "2026-01-01T09:11:00+00:00", "touches": 8}, {"t": "2026-01-01T09:12:00+00:00", "touches": 8}, {"t": "2026-01-01T09:13:00+00:00", "touches": 8}, {"t": "2026-01-01T09:14:00+00:00", "touches": 8}], "Paid Social": [{"t": "2026-01-01T09:00:00+00:00", "touches": 6}, {"t": "2026-01-01T09:01:00+00:00", "touches": 6}, {"t": "2026-01-01T09:02:00+00:00", "touches": 6}, {"t": "2026-01-01T09:03:00+00:00", "touches": 6}, {"t": "2026-01-01T09:04:00+00:00", "touches": 6}, {"t": "2026-01-01T09:05:00+00:00", "touches": 6}, {"t": "2026-01-01T09:06:00+00:00", "touches": 6}, {"t": "2026-01-01T09:07:00+00:00", "touches": 6}, {"t": "2026-01-01T09:08:00+00:00", "touches": 6}, {"t": "2026-01-01T09:09:00+00:00", "touches": 6}, {"t": "2026-01-01T09:10:00+00:00", "touches": 6}, {"t": "2026-01-01T09:11:00+00:00", "touches": 6}, {"t": "2026-01-01T09:12:00+00:00", "touches": 6}, {"t": "2026-01-01T09:13:00+00:00", "touches": 6}, {"t": "2026-01-01T09:14:00+00:00", "touches": 6}], "Outbound SDR": [{"t": "2026-01-01T09:00:00+00:00", "touches": 7}, {"t": "2026-01-01T09:01:00+00:00", "touches": 7}, {"t": "2026-01-01T09:02:00+00:00", "touches": 7}, {"t": "2026-01-01T09:03:00+00:00", "touches": 7}, {"t": "2026-01-01T09:04:00+00:00", "touches": 7}, {"t": "2026-01-01T09:05:00+00:00", "touches": 7}, {"t": "2026-01-01T09:06:00+00:00", "touches": 7}, {"t": "2026-01-01T09:07:00+00:00", "touches": 7}, {"t": "2026-01-01T09:08:00+00:00", "touches": 7}, {"t": "2026-01-01T09:09:00+00:00", "touches": 7}, {"t": "2026-01-01T09:10:00+00:00", "touches": 7}, {"t": "2026-01-01T09:11:00+00:00", "touches": 7}, {"t": "2026-01-01T09:12:00+00:00", "touches": 7}, {"t": "2026-01-01T09:13:00+00:00", "touches": 7}, {"t": "2026-01-01T09:14:00+00:00", "touches": 7}], "Email Nurture": [{"t": "2026-01-01T09:00:00+00:00", "touches": 6}, {"t": "2026-01-01T09:01:00+00:00", "touches": 6}, {"t": "2026-01-01T09:02:00+00:00", "touches": 6}, {"t": "2026-01-01T09:03:00+00:00", "touches": 6}, {"t": "2026-01-01T09:04:00+00:00", "touches": 6}, {"t": "2026-01-01T09:05:00+00:00", "touches": 6}, {"t": "2026-01-01T09:06:00+00:00", "touches": 6}, {"t": "2026-01-01T09:07:00+00:00", "touches": 6}, {"t": "2026-01-01T09:08:00+00:00", "touches": 6}, {"t": "2026-01-01T09:09:00+00:00", "touches": 6}, {"t": "2026-01-01T09:10:00+00:00", "touches": 6}, {"t": "2026-01-01T09:11:00+00:00", "touches": 6}, {"t": "2026-01-01T09:12:00+00:00", "touches": 6}, {"t": "2026-01-01T09:13:00+00:00", "touches": 6}, {"t": "2026-01-01T09:14:00+00:00", "touches": 6}], "Events": [{"t": "2026-01-01T09:00:00+00:00", "touches": 5}, {"t": "2026-01-01T09:01:00+00:00", "touches": 5}, {"t": "2026-01-01T09:02:00+00:00", "touches": 5}, {"t": "2026-01-01T09:03:00+00:00", "touches": 5}, {"t": "2026-01-01T09:04:00+00:00", "touches": 5}, {"t": "2026-01-01T09:05:00+00:00", "touches": 5}, {"t": "2026-01-01T09:06:00+00:00", "touches": 5}, {"t": "2026-01-01T09:07:00+00:00", "touches": 5}, {"t": "2026-01-01T09:08:00+00:00", "touches": 5}, {"t": "2026-01-01T09:09:00+00:00", "touches": 5}, {"t": "2026-01-01T09:10:00+00:00", "touches": 5}, {"t": "2026-01-01T09:11:00+00:00", "touches": 5}, {"t": "2026-01-01T09:12:00+00:00", "touches": 5}, {"t": "2026-01-01T09:13:00+00:00", "touches": 5}, {"t": "2026-01-01T09:14:00+00:00", "touches": 5}], "Organic/Web": [{"t": "2026-01-01T09:00:00+00:00", "touches": 3}, {"t": "2026-01-01T09:01:00+00:00", "touches": 3}, {"t": "2026-01-01T09:02:00+00:00", "touches": 3}, {"t": "2026-01-01T09:03:00+00:00", "touches": 3}, {"t": "2026-01-01T09:04:00+00:00", "touches": 3}, {"t": "2026-01-01T09:05:00+00:00", "touches": 3}, {"t": "2026-01-01T09:06:00+00:00", "touches": 3}, {"t": "2026-01-01T09:07:00+00:00", "touches": 3}, {"t": "2026-01-01T09:08:00+00:00", "touches": 3}, {"t": "2026-01-01T09:09:00+00:00", "touches": 3}, {"t": "2026-01-01T09:10:00+00:00", "touches": 3}, {"t": "2026-01-01T09:11:00+00:00", "touches": 3}, {"t": "2026-01-01T09:12:00+00:00", "touches": 3}, {"t": "2026-01-01T09:13:00+00:00", "touches": 3}, {"t": "2026-01-01T09:14:00+00:00", "touches": 3}], "Brand": [{"t": "2026-01-01T09:00:00+00:00", "touches": 2}, {"t": "2026-01-01T09:01:00+00:00", "touches": 2}, {"t": "2026-01-01T09:02:00+00:00", "touches": 2}, {"t": "2026-01-01T09:03:00+00:00", "touches": 2}, {"t": "2026-01-01T09:04:00+00:00", "touches": 2}, {"t": "2026-01-01T09:05:00+00:00", "touches": 2}, {"t": "2026-01-01T09:06:00+00:00", "touches": 2}, {"t": "2026-01-01T09:07:00+00:00", "touches": 2}, {"t": "2026-01-01T09:08:00+00:00", "touches": 2}, {"t": "2026-01-01T09:09:00+00:00", "touches": 2}, {"t": "2026-01-01T09:10:00+00:00", "touches": 2}, {"t": "2026-01-01T09:11:00+00:00", "touches": 2}, {"t": "2026-01-01T09:12:00+00:00", "touches": 2}, {"t": "2026-01-01T09:13:00+00:00", "touches": 2}, {"t": "2026-01-01T09:14:00+00:00", "touches": 2}], "AI Assistant": [{"t": "2026-01-01T09:00:00+00:00", "touches": 3}, {"t": "2026-01-01T09:01:00+00:00", "touches": 3}, {"t": "2026-01-01T09:02:00+00:00", "touches": 3}, {"t": "2026-01-01T09:03:00+00:00", "touches": 3}, {"t": "2026-01-01T09:04:00+00:00", "touches": 3}, {"t": "2026-01-01T09:05:00+00:00", "touches": 3}, {"t": "2026-01-01T09:06:00+00:00", "touches": 3}, {"t": "2026-01-01T09:07:00+00:00", "touches": 3}, {"t": "2026-01-01T09:08:00+00:00", "touches": 3}, {"t": "2026-01-01T09:09:00+00:00", "touches": 3}, {"t": "2026-01-01T09:10:00+00:00", "touches": 3}, {"t": "2026-01-01T09:11:00+00:00", "touches": 3}, {"t": "2026-01-01T09:12:00+00:00", "touches": 3}, {"t": "2026-01-01T09:13:00+00:00", "touches": 3}, {"t": "2026-01-01T09:14:00+00:00", "touches": 3}]}, "spend_by_channel": {"Paid Search": [{"t": "2026-01-01T09:00:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:01:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:02:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:03:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:04:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:05:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:06:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:07:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:08:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:09:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:10:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:11:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:12:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:13:00+00:00", "spend": 27333}, {"t": "2026-01-01T09:14:00+00:00", "spend": 27333}], "Paid Social": [{"t": "2026-01-01T09:00:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:01:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:02:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:03:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:04:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:05:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:06:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:07:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:08:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:09:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:10:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:11:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:12:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:13:00+00:00", "spend": 36667}, {"t": "2026-01-01T09:14:00+00:00", "spend": 36667}], "Outbound SDR": [{"t": "2026-01-01T09:00:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:01:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:02:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:03:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:04:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:05:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:06:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:07:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:08:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:09:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:10:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:11:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:12:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:13:00+00:00", "spend": 20000}, {"t": "2026-01-01T09:14:00+00:00", "spend": 20000}], "Email Nurture": [{"t": "2026-01-01T09:00:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:01:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:02:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:03:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:04:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:05:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:06:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:07:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:08:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:09:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:10:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:11:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:12:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:13:00+00:00", "spend": 3333}, {"t": "2026-01-01T09:14:00+00:00", "spend": 3333}], "Events": [{"t": "2026-01-01T09:00:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:01:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:02:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:03:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:04:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:05:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:06:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:07:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:08:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:09:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:10:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:11:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:12:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:13:00+00:00", "spend": 24000}, {"t": "2026-01-01T09:14:00+00:00", "spend": 24000}], "Organic/Web": [{"t": "2026-01-01T09:00:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:01:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:02:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:03:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:04:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:05:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:06:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:07:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:08:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:09:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:10:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:11:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:12:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:13:00+00:00", "spend": 2000}, {"t": "2026-01-01T09:14:00+00:00", "spend": 2000}], "Brand": [{"t": "2026-01-01T09:00:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:01:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:02:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:03:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:04:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:05:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:06:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:07:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:08:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:09:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:10:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:11:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:12:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:13:00+00:00", "spend": 12000}, {"t": "2026-01-01T09:14:00+00:00", "spend": 12000}], "AI Assistant": [{"t": "2026-01-01T09:00:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:01:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:02:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:03:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:04:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:05:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:06:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:07:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:08:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:09:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:10:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:11:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:12:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:13:00+00:00", "spend": 1333}, {"t": "2026-01-01T09:14:00+00:00", "spend": 1333}]}, "share_of_model": {"best cloud cost optimization platform": [{"t": "2026-01-01T09:00:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:01:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:02:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:03:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:04:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:05:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:06:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:07:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:08:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:09:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:10:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:11:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:12:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:13:00+00:00", "mention_rate": 0.95}, {"t": "2026-01-01T09:14:00+00:00", "mention_rate": 0.95}], "FinOps tools for enterprise": [{"t": "2026-01-01T09:00:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:01:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:02:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:03:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:04:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:05:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:06:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:07:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:08:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:09:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:10:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:11:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:12:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:13:00+00:00", "mention_rate": 0.833}, {"t": "2026-01-01T09:14:00+00:00", "mention_rate": 0.833}], "how to reduce our AWS bill": [{"t": "2026-01-01T09:00:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:01:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:02:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:03:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:04:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:05:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:06:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:07:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:08:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:09:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:10:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:11:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:12:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:13:00+00:00", "mention_rate": 0.633}, {"t": "2026-01-01T09:14:00+00:00", "mention_rate": 0.633}], "Acme Cloud alternatives": [{"t": "2026-01-01T09:00:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:01:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:02:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:03:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:04:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:05:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:06:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:07:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:08:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:09:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:10:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:11:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:12:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:13:00+00:00", "mention_rate": 0.55}, {"t": "2026-01-01T09:14:00+00:00", "mention_rate": 0.55}], "cloud cost anomaly detection": [{"t": "2026-01-01T09:00:00+00:00", "mention_rate": 1.0}, {"t": "2026-01-01T09:01:00+00:00", "mention_rate": 0.944}, {"t": "2026-01-01T09:02:00+00:00", "mention_rate": 0.888}, {"t": "2026-01-01T09:03:00+00:00", "mention_rate": 0.832}, {"t": "2026-01-01T09:04:00+00:00", "mention_rate": 0.776}, {"t": "2026-01-01T09:05:00+00:00", "mention_rate": 0.72}, {"t": "2026-01-01T09:06:00+00:00", "mention_rate": 0.664}, {"t": "2026-01-01T09:07:00+00:00", "mention_rate": 0.608}, {"t": "2026-01-01T09:08:00+00:00", "mention_rate": 0.552}, {"t": "2026-01-01T09:09:00+00:00", "mention_rate": 0.496}, {"t": "2026-01-01T09:10:00+00:00", "mention_rate": 0.44}, {"t": "2026-01-01T09:11:00+00:00", "mention_rate": 0.385}, {"t": "2026-01-01T09:12:00+00:00", "mention_rate": 0.329}, {"t": "2026-01-01T09:13:00+00:00", "mention_rate": 0.273}, {"t": "2026-01-01T09:14:00+00:00", "mention_rate": 0.217}]}, "illustrative": true}, "live_board": {"kpis": [{"key": "sourced_pipeline", "label": "Marketing-sourced pipeline", "value": 4280000, "format": "currency", "delta_pct": 9.5, "delta_label": "vs prior period", "subtext": "last-touch sourced, closed-won"}, {"key": "influenced", "label": "Marketing-influenced", "value": 9416000, "format": "currency", "delta_pct": null, "delta_label": "vs last look", "subtext": "held separate, never summed"}, {"key": "blended_cac", "label": "Blended CAC", "value": 52778, "format": "currency", "delta_pct": null, "delta_label": "vs last look", "subtext": "driven by Paid Social"}, {"key": "cac_payback_months", "label": "CAC payback", "value": 5.3, "format": "months", "delta_pct": null, "delta_label": "", "subtext": "on ARR; gross margin not modeled"}], "what_changed": [{"kind": "new", "title": "Revenue pace shifted", "body": "Closed-won over the latest buckets is +29% vs the start of the window \u2014 recomputed live, no nightly job.", "real": true}, {"kind": "drift", "title": "Slipped out of an AI answer", "body": "\"cloud cost anomaly detection\": mention rate 22%, no longer ranked. The AI Assistant channel is leaking \u2014 no ad dashboard shows this.", "real": true}, {"kind": "low_confidence", "title": "Organic/Web: too few to attribute", "body": "2 conversions in window. Too thin to trust a reallocation \u2014 we are not going to pretend otherwise.", "real": true}, {"kind": "new", "title": "First snapshot", "body": "Baseline captured. 'What changed' deltas populate on the next refresh.", "real": true}], "money_by_channel": [{"channel": "Paid Search", "revenue": 870000, "share": 0.2033}, {"channel": "Outbound SDR", "revenue": 710000, "share": 0.1659}, {"channel": "Paid Social", "revenue": 640000, "share": 0.1495}, {"channel": "Email Nurture", "revenue": 640000, "share": 0.1495}, {"channel": "Events", "revenue": 560000, "share": 0.1308}, {"channel": "AI Assistant", "revenue": 340000, "share": 0.0794}, {"channel": "Organic/Web", "revenue": 300000, "share": 0.0701}, {"channel": "Brand", "revenue": 220000, "share": 0.0514}]}, "model_compare": {"models": ["last_touch", "linear", "time_decay"], "model_labels": {"last_touch": "Last touch", "linear": "W-shaped", "time_decay": "Data-driven"}, "credit_by_channel": [{"channel": "Paid Search", "shares": {"last_touch": 0.257, "linear": 0.1589, "time_decay": 0.2033}, "spread_pts": 10, "status": "disagree"}, {"channel": "Outbound SDR", "shares": {"last_touch": 0.229, "linear": 0.1308, "time_decay": 0.1659}, "spread_pts": 10, "status": "disagree"}, {"channel": "Paid Social", "shares": {"last_touch": 0.1215, "linear": 0.1916, "time_decay": 0.1495}, "spread_pts": 7, "status": "disagree"}, {"channel": "Email Nurture", "shares": {"last_touch": 0.1682, "linear": 0.1262, "time_decay": 0.1495}, "spread_pts": 4, "status": "agree"}, {"channel": "Events", "shares": {"last_touch": 0.1098, "linear": 0.1682, "time_decay": 0.1308}, "spread_pts": 6, "status": "disagree"}, {"channel": "AI Assistant", "shares": {"last_touch": 0.028, "linear": 0.0654, "time_decay": 0.0794}, "spread_pts": 5, "status": "agree"}, {"channel": "Organic/Web", "shares": {"last_touch": 0.0584, "linear": 0.0701, "time_decay": 0.0701}, "spread_pts": 1, "status": "thin"}, {"channel": "Brand", "shares": {"last_touch": 0.028, "linear": 0.0888, "time_decay": 0.0514}, "spread_pts": 6, "status": "thin"}], "credit_by_campaign": [{"campaign": "Brand Search - Acme", "channel": "Paid Search", "spend": 95000, "attributed_revenue": 410000, "deals": 4, "roi": 4.32}, {"campaign": "Competitor Conquest", "channel": "Paid Search", "spend": 130000, "attributed_revenue": 320000, "deals": 3, "roi": 2.46}, {"campaign": "ABM Tier 1 - Sponsored", "channel": "Paid Social", "spend": 210000, "attributed_revenue": 300000, "deals": 3, "roi": 1.43}, {"campaign": "SDR Outbound - Enterprise", "channel": "Outbound SDR", "spend": 140000, "attributed_revenue": 380000, "deals": 3, "roi": 2.71}, {"campaign": "Nurture - Product Trial", "channel": "Email Nurture", "spend": 18000, "attributed_revenue": 290000, "deals": 3, "roi": 16.11}, {"campaign": "Solution Keywords - Cloud", "channel": "Paid Search", "spend": 120000, "attributed_revenue": 250000, "deals": 2, "roi": 2.08}, {"campaign": "ABM Tier 2 - InMail", "channel": "Paid Social", "spend": 150000, "attributed_revenue": 240000, "deals": 2, "roi": 1.6}, {"campaign": "SDR Outbound - MidMarket", "channel": "Outbound SDR", "spend": 100000, "attributed_revenue": 240000, "deals": 2, "roi": 2.4}, {"campaign": "Field Event - SaaStr", "channel": "Events", "spend": 180000, "attributed_revenue": 250000, "deals": 2, "roi": 1.39}, {"campaign": "Webinar Series - Q1", "channel": "Events", "spend": 90000, "attributed_revenue": 180000, "deals": 1, "roi": 2.0}, {"campaign": "Nurture - Re-engagement", "channel": "Email Nurture", "spend": 14000, "attributed_revenue": 190000, "deals": 2, "roi": 13.57}, {"campaign": "Retargeting - Display", "channel": "Paid Social", "spend": 85000, "attributed_revenue": 130000, "deals": 1, "roi": 1.53}, {"campaign": "Organic - Content Hub", "channel": "Organic/Web", "spend": 18000, "attributed_revenue": 170000, "deals": 1, "roi": 9.44}, {"campaign": "Generic Keywords - Broad", "channel": "Paid Search", "spend": 75000, "attributed_revenue": 85000, "deals": 0, "roi": 1.13}, {"campaign": "Brand Awareness - Video", "channel": "Brand", "spend": 110000, "attributed_revenue": 130000, "deals": 1, "roi": 1.18}, {"campaign": "Organic - Comparison Pages", "channel": "Organic/Web", "spend": 12000, "attributed_revenue": 130000, "deals": 1, "roi": 10.83}, {"campaign": "Executive Roundtable", "channel": "Events", "spend": 90000, "attributed_revenue": 130000, "deals": 1, "roi": 1.44}, {"campaign": "Brand - Podcast Sponsor", "channel": "Brand", "spend": 70000, "attributed_revenue": 90000, "deals": 0, "roi": 1.29}, {"campaign": "SDR Outbound - SMB", "channel": "Outbound SDR", "spend": 60000, "attributed_revenue": 200000, "deals": 2, "roi": 3.33}, {"campaign": "Nurture - Onboarding", "channel": "Email Nurture", "spend": 18000, "attributed_revenue": 160000, "deals": 1, "roi": 8.89}, {"campaign": "LLM Referral - Organic", "channel": "AI Assistant", "spend": 20000, "attributed_revenue": 340000, "deals": 3, "roi": 17.0}], "incrementality_tests": {"illustrative": true, "note": "Holdout / geo-incrementality tests are a roadmap surface; the pipeline has no experiment framework yet.", "tests": []}}, "reallocation_agent": {"recommendations": [{"id": 0, "title": "Decrease Paid Social -110,000/wk", "action": "Decrease", "channel": "Paid Social", "current_spend": 550000, "delta": -110000, "proposed_spend": 440000, "expected_revenue_impact": -128000, "confidence": "low", "rationale": "Paid Social ROI is 1.16x, below the blended 2.25x. Decrease weekly spend by $110,000 (to $440,000); estimated revenue impact $-128,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.", "basis": ["cac_roi: Paid Social spend $550,000, ROI 1.16x", "funnel_metrics: Paid Social 6 conversions (trailing 90d)"], "reversible_days": 7, "status": "pending"}, {"id": 1, "title": "Decrease Paid Search -82,000/wk", "action": "Decrease", "channel": "Paid Search", "current_spend": 410000, "delta": -82000, "proposed_spend": 328000, "expected_revenue_impact": -174000, "confidence": "low", "rationale": "Paid Search ROI is 2.12x, below the blended 2.25x. Decrease weekly spend by $82,000 (to $328,000); estimated revenue impact $-174,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.", "basis": ["cac_roi: Paid Search spend $410,000, ROI 2.12x", "funnel_metrics: Paid Search 8 conversions (trailing 90d)"], "reversible_days": 7, "status": "pending"}, {"id": 2, "title": "Increase Email Nurture +10,000/wk", "action": "Increase", "channel": "Email Nurture", "current_spend": 50000, "delta": 10000, "proposed_spend": 60000, "expected_revenue_impact": 128000, "confidence": "low", "rationale": "Email Nurture ROI is 12.80x, above the blended 2.25x. Increase weekly spend by $10,000 (to $60,000); estimated revenue impact $+128,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.", "basis": ["cac_roi: Email Nurture spend $50,000, ROI 12.80x", "funnel_metrics: Email Nurture 6 conversions (trailing 90d)"], "reversible_days": 7, "status": "pending"}, {"id": 3, "title": "Increase Outbound SDR +29,960/wk", "action": "Increase", "channel": "Outbound SDR", "current_spend": 300000, "delta": 29960, "proposed_spend": 329960, "expected_revenue_impact": 70906, "confidence": "high", "rationale": "Outbound SDR ROI is 2.37x, above the blended 2.25x. Increase weekly spend by $29,960 (to $329,960); estimated revenue impact $+70,906 at current efficiency.", "basis": ["cac_roi: Outbound SDR spend $300,000, ROI 2.37x", "funnel_metrics: Outbound SDR 6 conversions (trailing 90d)"], "reversible_days": 7, "status": "pending"}], "autonomy": {"level": 2, "max_level": 4, "weekly_cap": 25000, "match_rate": {"matched": 1, "of": 1}, "note": "Every move is capped, reversible, and written to the decision ledger."}}, "decision_ledger": [{"ts": "2026-07-15T10:42:07+00:00", "event": "Drift detected: AI answer visibility slipped", "actor": "AGENT", "result": "Flagged in share-of-model"}, {"ts": "2026-07-15T10:42:07+00:00", "event": "Recommendation issued: Decrease Paid Social -110,000", "actor": "AGENT", "result": "Pending approval"}, {"ts": "2026-07-15T10:42:07+00:00", "event": "Recommendation issued: Decrease Paid Search -82,000", "actor": "AGENT", "result": "Pending approval"}, {"ts": "2026-07-15T10:42:07+00:00", "event": "Recommendation issued: Increase Email Nurture +10,000", "actor": "AGENT", "result": "Pending approval"}, {"ts": "2026-07-15T09:15:22+00:00", "event": "Approve: Increase Email Nurture \u2014 aligns with Q3 plan", "actor": "HUMAN", "result": "Logged to decision ledger"}]}
+const API = new URLSearchParams(location.search).get("api") || "http://localhost:8787/board.json";
+let BOARD = FALLBACK, SCREEN = "live";
+
+const money = n => n==null ? "—" :
+  Math.abs(n)>=1e6 ? "$"+(n/1e6).toFixed(1)+"M" : Math.abs(n)>=1e3 ? "$"+(n/1e3).toFixed(1)+"K" : "$"+Math.round(n);
+const pct = f => (f*100).toFixed(0)+"%";
+const esc = s => String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+function ago(iso){const s=Math.max(0,Math.round((Date.now()-Date.parse(iso))/1000));
+  return s<60?s+"s ago":s<3600?Math.round(s/60)+"m ago":Math.round(s/3600)+"h ago";}
+
+function chrome(){
+  const m=BOARD.meta;
+  document.getElementById("brandSub").textContent=m.customer;
+  document.getElementById("recomputed").textContent="Recomputed "+ago(m.recomputed_at);
+  document.getElementById("eps").textContent=m.events_per_sec.toLocaleString()+" events/sec";
+  document.getElementById("foot").innerHTML=esc(m.customer)+", "+esc(m.environment)+"<br>"+m.sources_streaming+" sources streaming";
+  const rev=(BOARD.trends.revenue||[]).slice(-24), mx=Math.max(1,...rev.map(p=>p.revenue));
+  document.getElementById("spark").innerHTML=rev.map(p=>`<i style="height:${4+16*p.revenue/mx}px"></i>`).join("");
+}
+
+function kpi(k){
+  const val=k.format==="months"?(k.value==null?"—":k.value+" mo"):money(k.value);
+  const d=k.delta_pct==null?"":`<div class="delta ${k.delta_pct>=0?"up":"down"}">${k.delta_pct>=0?"+":""}${k.delta_pct}% ${esc(k.delta_label)}</div>`;
+  return `<div class="kpi"><div class="lab">${esc(k.label)}</div><div class="val">${val}</div>${d}<div class="st">${esc(k.subtext||"")}</div></div>`;
+}
+function changeCard(c){
+  const b={drift:"b-drift",new:"b-new",low_confidence:"b-low"}[c.kind]||"b-low";
+  const lab={drift:"DRIFT",new:"NEW",low_confidence:"LOW CONFIDENCE"}[c.kind]||c.kind.toUpperCase();
+  return `<div class="ccard"><span class="badge ${b}">${lab}</span>${c.real?"":'<span class="ill">illustrative</span>'}<p>${esc(c.body)}</p></div>`;
+}
+function liveBoard(){
+  const lb=BOARD.live_board, mx=Math.max(1,...lb.money_by_channel.map(r=>r.revenue));
+  return `<div class="eyebrow">Live board</div><h1>${esc(BOARD.meta.period_label)}</h1>
+    <p class="sub">Every number recomputes as events land. Nothing here waits for a nightly job.</p>
+    <div class="kpis">${lb.kpis.map(kpi).join("")}</div>
+    <div class="section"><h2>What changed since you last looked</h2>
+      <div class="cards3">${lb.what_changed.slice(0,3).map(changeCard).join("")}</div></div>
+    <div class="section"><h2>Where the money is</h2>
+      <p class="note">Ranked by the data-driven model. Switch models in Model compare.</p>
+      <div class="bars">${lb.money_by_channel.map(r=>`<div class="bar"><span class="nm">${esc(r.channel)}</span>
+        <span class="track"><i style="width:${(r.revenue/mx*100).toFixed(1)}%"></i></span>
+        <span class="amt">${money(r.revenue)}</span></div>`).join("")}</div></div>`;
+}
+function modelCompare(){
+  const mc=BOARD.model_compare, L=mc.model_labels;
+  const tag=s=>({disagree:['t-spread','Spread'],agree:['t-agree','Models agree'],thin:['t-thin','Not enough data']}[s]||['t-thin',s]);
+  const row=r=>{const[cls,txt]=tag(r.status);const t=r.status==="disagree"?` ${r.spread_pts} pts`:"";
+    const bars=mc.models.map(m=>`<div class="mm"><span>${esc(L[m])}</span><span class="mt"><i style="width:${(r.shares[m]*100).toFixed(0)}%"></i></span><b>${pct(r.shares[m])}</b></div>`).join("");
+    return `<div class="mrow"><div class="ch">${esc(r.channel)}<span class="tag ${cls}">${txt}${t}</span></div><div class="mmodels">${bars}</div></div>`;};
+  return `<div class="eyebrow">Model compare</div><h1>Three models, side by side</h1>
+    <p class="sub">No vendor has the right model. So we show you all of them and flag where they disagree.</p>
+    <div class="tabs"><span class="tab active">Credit by channel</span><span class="tab">Credit by campaign</span><span class="tab">Incrementality tests</span></div>
+    <div class="mtable"><div class="mhead"><span>Channel</span><span>Share of credit, three models</span></div>
+      ${mc.credit_by_channel.map(row).join("")}</div>`;
+}
+function agent(){
+  const ra=BOARD.reallocation_agent, a=ra.autonomy;
+  const rec=r=>`<div class="rec ${r.action==='Decrease'&&r.confidence==='low'?'':''}">
+    <div><h3>${esc(r.title)}</h3><p>${esc(r.rationale)}</p><div class="basis">Basis: ${esc((r.basis||[]).join("  ·  "))}</div></div>
+    <div class="side2"><span class="conf">Confidence: ${r.confidence}</span>
+      <button class="btn pri">${r.action==='Decrease'?'Approve cut':'Approve move'}</button>
+      <button class="btn">Show the math</button></div></div>`;
+  return `<div class="eyebrow">Reallocation agent</div><h1>${ra.recommendations.length} recommendations waiting</h1>
+    <p class="sub">The agent watches every channel and proposes moves. You approve. Autonomy grows with trust.</p>
+    ${ra.recommendations.map(rec).join("")||'<p class="sub">No material change this period.</p>'}
+    <div class="section"><h2>Autonomy</h2>
+      <div class="auto"><h3>Level ${a.level} of ${a.max_level}, propose and wait.</h3>
+      <p>The agent can move up to ${money(a.weekly_cap)} per week once you promote it, and only inside channels you allow. Every move is capped, reversible, and written to the decision ledger. ${a.match_rate.matched} of your last ${a.match_rate.of} approvals matched the agent's recommendation.</p>
+      <button class="btn pri">Promote to Level ${a.level+1}</button> <button class="btn">See the caps</button></div></div>`;
+}
+function ledger(){
+  const rows=BOARD.decision_ledger.map(e=>`<tr><td class="when">${esc((e.ts||"").slice(11,19)||e.ts)}</td>
+    <td class="ev">${esc(e.event)}</td><td><span class="actor ${e.actor}">${e.actor}</span></td><td>${esc(e.result)}</td></tr>`).join("");
+  return `<div class="eyebrow">Decision ledger</div><h1>Every number has a paper trail</h1>
+    <p class="sub">What the agent saw, what it proposed, who approved it, what happened next. Export it and hand it to finance.</p>
+    <div class="ltable"><table><thead><tr><th>When</th><th>Event</th><th>Actor</th><th>Result</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+const SCREENS={live:liveBoard,model:modelCompare,agent:agent,ledger:ledger};
+function render(){chrome();document.getElementById("view").innerHTML=SCREENS[SCREEN]();}
+
+document.querySelectorAll(".navitem").forEach(n=>n.addEventListener("click",()=>{
+  SCREEN=n.dataset.screen;
+  document.querySelectorAll(".navitem").forEach(x=>x.classList.toggle("active",x===n));
+  render();
+}));
+
+async function poll(){
+  try{const r=await fetch(API,{cache:"no-store"});if(r.ok){BOARD=await r.json();render();}}catch(e){}
+}
+render();
+poll();
+setInterval(poll,5000);
+setInterval(()=>{document.getElementById("recomputed").textContent="Recomputed "+ago(BOARD.meta.recomputed_at);},1000);
+</script>
+</body>
+</html>

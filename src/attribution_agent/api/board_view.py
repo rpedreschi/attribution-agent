@@ -409,8 +409,9 @@ def trends_sample(data: BoardPackData, buckets: int = 15) -> dict:
     base = datetime(2026, 1, 1, 9, 0, tzinfo=timezone.utc)
     times = [(base + timedelta(minutes=i)).isoformat() for i in range(buckets)]
     total = data.total_attributed
-    # gentle ramp of per-bucket revenue summing to ~total
-    weights = [1 + i for i in range(buckets)]
+    # gentle ramp of per-bucket revenue summing to ~total (base >> range so the
+    # window-pace delta reads believably, ~+20-30%, not +600%)
+    weights = [40 + i for i in range(buckets)]
     wsum = sum(weights)
     revenue = [{"t": times[i], "revenue": round(total * weights[i] / wsum),
                 "deals": max(1, round(data.won_deals * weights[i] / wsum))}
