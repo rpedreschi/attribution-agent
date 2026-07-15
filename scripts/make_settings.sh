@@ -11,7 +11,7 @@ cd "$(dirname "$0")/.."
 KAFKA_BOOTSTRAP="PASTE_WARPSTREAM_BOOTSTRAP:9092"
 KAFKA_KEY="PASTE_WARPSTREAM_SASL_USERNAME"
 KAFKA_SECRET="PASTE_WARPSTREAM_SASL_PASSWORD"
-KAFKA_CA="config/warpstream-ca.pem"   # path where you saved the WarpStream CA (PEM)
+KAFKA_CA="config/warpstream-ca.crt"   # path to your WarpStream CA (.crt or .pem, PEM-encoded)
 DS_MCP_ENDPOINT="https://api-mizaz8.deltastream.io/mcp/v1"
 DS_API_TOKEN="PASTE_DELTASTREAM_API_TOKEN"
 ANTHROPIC_KEY="PASTE_ANTHROPIC_API_KEY"
