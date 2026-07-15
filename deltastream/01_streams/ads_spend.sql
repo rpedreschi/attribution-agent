@@ -15,8 +15,8 @@ CREATE STREAM "linkedin_ads" (
     "clicks"       BIGINT,
     "event_time"   TIMESTAMP          -- wall-clock of the spend row (for spend timeline)
 ) WITH (
-    'topic' = 'attr_linkedin_ads',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_linkedin_ads',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -31,8 +31,8 @@ CREATE STREAM "google_ads" (
     "clicks"       BIGINT,
     "event_time"   TIMESTAMP
 ) WITH (
-    'topic' = 'attr_google_ads',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_google_ads',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'

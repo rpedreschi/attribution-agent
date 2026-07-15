@@ -105,7 +105,7 @@ deterministic, number-grounded templates so the artifact always builds.
    `--max-events` or `--duration`.
 
 3. **Deploy the DeltaStream objects** in order: `00_stores.sql` (creates the
-   `attribution` database + session context; the `demo_confluent` store already
+   `attribution` database + session context; the `demo_warpstream` store already
    exists), `01_streams/`, `02_changelogs/`, `03_identity/`, `04_facts/`,
    `05_views/` — or just run `deltastream/deploy_all.sql`. DeltaStream
    auto-exposes the materialized views over its MCP endpoint; set

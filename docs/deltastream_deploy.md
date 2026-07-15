@@ -14,10 +14,10 @@ Either way you run the same statements in the same order.
 
 ## 0. Before you start
 
-- Events must already be in Confluent on the `attr_*` source topics (e.g.
-  `attr_ga4_events`, `attr_salesforce_cdc_contacts`). Confirm with the
+- Events must already be in Confluent on the `rachel_*` source topics (e.g.
+  `rachel_ga4_events`, `rachel_salesforce_cdc_contacts`). Confirm with the
   datagen run, or in the Confluent UI (each topic should have a message count).
-- The Kafka store `demo_confluent` must exist on this DeltaStream instance. A
+- The Kafka store `demo_warpstream` must exist on this DeltaStream instance. A
   **new/different instance won't have it.** One-time setup per instance:
   ```bash
   bash scripts/demo_init.sh     # creates the store + the attribution database
@@ -36,9 +36,9 @@ Either way you run the same statements in the same order.
 
 ## 1. Database + session context  — `00_stores.sql`
 
-The Kafka store already exists in this org as **`demo_confluent`** (the default
+The Kafka store already exists in this org as **`demo_warpstream`** (the default
 store), so there is no store to create — the stream/changelog DDLs reference
-`'demo_confluent'` directly. Just run `00_stores.sql`: it creates the
+`'demo_warpstream'` directly. Just run `00_stores.sql`: it creates the
 `attribution` database and sets the session context (`USE DATABASE / SCHEMA`).
 
 > **The session context is what puts every object in `attribution.public`.**
@@ -51,8 +51,8 @@ store), so there is no store to create — the stream/changelog DDLs reference
 Validate:
 
 ```sql
-LIST STORES;                          -- demo_confluent present (already exists)
-PRINT STORE "demo_confluent";         -- lists the attr_* topics => connectivity OK
+LIST STORES;                          -- demo_warpstream present (already exists)
+PRINT STORE "demo_warpstream";         -- lists the rachel_* topics => connectivity OK
 LIST DATABASES;                       -- attribution present
 ```
 
@@ -64,13 +64,13 @@ LIST DATABASES;                       -- attribution present
 > or the unquoted name may fold to a different case and "not found".
 >
 > **Topic ownership convention:** *every* topic in this project is prefixed
-> `attr_` so ops can tell whose topics they are. Datagen-produced source topics
-> (`attr_ga4_events`, `attr_hubspot_events`, `attr_outreach_activity`,
-> `attr_linkedin_ads`, `attr_google_ads`, `attr_salesforce_cdc_accounts`,
-> `attr_salesforce_cdc_contacts`, `attr_salesforce_cdc_opportunities`) and the
-> DeltaStream-created derived topics (`attr_web_resolved`,
-> `attr_web_identity_map`, `attr_touchpoints`, `attr_conversions`, `attr_spend`,
-> `attr_funnel_events`). Because DeltaStream has to create the derived topics, each carries
+> `rachel_` so ops can tell whose topics they are. Datagen-produced source topics
+> (`rachel_ga4_events`, `rachel_hubspot_events`, `rachel_outreach_activity`,
+> `rachel_linkedin_ads`, `rachel_google_ads`, `rachel_salesforce_cdc_accounts`,
+> `rachel_salesforce_cdc_contacts`, `rachel_salesforce_cdc_opportunities`) and the
+> DeltaStream-created derived topics (`rachel_web_resolved`,
+> `rachel_web_identity_map`, `rachel_touchpoints`, `rachel_conversions`, `rachel_spend`,
+> `rachel_funnel_events`). Because DeltaStream has to create the derived topics, each carries
 > `'topic.partitions' = 1` and `'topic.replicas' = 3` (unquoted integers) in its
 > WITH clause (Confluent Cloud requires replication factor 3); adjust if your
 > cluster differs.
@@ -82,7 +82,7 @@ before going further.
 
 Run all five: `ga4_sessions.sql`, `hubspot_events.sql`, `outreach_activity.sql`,
 `ads_spend.sql` (creates `linkedin_ads` + `google_ads`), and
-`share_of_model.sql` (the LLM answer-space probe feed — reads `attr_share_of_model`,
+`share_of_model.sql` (the LLM answer-space probe feed — reads `rachel_share_of_model`,
 which DeltaStream creates, so it carries `topic.partitions`/`topic.replicas`).
 `share_of_model` is populated only by the **live** datagen (`--stream`), not the
 batch backfill, since share-of-model is a live monitoring signal.
@@ -185,7 +185,7 @@ exposed MVs as tools), and the LLM backend.
 | `DESCRIBE QUERY <id>;` | why a specific query errored |
 | `SELECT * FROM <stream>;` | live ingestion + timestamp parsing (continuous) |
 | `SELECT * FROM <mv>;` | current aggregated state (snapshot) |
-| `PRINT STORE "demo_confluent";` | store connectivity / topic visibility |
+| `PRINT STORE "demo_warpstream";` | store connectivity / topic visibility |
 
 ## Teardown / redeploy
 
@@ -194,7 +194,7 @@ statement at a time, so the CLI never collapses a comment into a statement):
 
 ```bash
 export DS_TOKEN="<token>"; export DSQL_BIN="../../dscliv2"
-export DS_SERVER="https://api-kd8j38.stage.deltastream-internal.name/v2"
+export DS_SERVER="https://api-mizaz8.deltastream.io/v2"
 
 python scripts/run_sql.py deltastream/teardown.sql --keep-going   # drop relations
 python scripts/run_sql.py deltastream/deploy_all.sql              # rebuild them

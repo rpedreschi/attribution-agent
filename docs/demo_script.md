@@ -39,7 +39,7 @@ Set the DeltaStream env once (Terminal 1 and 2):
 
 ```bash
 export DSQL_BIN=../../dscliv2
-export DS_SERVER=https://api-kd8j38.stage.deltastream-internal.name/v2
+export DS_SERVER=https://api-mizaz8.deltastream.io/v2
 export DS_TOKEN=<your-deltastream-api-token>
 ```
 

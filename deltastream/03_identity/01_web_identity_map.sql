@@ -21,10 +21,10 @@ USE SCHEMA "public";
 
 -- 1. Resolve each form submission to its account (stream-changelog enrichment).
 CREATE STREAM "web_resolved" WITH (
-    'topic' = 'attr_web_resolved',
+    'topic' = 'rachel_web_resolved',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 ) AS
@@ -41,10 +41,10 @@ WHERE h."event_type" = 'form_submission'
 
 -- 2. Collapse to one current account per web cookie (GROUP BY => changelog).
 CREATE CHANGELOG "web_identity_map" WITH (
-    'topic' = 'attr_web_identity_map',
+    'topic' = 'rachel_web_identity_map',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'key.columns' = 'web_user_id'
 ) AS

@@ -1,8 +1,8 @@
 -- Environment bootstrap: the database/schema that every later object lives in.
 --
--- The Kafka store already exists in this DeltaStream org as `demo_confluent`
+-- The Kafka store already exists in this DeltaStream org as `demo_warpstream`
 -- (and is the default store), so there is NO CREATE STORE here. The stream and
--- changelog DDLs reference 'demo_confluent' directly in their WITH clauses.
+-- changelog DDLs reference 'demo_warpstream' directly in their WITH clauses.
 --
 -- NOTE: the attribution context is served from the DeltaStream materialized
 -- views (05_views/), which DeltaStream auto-exposes over its MCP endpoint to any
@@ -19,7 +19,7 @@ CREATE DATABASE "attribution";
 --    names against — the current database/schema, so set these at the start of
 --    EVERY CLI or web-app session before running 01_streams/ onward (re-run if
 --    you reconnect). This is what guarantees every object lands in
---    attribution.public. demo_confluent is already the default store, so no
+--    attribution.public. demo_warpstream is already the default store, so no
 --    USE STORE is required.
 USE DATABASE "attribution";
 USE SCHEMA "public";

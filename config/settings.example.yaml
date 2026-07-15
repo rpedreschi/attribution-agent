@@ -20,22 +20,22 @@ kafka:
   sasl_username: "${KAFKA_API_KEY}"
   sasl_password: "${KAFKA_API_SECRET}"
   topics:
-    salesforce_accounts: "attr_salesforce_cdc_accounts"
-    salesforce_contacts: "attr_salesforce_cdc_contacts"
-    salesforce_opportunities: "attr_salesforce_cdc_opportunities"
-    hubspot: "attr_hubspot_events"
-    ga4: "attr_ga4_events"
-    linkedin_ads: "attr_linkedin_ads"
-    google_ads: "attr_google_ads"
-    outreach: "attr_outreach_activity"
-    channel_cost: "attr_channel_cost"
-    share_of_model: "attr_share_of_model"
+    salesforce_accounts: "rachel_salesforce_cdc_accounts"
+    salesforce_contacts: "rachel_salesforce_cdc_contacts"
+    salesforce_opportunities: "rachel_salesforce_cdc_opportunities"
+    hubspot: "rachel_hubspot_events"
+    ga4: "rachel_ga4_events"
+    linkedin_ads: "rachel_linkedin_ads"
+    google_ads: "rachel_google_ads"
+    outreach: "rachel_outreach_activity"
+    channel_cost: "rachel_channel_cost"
+    share_of_model: "rachel_share_of_model"
 
 deltastream:
   # DeltaStream MCP REST endpoint. Materialized views the token's role can
   # SELECT are auto-exposed as MCP tools. See deltastream/ for the SQL and the
   # CREATE API_TOKEN step.
-  mcp_endpoint: "https://api-kd8j38.stage.deltastream-internal.name/mcp/v1"   # your org's REST endpoint
+  mcp_endpoint: "https://api-mizaz8.deltastream.io/mcp/v1"   # your org's REST endpoint
   api_token: "${DELTASTREAM_API_TOKEN}"   # CREATE API_TOKEN bound to the role below
   organization: "${DELTASTREAM_ORG}"
   role: "attribution_reader"

@@ -15,8 +15,8 @@ CREATE STREAM "outreach_activity" (
     "sequence"     VARCHAR,
     "sdr"          VARCHAR
 ) WITH (
-    'topic' = 'attr_outreach_activity',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_outreach_activity',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'

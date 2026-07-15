@@ -18,8 +18,8 @@ CREATE STREAM "ga4_events" (
     "utm_term"      VARCHAR,
     "utm_content"   VARCHAR
 ) WITH (
-    'topic' = 'attr_ga4_events',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_ga4_events',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -44,8 +44,8 @@ CREATE STREAM "hubspot_events" (
     "utm_campaign"    VARCHAR,
     "program_category" VARCHAR
 ) WITH (
-    'topic' = 'attr_hubspot_events',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_hubspot_events',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -64,8 +64,8 @@ CREATE STREAM "outreach_activity" (
     "sequence"     VARCHAR,
     "sdr"          VARCHAR
 ) WITH (
-    'topic' = 'attr_outreach_activity',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_outreach_activity',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -84,8 +84,8 @@ CREATE STREAM "linkedin_ads" (
     "clicks"       BIGINT,
     "event_time"   TIMESTAMP
 ) WITH (
-    'topic' = 'attr_linkedin_ads',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_linkedin_ads',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -100,8 +100,8 @@ CREATE STREAM "google_ads" (
     "clicks"       BIGINT,
     "event_time"   TIMESTAMP
 ) WITH (
-    'topic' = 'attr_google_ads',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_google_ads',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -121,10 +121,10 @@ CREATE STREAM "share_of_model" (
     "top_competitor" VARCHAR,
     "sentiment"      VARCHAR
 ) WITH (
-    'topic' = 'attr_share_of_model',
+    'topic' = 'rachel_share_of_model',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -143,8 +143,8 @@ CREATE CHANGELOG "sf_contacts" (
     "updated_at" TIMESTAMP,
     PRIMARY KEY ("email")
 ) WITH (
-    'topic' = 'attr_salesforce_cdc_contacts',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_salesforce_cdc_contacts',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
     'timestamp.format' = 'iso8601'
@@ -161,8 +161,8 @@ CREATE CHANGELOG "sf_accounts" (
     "updated_at"     TIMESTAMP,
     PRIMARY KEY ("account_id")
 ) WITH (
-    'topic' = 'attr_salesforce_cdc_accounts',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_salesforce_cdc_accounts',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
     'timestamp.format' = 'iso8601'
@@ -178,8 +178,8 @@ CREATE STREAM "sf_opportunities" (
     "event_time"     TIMESTAMP,
     "program_category" VARCHAR
 ) WITH (
-    'topic' = 'attr_salesforce_cdc_opportunities',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_salesforce_cdc_opportunities',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -190,10 +190,10 @@ USE DATABASE "attribution";
 USE SCHEMA "public";
 
 CREATE STREAM "web_resolved" WITH (
-    'topic' = 'attr_web_resolved',
+    'topic' = 'rachel_web_resolved',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 ) AS
@@ -209,10 +209,10 @@ WHERE h."event_type" = 'form_submission'
   AND h."web_user_id" IS NOT NULL;
 
 CREATE CHANGELOG "web_identity_map" WITH (
-    'topic' = 'attr_web_identity_map',
+    'topic' = 'rachel_web_identity_map',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'key.columns' = 'web_user_id'
 ) AS
@@ -243,10 +243,10 @@ CREATE STREAM "touchpoints" (
     "source"           VARCHAR,
     "source_system"    VARCHAR
 ) WITH (
-    'topic' = 'attr_touchpoints',
+    'topic' = 'rachel_touchpoints',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );
@@ -310,10 +310,10 @@ CREATE STREAM "conversions" (
     "deal_size"        VARCHAR,
     "program_category" VARCHAR
 ) WITH (
-    'topic' = 'attr_conversions',
+    'topic' = 'rachel_conversions',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );
@@ -358,10 +358,10 @@ CREATE STREAM "spend" (
     "source_platform"  VARCHAR,
     "event_time"       TIMESTAMP
 ) WITH (
-    'topic' = 'attr_spend',
+    'topic' = 'rachel_spend',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -373,10 +373,10 @@ CREATE STREAM "channel_cost" (
     "spend_amount" DOUBLE,
     "event_time"   TIMESTAMP
 ) WITH (
-    'topic' = 'attr_channel_cost',
+    'topic' = 'rachel_channel_cost',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -406,10 +406,10 @@ CREATE STREAM "funnel_events" (
     "program_category" VARCHAR,
     "stage"            VARCHAR
 ) WITH (
-    'topic' = 'attr_funnel_events',
+    'topic' = 'rachel_funnel_events',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

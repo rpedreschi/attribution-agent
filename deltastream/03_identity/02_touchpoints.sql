@@ -24,10 +24,10 @@ CREATE STREAM "touchpoints" (
     "source"           VARCHAR,
     "source_system"    VARCHAR
 ) WITH (
-    'topic' = 'attr_touchpoints',
+    'topic' = 'rachel_touchpoints',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

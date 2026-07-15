@@ -11,7 +11,7 @@ cd "$(dirname "$0")/.."
 KAFKA_BOOTSTRAP="pkc-921jm.us-east-2.aws.confluent.cloud:9092"
 KAFKA_KEY="WOKWAFU7IAFTGYGU"
 KAFKA_SECRET="PASTE_CONFLUENT_API_SECRET"
-DS_MCP_ENDPOINT="https://api-kd8j38.stage.deltastream-internal.name/mcp/v1"
+DS_MCP_ENDPOINT="https://api-mizaz8.deltastream.io/mcp/v1"
 DS_API_TOKEN="PASTE_DELTASTREAM_API_TOKEN"
 ANTHROPIC_KEY="PASTE_ANTHROPIC_API_KEY"
 # ===================================================================

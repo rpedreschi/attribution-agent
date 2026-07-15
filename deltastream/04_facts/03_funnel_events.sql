@@ -11,10 +11,10 @@ CREATE STREAM "funnel_events" (
     "program_category" VARCHAR,
     "stage"            VARCHAR
 ) WITH (
-    'topic' = 'attr_funnel_events',
+    'topic' = 'rachel_funnel_events',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

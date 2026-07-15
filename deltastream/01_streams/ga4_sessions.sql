@@ -20,8 +20,8 @@ CREATE STREAM "ga4_events" (
     "utm_term"      VARCHAR,
     "utm_content"   VARCHAR
 ) WITH (
-    'topic' = 'attr_ga4_events',
-    'store' = 'demo_confluent',
+    'topic' = 'rachel_ga4_events',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'

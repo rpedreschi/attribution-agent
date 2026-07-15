@@ -3,7 +3,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 : "${DSQL_BIN:?set DSQL_BIN, e.g. export DSQL_BIN=../../dscliv2}"
-: "${DS_SERVER:?set DS_SERVER, e.g. export DS_SERVER=https://api-kd8j38.stage.deltastream-internal.name/v2}"
+: "${DS_SERVER:?set DS_SERVER, e.g. export DS_SERVER=https://api-mizaz8.deltastream.io/v2}"
 : "${DS_TOKEN:?set DS_TOKEN to your DeltaStream API token}"
 MAX_JOURNEYS="${MAX_JOURNEYS:-12}"
 

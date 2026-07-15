@@ -17,10 +17,10 @@ CREATE STREAM "conversions" (
     "deal_size"        VARCHAR,
     "program_category" VARCHAR
 ) WITH (
-    'topic' = 'attr_conversions',
+    'topic' = 'rachel_conversions',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );

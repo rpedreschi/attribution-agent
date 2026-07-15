@@ -17,17 +17,17 @@ CREATE STREAM "spend" (
     "source_platform"  VARCHAR,
     "event_time"       TIMESTAMP
 ) WITH (
-    'topic' = 'attr_spend',
+    'topic' = 'rachel_spend',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
 );
 
 -- The finance loaded-cost feed (non-ad channels). Carries topic.partitions/
--- replicas because attr_channel_cost is new — DeltaStream creates it here rather
+-- replicas because rachel_channel_cost is new — DeltaStream creates it here rather
 -- than waiting on the datagen to publish it first.
 CREATE STREAM "channel_cost" (
     "spend_date"   VARCHAR,
@@ -35,10 +35,10 @@ CREATE STREAM "channel_cost" (
     "spend_amount" DOUBLE,
     "event_time"   TIMESTAMP
 ) WITH (
-    'topic' = 'attr_channel_cost',
+    'topic' = 'rachel_channel_cost',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'

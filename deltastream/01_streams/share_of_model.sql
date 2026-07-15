@@ -4,7 +4,7 @@
 -- AI Assistant channel — the place you lose overnight when a model updates. The
 -- agent reads the aggregate (mv_share_of_model); a live drop shows up here first.
 --
--- Carries topic.partitions/replicas because attr_share_of_model is new —
+-- Carries topic.partitions/replicas because rachel_share_of_model is new —
 -- DeltaStream creates it here rather than waiting on the datagen to publish first.
 
 -- Ensure objects land in attribution.public even if run in a fresh session.
@@ -21,10 +21,10 @@ CREATE STREAM "share_of_model" (
     "top_competitor" VARCHAR,
     "sentiment"      VARCHAR     -- positive | neutral | absent
 ) WITH (
-    'topic' = 'attr_share_of_model',
+    'topic' = 'rachel_share_of_model',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
-    'store' = 'demo_confluent',
+    'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
