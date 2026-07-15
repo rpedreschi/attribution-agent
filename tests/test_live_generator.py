@@ -58,3 +58,15 @@ def test_live_emits_identity_bridge_and_spend():
 
 def test_deterministic_under_seed():
     assert _drain(seconds=30.0) == _drain(seconds=30.0)
+
+
+def test_max_journeys_caps_won_deals():
+    # A long, busy run must NOT accumulate unbounded closed-won deals — the cap
+    # keeps the headline believable no matter how long the stream is left up.
+    by_topic = _drain(seconds=3600.0, max_journeys=12)
+    won = [p for p in by_topic.get("salesforce_opportunities", [])
+           if p["stage_to"] == "ClosedWon"]
+    # <= 12 journeys spawned, so at most 12 closed-won (usually fewer — some lose).
+    assert 0 < len(won) <= 12
+    # ambient + spend keep flowing even after the cap is hit.
+    assert by_topic.get("linkedin_ads") and by_topic.get("share_of_model")

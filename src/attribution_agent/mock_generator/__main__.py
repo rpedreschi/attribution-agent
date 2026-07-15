@@ -44,7 +44,8 @@ def _run_stream(settings, args) -> None:
                                out_dir=Path(args.out_dir), mode="a")
     gen = LiveGenerator(seed=args.seed, journey_seconds=args.journey_seconds,
                         new_journey_rate=args.new_journey_rate,
-                        ambient_per_tick=args.ambient_per_tick)
+                        ambient_per_tick=args.ambient_per_tick,
+                        max_journeys=args.max_journeys)
     target = "files in " + args.out_dir if args.dry_run else "Kafka"
     print(f"Streaming live events to {target} every {args.interval}s "
           f"(Ctrl-C to stop)…")
@@ -105,6 +106,10 @@ def main() -> None:
                              "(default: 0.15 — gentle drift; raise for a busier stream).")
     parser.add_argument("--ambient-per-tick", type=int, default=2,
                         help="Anonymous background touches per tick (default: 2).")
+    parser.add_argument("--max-journeys", type=int, default=12,
+                        help="Cap on new live journeys over the whole run so the "
+                             "headline stays believable (default: 12; 0 = unlimited). "
+                             "Higher = bigger totals; in-flight journeys still finish.")
     parser.add_argument("--max-events", type=int, default=0,
                         help="Stop streaming after this many events (0 = unlimited).")
     parser.add_argument("--duration", type=float, default=0.0,

@@ -94,7 +94,7 @@ class LiveGenerator:
 
     def __init__(self, *, seed: int = 42, journey_seconds: float = 180.0,
                  new_journey_rate: float = 0.15, ambient_per_tick: int = 2,
-                 som_degrade_seconds: float = 120.0) -> None:
+                 som_degrade_seconds: float = 120.0, max_journeys: int = 12) -> None:
         self.rng = random.Random(seed)
         self.journey_seconds = journey_seconds
         self.new_journey_rate = new_journey_rate
@@ -102,6 +102,14 @@ class LiveGenerator:
         # After this many seconds of streaming, the designated buyer query drops
         # out of the LLM answers — the live "you slipped out of the answer" beat.
         self.som_degrade_seconds = som_degrade_seconds
+        # Cap on NEW journeys spawned over the whole run (0 = unlimited). Without
+        # it, a stream left running accumulates unbounded revenue/deals into the
+        # all-time MVs and the headline balloons past believability (the $33M/
+        # +749% runaway). With it, totals plateau at backfill + a few live deals;
+        # in-flight journeys still finish, and ambient/spend/share-of-model keep
+        # flowing so the demo stays live.
+        self.max_journeys = max_journeys
+        self._spawned = 0
         self._seq = 0
         self._inflight: list[_Journey] = []
         self._channels = [c.name for c in sd.CHANNELS]
@@ -289,8 +297,10 @@ class LiveGenerator:
         now = now or datetime.utcnow()
         events: list[Event] = []
 
-        if self.rng.random() < self.new_journey_rate:
+        under_cap = self.max_journeys <= 0 or self._spawned < self.max_journeys
+        if under_cap and self.rng.random() < self.new_journey_rate:
             self._inflight.append(self._spawn(now))
+            self._spawned += 1
 
         still: list[_Journey] = []
         for j in self._inflight:

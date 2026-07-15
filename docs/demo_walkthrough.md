@@ -8,19 +8,21 @@ The 5-minute live drive. (The full version with objection-handling is
 ## Before the call (5 min)
 
 ```bash
-# 1. data flowing — start the stream a few minutes early so deals have closed
-python -m attribution_agent.mock_generator --stream --backfill
+# 1. data flowing — start the stream a few minutes early so deals have closed.
+#    --max-journeys caps live deals so the headline stays believable (~$5-6M,
+#    not a $30M runaway) even if you leave it running. Raise it for bigger
+#    numbers, lower it to stay closer to the $4.28M anchor.
+python -m attribution_agent.mock_generator --stream --backfill --max-journeys 12
 
-# 2. when the numbers look good in the agent, FREEZE them: Ctrl-C the stream
-#    (a steady headline reads more credible than one ticking up mid-sentence)
-
-# 3. launch the agent on the live pipeline
+# 2. launch the agent on the live pipeline
 python -m attribution_agent.agent.cli --source mcp
 ```
 
-Quick pre-flight at the `agent>` prompt: `summary` (non-zero revenue + spend),
-`recs` (proposes a move). If `recs` is empty, the data's still thin — let the
-stream run a bit longer. Then you're set.
+Quick pre-flight at the `agent>` prompt: `summary` (non-zero revenue + spend,
+QoQ in a sane +30–50% range), `recs` (proposes a move). If `recs` is empty, the
+data's still thin — let the stream run a bit longer. The cap means the totals
+plateau on their own, so you no longer have to Ctrl-C the stream mid-demo to
+keep the number steady.
 
 ---
 
