@@ -291,7 +291,7 @@ class Generator:
 
     # -- orchestration -------------------------------------------------------
 
-    def generate(self) -> list[Event]:
+    def generate(self, *, no_ambient: bool = False) -> list[Event]:
         sd.validate()
         won = self.build_won_accounts()
         other_opps = sd.TOTAL_OPPORTUNITIES - sd.TOTAL_WON_DEALS
@@ -299,6 +299,10 @@ class Generator:
         events += self.emit_accounts_and_contacts(won, other_count=other_opps + 200)
         events += self.emit_won_journeys(won)
         events += self.emit_open_opportunities(other_opps)
-        events += self.emit_ambient_touches()
+        # Ambient GA4 noise never resolves to an account (filtered out of
+        # attribution) — it's ~97% of the volume and pure egress. Skip it with
+        # --no-ambient on bandwidth-metered brokers.
+        if not no_ambient:
+            events += self.emit_ambient_touches()
         events += self.emit_spend()
         return events

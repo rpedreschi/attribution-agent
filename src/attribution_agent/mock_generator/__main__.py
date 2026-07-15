@@ -28,7 +28,7 @@ from .live_generator import LiveGenerator
 
 
 def _run_batch(settings, args) -> None:
-    events = Generator(seed=args.seed).generate()
+    events = Generator(seed=args.seed).generate(no_ambient=args.no_ambient)
     counts = publish_all(events, settings, dry_run=args.dry_run, out_dir=Path(args.out_dir))
     total = sum(counts.values())
     target = "files in " + args.out_dir if args.dry_run else "Kafka"
@@ -44,7 +44,7 @@ def _run_stream(settings, args) -> None:
                                out_dir=Path(args.out_dir), mode="a")
     gen = LiveGenerator(seed=args.seed, journey_seconds=args.journey_seconds,
                         new_journey_rate=args.new_journey_rate,
-                        ambient_per_tick=args.ambient_per_tick,
+                        ambient_per_tick=0 if args.no_ambient else args.ambient_per_tick,
                         max_journeys=args.max_journeys)
     target = "files in " + args.out_dir if args.dry_run else "Kafka"
     print(f"Streaming live events to {target} every {args.interval}s "
@@ -106,6 +106,10 @@ def main() -> None:
                              "(default: 0.15 — gentle drift; raise for a busier stream).")
     parser.add_argument("--ambient-per-tick", type=int, default=2,
                         help="Anonymous background touches per tick (default: 2).")
+    parser.add_argument("--no-ambient", action="store_true",
+                        help="Drop the anonymous GA4 noise (never resolves to an "
+                             "account; ~97%% of the volume). Use on bandwidth-metered "
+                             "brokers — cuts the backfill from ~52k events to ~1.7k.")
     parser.add_argument("--max-journeys", type=int, default=12,
                         help="Cap on new live journeys over the whole run so the "
                              "headline stays believable (default: 12; 0 = unlimited). "

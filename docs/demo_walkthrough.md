@@ -12,7 +12,7 @@ The 5-minute live drive. (The full version with objection-handling is
 #    --max-journeys caps live deals so the headline stays believable (~$5-6M,
 #    not a $30M runaway) even if you leave it running. Raise it for bigger
 #    numbers, lower it to stay closer to the $4.28M anchor.
-python -m attribution_agent.mock_generator --stream --backfill --max-journeys 12
+python -m attribution_agent.mock_generator --stream --backfill --no-ambient --interval 8 --max-journeys 12
 
 # 2. launch the agent on the live pipeline
 python -m attribution_agent.agent.cli --source mcp

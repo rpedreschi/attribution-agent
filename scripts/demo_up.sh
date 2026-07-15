@@ -20,4 +20,5 @@ echo "==> deploying streams, changelogs, and materialized views"
 python scripts/run_sql.py deltastream/deploy_all.sql --cli "$DSQL_BIN" --server "$DS_SERVER"
 
 echo "==> streaming data (Ctrl-C to stop; capped at $MAX_JOURNEYS live journeys)"
-python -m attribution_agent.mock_generator --stream --backfill --max-journeys "$MAX_JOURNEYS"
+python -m attribution_agent.mock_generator --stream --backfill --no-ambient \
+    --interval "${INTERVAL:-8}" --ambient-per-tick 0 --max-journeys "$MAX_JOURNEYS"
