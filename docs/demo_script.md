@@ -35,19 +35,35 @@ tech earns the trust, it doesn't replace it.
 
 Three terminals + the agent, all started before anyone joins:
 
+Set the DeltaStream env once (Terminal 1 and 2):
+
 ```bash
-# Terminal 1 — clean rebuild so the numbers are coherent (see deltastream_deploy.md):
-python scripts/terminate_queries.py --cli <dsql> --server <server-url>
-python scripts/run_sql.py deltastream/teardown.sql --keep-going --cli <dsql> --server <server-url>
-python scripts/run_sql.py deltastream/deploy_all.sql --cli <dsql> --server <server-url>
+export DSQL_BIN=../../dscliv2
+export DS_SERVER=https://api-kap822.deltastream.io/v2
+export DS_TOKEN=<your-deltastream-api-token>
+```
 
-# Terminal 2 — the live event firehose. Backfill Q1, then KEEP STREAMING.
-# Leave this visible: scrolling events are part of the show.
-python -m attribution_agent.mock_generator --stream --backfill
+Terminal 1 — clean rebuild + live firehose in one command (terminate, teardown,
+deploy, then keep streaming). Leave it visible; scrolling events are the show:
 
-# Terminal 3 — the agent, pinned to live MCP (no silent sample fallback):
+```bash
+bash scripts/demo_up.sh
+```
+
+Terminal 2 — the agent, pinned to live MCP (no silent sample fallback):
+
+```bash
 python -m attribution_agent.agent.cli --source mcp
 ```
+
+Terminal 3 (optional) — the dashboard UI, live off the same pipeline:
+
+```bash
+python -m attribution_agent.api.board_view --source mcp --serve 8787
+```
+then open `ui/index.html?api=http://localhost:8787/board.json`.
+
+(Teardown only, no rebuild: `bash scripts/demo_down.sh`.)
 
 Pre-flight checks (do not skip):
 - `agent> summary` shows non-zero revenue and spend.
