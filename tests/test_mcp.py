@@ -44,12 +44,18 @@ def test_attribution_distributes_full_revenue_under_every_model():
         {"account_id": "B", "channel": "Outbound SDR", "touch_count": 3,
          "last_touch_time": "2026-03-08T00:00:00"},
     ]
-    attr, deals = _attribution_from_context(dist, won)
+    attr, deals, influenced = _attribution_from_context(dist, won)
 
     # Every model distributes exactly the $300 of won revenue.
     for model in ("last_touch", "linear", "time_decay"):
         total = sum(getattr(a, model) for a in attr.values())
         assert round(total, 2) == 300.0
+
+    # Influenced credits full deal revenue to every channel in each path:
+    # A ($100) touched Paid Search + Email Nurture; B ($200) touched Outbound SDR.
+    assert influenced["Paid Search"] == 100
+    assert influenced["Email Nurture"] == 100
+    assert influenced["Outbound SDR"] == 200
 
     # Last touch: A -> Paid Search (100), B -> Outbound SDR (200); deal credit too.
     assert attr["Paid Search"].last_touch == 100

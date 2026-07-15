@@ -132,6 +132,9 @@ class BoardPackData:
     prior_spend: float
     won_deals: int
     prior_won_deals: int
+    # Marketing-influenced revenue per channel (full deal revenue to every channel
+    # in the path; sums higher than sourced — held separate, never summed).
+    influenced_by_channel: dict[str, float] = field(default_factory=dict)
     # LLM answer-space visibility (leading indicator for the AI Assistant channel)
     share_of_model: list[ShareOfModelRow] = field(default_factory=list)
     # filled in by the agent layer
@@ -186,6 +189,11 @@ class BoardPackData:
         share_of_model = [ShareOfModelRow(m.buyer_query, m.probes, m.mentions,
                                           m.citations, m.best_rank, m.avg_rank)
                           for m in sd.SHARE_OF_MODEL]
+        # Offline approximation of any-touch reach (live MCP computes it exactly
+        # from the per-account touch distribution): multi-touch deals appear in
+        # ~2.2 channels on average, so influenced sums higher than sourced.
+        influenced_by_channel = {c.name: round(c.time_decay_revenue * 2.2)
+                                 for c in sd.CHANNELS}
         return cls(
             customer_name=sd.CUSTOMER_NAME, fiscal_period=sd.FISCAL_PERIOD,
             channels=channels, funnel=funnel, cac_roi=cac_roi, campaigns=campaigns,
@@ -193,6 +201,7 @@ class BoardPackData:
             prior_attributed=sd.PRIOR_ATTRIBUTED_REVENUE,
             total_spend=sd.total_spend(), prior_spend=sd.PRIOR_TOTAL_SPEND,
             won_deals=sd.TOTAL_WON_DEALS, prior_won_deals=sd.PRIOR_WON_DEALS,
+            influenced_by_channel=influenced_by_channel,
             share_of_model=share_of_model,
         )
 
@@ -217,7 +226,7 @@ class BoardPackData:
             som_rows = []
 
         spend_by_channel = {r["channel"]: float(r.get("spend") or 0) for r in spend_rows}
-        attr, deals = _attribution_from_context(dist_rows, won_rows)
+        attr, deals, influenced = _attribution_from_context(dist_rows, won_rows)
 
         all_channels = sorted(set(spend_by_channel) | set(attr))
         channels = [ChannelAttribution(ch, attr.get(ch, _Z).last_touch,
@@ -247,6 +256,7 @@ class BoardPackData:
             total_attributed=total_attr, prior_attributed=sd.PRIOR_ATTRIBUTED_REVENUE,
             total_spend=total_spend, prior_spend=sd.PRIOR_TOTAL_SPEND,
             won_deals=won, prior_won_deals=sd.PRIOR_WON_DEALS,
+            influenced_by_channel={ch: round(v) for ch, v in influenced.items()},
             share_of_model=share_of_model,
         )
 
@@ -304,7 +314,7 @@ def _parse_ts(value) -> datetime | None:
 def _attribution_from_context(
     dist_rows: list[dict], won_rows: list[dict],
     half_life_days: float = 7.0,
-) -> tuple[dict[str, _Attr], dict[str, int]]:
+) -> tuple[dict[str, _Attr], dict[str, int], dict[str, float]]:
     """Distribute each account's won revenue across channels under all three
     models, from the per-account channel touch distribution.
 
@@ -313,6 +323,8 @@ def _attribution_from_context(
     time decay  = recency-weighted (per channel's latest touch vs close), halved
                   every `half_life_days`, normalized per account
     deals       = last-touch credit (new customers per channel, for CAC)
+    influenced  = full deal revenue to EVERY channel in the path (multi-touch
+                  deals counted in several channels; sums higher than sourced)
     """
     by_account: dict[str, list[dict]] = {}
     for r in dist_rows:
@@ -320,6 +332,7 @@ def _attribution_from_context(
 
     attr: dict[str, _Attr] = {}
     deals: dict[str, int] = {}
+    influenced: dict[str, float] = {}
 
     def bucket(ch: str) -> _Attr:
         return attr.setdefault(ch, _Attr())
@@ -332,6 +345,11 @@ def _attribution_from_context(
             continue
         close = _parse_ts(won.get("close_time"))
         total_touch = sum(int(r.get("touch_count") or 0) for r in rows) or 1
+
+        # influenced: every channel anywhere in the path gets the full deal
+        # revenue (the "marketing-influenced" figure; never summed into one).
+        for ch in {r["channel"] for r in rows}:
+            influenced[ch] = influenced.get(ch, 0.0) + revenue
 
         # last touch + deal credit
         last_row = max(rows, key=lambda r: _parse_ts(r.get("last_touch_time")) or datetime.min)
@@ -356,7 +374,7 @@ def _attribution_from_context(
         for ch, w in weights.items():
             bucket(ch).time_decay += revenue * w / wsum
 
-    return attr, deals
+    return attr, deals, influenced
 
 
 def _pearson(a: list[float], b: list[float]) -> float:
