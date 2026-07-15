@@ -26,7 +26,7 @@ CREATE STREAM "touchpoints" (
 ) WITH (
     'topic' = 'rachel_touchpoints',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'

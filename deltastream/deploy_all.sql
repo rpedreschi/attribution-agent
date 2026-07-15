@@ -19,6 +19,8 @@ CREATE STREAM "ga4_events" (
     "utm_content"   VARCHAR
 ) WITH (
     'topic' = 'rachel_ga4_events',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -45,6 +47,8 @@ CREATE STREAM "hubspot_events" (
     "program_category" VARCHAR
 ) WITH (
     'topic' = 'rachel_hubspot_events',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -65,6 +69,8 @@ CREATE STREAM "outreach_activity" (
     "sdr"          VARCHAR
 ) WITH (
     'topic' = 'rachel_outreach_activity',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -85,6 +91,8 @@ CREATE STREAM "linkedin_ads" (
     "event_time"   TIMESTAMP
 ) WITH (
     'topic' = 'rachel_linkedin_ads',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -101,6 +109,8 @@ CREATE STREAM "google_ads" (
     "event_time"   TIMESTAMP
 ) WITH (
     'topic' = 'rachel_google_ads',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -123,7 +133,7 @@ CREATE STREAM "share_of_model" (
 ) WITH (
     'topic' = 'rachel_share_of_model',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -144,6 +154,8 @@ CREATE CHANGELOG "sf_contacts" (
     PRIMARY KEY ("email")
 ) WITH (
     'topic' = 'rachel_salesforce_cdc_contacts',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
@@ -162,6 +174,8 @@ CREATE CHANGELOG "sf_accounts" (
     PRIMARY KEY ("account_id")
 ) WITH (
     'topic' = 'rachel_salesforce_cdc_accounts',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
@@ -179,6 +193,8 @@ CREATE STREAM "sf_opportunities" (
     "program_category" VARCHAR
 ) WITH (
     'topic' = 'rachel_salesforce_cdc_opportunities',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -192,7 +208,7 @@ USE SCHEMA "public";
 CREATE STREAM "web_resolved" WITH (
     'topic' = 'rachel_web_resolved',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
@@ -211,7 +227,7 @@ WHERE h."event_type" = 'form_submission'
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'rachel_web_identity_map',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'key.columns' = 'web_user_id'
@@ -245,7 +261,7 @@ CREATE STREAM "touchpoints" (
 ) WITH (
     'topic' = 'rachel_touchpoints',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
@@ -312,7 +328,7 @@ CREATE STREAM "conversions" (
 ) WITH (
     'topic' = 'rachel_conversions',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
@@ -360,7 +376,7 @@ CREATE STREAM "spend" (
 ) WITH (
     'topic' = 'rachel_spend',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -375,7 +391,7 @@ CREATE STREAM "channel_cost" (
 ) WITH (
     'topic' = 'rachel_channel_cost',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -408,7 +424,7 @@ CREATE STREAM "funnel_events" (
 ) WITH (
     'topic' = 'rachel_funnel_events',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'

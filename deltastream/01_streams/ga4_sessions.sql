@@ -21,6 +21,8 @@ CREATE STREAM "ga4_events" (
     "utm_content"   VARCHAR
 ) WITH (
     'topic' = 'rachel_ga4_events',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',

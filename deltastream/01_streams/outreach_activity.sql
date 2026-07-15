@@ -16,6 +16,8 @@ CREATE STREAM "outreach_activity" (
     "sdr"          VARCHAR
 ) WITH (
     'topic' = 'rachel_outreach_activity',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',

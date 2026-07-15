@@ -16,6 +16,8 @@ CREATE STREAM "linkedin_ads" (
     "event_time"   TIMESTAMP          -- wall-clock of the spend row (for spend timeline)
 ) WITH (
     'topic' = 'rachel_linkedin_ads',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -32,6 +34,8 @@ CREATE STREAM "google_ads" (
     "event_time"   TIMESTAMP
 ) WITH (
     'topic' = 'rachel_google_ads',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',

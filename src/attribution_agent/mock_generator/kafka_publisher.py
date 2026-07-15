@@ -110,7 +110,7 @@ def _admin_client(settings: Settings):
     return AdminClient(_kafka_conf(settings))
 
 
-def create_topics(settings: Settings, *, partitions: int = 6, replication: int = 3) -> None:
+def create_topics(settings: Settings, *, partitions: int = 1, replication: int = 1) -> None:
     """Create the source topics on Confluent Cloud (auto-create is usually off).
     Confluent Basic/Standard clusters require replication factor 3."""
     from confluent_kafka.admin import NewTopic  # lazy import
@@ -138,7 +138,7 @@ def delete_topics(settings: Settings) -> None:
             print(f"  topic {topic}: {exc}")
 
 
-def recreate_topics(settings: Settings, *, partitions: int = 6, replication: int = 3,
+def recreate_topics(settings: Settings, *, partitions: int = 1, replication: int = 1,
                     poll_seconds: float = 3.0, max_polls: int = 20) -> None:
     """Delete then recreate the source topics for a clean slate. Confluent Cloud
     deletes asynchronously, so wait for the names to disappear before creating

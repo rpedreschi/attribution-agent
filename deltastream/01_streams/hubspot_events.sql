@@ -22,6 +22,8 @@ CREATE STREAM "hubspot_events" (
     "program_category" VARCHAR        -- source channel, set on lifecycle_change events
 ) WITH (
     'topic' = 'rachel_hubspot_events',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',

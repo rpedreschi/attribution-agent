@@ -72,7 +72,7 @@ LIST DATABASES;                       -- attribution present
 > `rachel_web_identity_map`, `rachel_touchpoints`, `rachel_conversions`, `rachel_spend`,
 > `rachel_funnel_events`). Because DeltaStream has to create the derived topics, each carries
 > `'topic.partitions' = 1` and `'topic.replicas' = 3` (unquoted integers) in its
-> WITH clause (Confluent Cloud requires replication factor 3); adjust if your
+> WITH clause (WarpStream uses replication factor 1); adjust if your
 > cluster differs.
 
 If `PRINT STORE` can't list topics, the store credentials/URI are wrong — fix

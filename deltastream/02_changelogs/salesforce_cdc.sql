@@ -28,6 +28,8 @@ CREATE CHANGELOG "sf_contacts" (
     PRIMARY KEY ("email")
 ) WITH (
     'topic' = 'rachel_salesforce_cdc_contacts',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
@@ -46,6 +48,8 @@ CREATE CHANGELOG "sf_accounts" (
     PRIMARY KEY ("account_id")
 ) WITH (
     'topic' = 'rachel_salesforce_cdc_accounts',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
@@ -63,6 +67,8 @@ CREATE STREAM "sf_opportunities" (
     "program_category" VARCHAR        -- source channel (lead source)
 ) WITH (
     'topic' = 'rachel_salesforce_cdc_opportunities',
+    'topic.partitions' = 1,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',

@@ -19,7 +19,7 @@ CREATE STREAM "spend" (
 ) WITH (
     'topic' = 'rachel_spend',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',
@@ -37,7 +37,7 @@ CREATE STREAM "channel_cost" (
 ) WITH (
     'topic' = 'rachel_channel_cost',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time',

@@ -23,7 +23,7 @@ USE SCHEMA "public";
 CREATE STREAM "web_resolved" WITH (
     'topic' = 'rachel_web_resolved',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'timestamp' = 'event_time'
@@ -43,7 +43,7 @@ WHERE h."event_type" = 'form_submission'
 CREATE CHANGELOG "web_identity_map" WITH (
     'topic' = 'rachel_web_identity_map',
     'topic.partitions' = 1,
-    'topic.replicas' = 3,
+    'topic.replicas' = 1,
     'store' = 'demo_warpstream',
     'value.format' = 'json',
     'key.columns' = 'web_user_id'
