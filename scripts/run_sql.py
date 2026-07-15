@@ -8,11 +8,11 @@ Authenticate with the DS_TOKEN env var (dsql reads it automatically).
 
     export DS_TOKEN="<your-token>"
     python scripts/run_sql.py deltastream/deploy_all.sql \
-        --cli ../../dscliv2 --server https://api-kap822.deltastream.io/v2
+        --cli ../../dscliv2 --server https://api-kd8j38.stage.deltastream-internal.name/v2
 
     # teardown: keep going past harmless 'does not exist' errors
     python scripts/run_sql.py deltastream/teardown.sql --keep-going \
-        --cli ../../dscliv2 --server https://api-kap822.deltastream.io/v2
+        --cli ../../dscliv2 --server https://api-kd8j38.stage.deltastream-internal.name/v2
 
 The --cli / --server / --org defaults can also come from the DSQL_BIN /
 DS_SERVER / DS_ORG environment variables.

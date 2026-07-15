@@ -17,9 +17,25 @@ Either way you run the same statements in the same order.
 - Events must already be in Confluent on the `attr_*` source topics (e.g.
   `attr_ga4_events`, `attr_salesforce_cdc_contacts`). Confirm with the
   datagen run, or in the Confluent UI (each topic should have a message count).
-- The Kafka store already exists as `demo_confluent` (the default store); you do
-  not create one. You just need a DDL-capable role to create the database and
-  objects.
+- The Kafka store `demo_confluent` must exist on this DeltaStream instance and be
+  the default. On the org where this was first built it already was — but a
+  **new/different instance won't have it**. Check `LIST STORES;`. If it's missing,
+  create one pointing at your Confluent cluster (you need the Kafka bootstrap +
+  API key/secret), then make it default:
+  ```sql
+  CREATE STORE "demo_confluent" WITH (
+    'type' = KAFKA,
+    'kafka.sasl.hash_function' = PLAIN,
+    'uris' = 'pkc-921jm.us-east-2.aws.confluent.cloud:9092',
+    'kafka.sasl.username' = '<KAFKA_API_KEY>',
+    'kafka.sasl.password' = '<KAFKA_API_SECRET>'
+  );
+  ```
+  (Confirm the exact WITH keys against your DeltaStream version's CREATE STORE
+  docs — they vary by release.)
+- A **new instance also needs a new API token** (`DS_TOKEN` for deploy,
+  `DELTASTREAM_API_TOKEN` for the agent) — the old token was scoped to the old
+  org. `demo_up.sh` now creates the `attribution` database for you.
 
 ## 1. Database + session context  — `00_stores.sql`
 
@@ -181,7 +197,7 @@ statement at a time, so the CLI never collapses a comment into a statement):
 
 ```bash
 export DS_TOKEN="<token>"; export DSQL_BIN="../../dscliv2"
-export DS_SERVER="https://api-kap822.deltastream.io/v2"
+export DS_SERVER="https://api-kd8j38.stage.deltastream-internal.name/v2"
 
 python scripts/run_sql.py deltastream/teardown.sql --keep-going   # drop relations
 python scripts/run_sql.py deltastream/deploy_all.sql              # rebuild them
