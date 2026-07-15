@@ -13,12 +13,15 @@ customer:
   fiscal_period: "2026-Q1"
 
 kafka:
-  # Confluent Cloud cluster. SASL_SSL + PLAIN (API key / secret).
-  bootstrap_servers: "${KAFKA_BOOTSTRAP_SERVERS}"   # e.g. pkc-921jm.us-east-2.aws.confluent.cloud:9092
+  # WarpStream (or any Kafka-API) cluster. SASL_SSL + PLAIN.
+  bootstrap_servers: "${KAFKA_BOOTSTRAP_SERVERS}"
   security_protocol: "SASL_SSL"
   sasl_mechanism: "PLAIN"
   sasl_username: "${KAFKA_API_KEY}"
   sasl_password: "${KAFKA_API_SECRET}"
+  # PEM CA file if the broker uses a custom root (WarpStream does). Leave empty
+  # for public-CA brokers. The producer + admin client pass it to librdkafka.
+  ssl_ca_location: "${KAFKA_SSL_CA_LOCATION}"
   topics:
     salesforce_accounts: "rachel_salesforce_cdc_accounts"
     salesforce_contacts: "rachel_salesforce_cdc_contacts"

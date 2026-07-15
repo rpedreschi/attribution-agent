@@ -29,6 +29,9 @@ class KafkaConfig(BaseModel):
     sasl_mechanism: str | None = None
     sasl_username: str | None = None
     sasl_password: str | None = None
+    # PEM CA file for brokers with a custom root (e.g. WarpStream). Maps to
+    # librdkafka's ssl.ca.location for the producer + admin client.
+    ssl_ca_location: str | None = None
     topics: dict[str, str] = Field(default_factory=dict)
 
 

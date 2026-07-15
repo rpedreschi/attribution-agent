@@ -64,23 +64,30 @@ class FilePublisher:
             fh.close()  # type: ignore[union-attr]
 
 
+def _kafka_conf(settings: Settings) -> dict[str, object]:
+    """librdkafka connection config shared by the producer and admin client."""
+    conf: dict[str, object] = {
+        "bootstrap.servers": settings.kafka.bootstrap_servers,
+        "security.protocol": settings.kafka.security_protocol,
+    }
+    if settings.kafka.sasl_mechanism:
+        conf.update({
+            "sasl.mechanism": settings.kafka.sasl_mechanism,
+            "sasl.username": settings.kafka.sasl_username,
+            "sasl.password": settings.kafka.sasl_password,
+        })
+    if settings.kafka.ssl_ca_location:            # custom broker CA (e.g. WarpStream)
+        conf["ssl.ca.location"] = settings.kafka.ssl_ca_location
+    return conf
+
+
 class KafkaPublisher:
     """Wraps confluent_kafka.Producer. Imported lazily so dry-run needs no broker."""
 
     def __init__(self, settings: Settings) -> None:
         from confluent_kafka import Producer  # lazy import
 
-        conf: dict[str, object] = {
-            "bootstrap.servers": settings.kafka.bootstrap_servers,
-            "security.protocol": settings.kafka.security_protocol,
-        }
-        if settings.kafka.sasl_mechanism:
-            conf.update({
-                "sasl.mechanism": settings.kafka.sasl_mechanism,
-                "sasl.username": settings.kafka.sasl_username,
-                "sasl.password": settings.kafka.sasl_password,
-            })
-        self._producer = Producer(conf)
+        self._producer = Producer(_kafka_conf(settings))
         self.counts: dict[str, int] = {}
 
     def publish(self, topic: str, key: str, payload: dict) -> None:
@@ -100,17 +107,7 @@ def _admin_client(settings: Settings):
     """Build a confluent_kafka AdminClient from settings (lazy import)."""
     from confluent_kafka.admin import AdminClient  # lazy import
 
-    conf: dict[str, object] = {
-        "bootstrap.servers": settings.kafka.bootstrap_servers,
-        "security.protocol": settings.kafka.security_protocol,
-    }
-    if settings.kafka.sasl_mechanism:
-        conf.update({
-            "sasl.mechanism": settings.kafka.sasl_mechanism,
-            "sasl.username": settings.kafka.sasl_username,
-            "sasl.password": settings.kafka.sasl_password,
-        })
-    return AdminClient(conf)
+    return AdminClient(_kafka_conf(settings))
 
 
 def create_topics(settings: Settings, *, partitions: int = 6, replication: int = 3) -> None:

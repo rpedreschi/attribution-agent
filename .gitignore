@@ -33,3 +33,5 @@ events/*.jsonl
 .idea/
 .vscode/
 config/settings.yaml.bak
+config/*.pem
+config/*.crt

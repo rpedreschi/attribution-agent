@@ -8,9 +8,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # ============================ EDIT THESE ============================
-KAFKA_BOOTSTRAP="pkc-921jm.us-east-2.aws.confluent.cloud:9092"
-KAFKA_KEY="WOKWAFU7IAFTGYGU"
-KAFKA_SECRET="PASTE_CONFLUENT_API_SECRET"
+KAFKA_BOOTSTRAP="PASTE_WARPSTREAM_BOOTSTRAP:9092"
+KAFKA_KEY="PASTE_WARPSTREAM_SASL_USERNAME"
+KAFKA_SECRET="PASTE_WARPSTREAM_SASL_PASSWORD"
+KAFKA_CA="config/warpstream-ca.pem"   # path where you saved the WarpStream CA (PEM)
 DS_MCP_ENDPOINT="https://api-mizaz8.deltastream.io/mcp/v1"
 DS_API_TOKEN="PASTE_DELTASTREAM_API_TOKEN"
 ANTHROPIC_KEY="PASTE_ANTHROPIC_API_KEY"
@@ -25,6 +26,7 @@ kafka:
   bootstrap_servers: "$KAFKA_BOOTSTRAP"
   sasl_username: "$KAFKA_KEY"
   sasl_password: "$KAFKA_SECRET"
+  ssl_ca_location: "$KAFKA_CA"
 
 deltastream:
   mcp_endpoint: "$DS_MCP_ENDPOINT"
