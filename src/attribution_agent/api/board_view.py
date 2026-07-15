@@ -47,7 +47,7 @@ def build_board_view(
     now = now or datetime.now(timezone.utc)
     excluded = set(excluded_channels or [])
     trends = trends or {"bucket": "minute", "revenue": [], "touches_by_channel": {},
-                        "share_of_model": {}, "illustrative": False}
+                        "spend_by_channel": {}, "share_of_model": {}, "illustrative": False}
 
     view = {
         "meta": _meta(data, now, events_per_sec, sources_streaming, trends),
@@ -388,8 +388,18 @@ def trends_from_mcp(client, views: dict) -> dict:
             for b, c in sorted(series.items())]
         for q, series in som.items()}
 
+    # spend by channel over time (spend pacing; cross with touches for live CPL)
+    spend: dict = {}
+    for r in _q("spend_timeline"):
+        ch, b = r.get("channel"), _bucket_iso(r.get("bucket"))
+        spend.setdefault(ch, {}).setdefault(b, 0.0)
+        spend[ch][b] += float(r.get("spend") or 0)
+    spend_by_channel = {ch: [{"t": b, "spend": round(v)} for b, v in sorted(series.items())]
+                        for ch, series in spend.items()}
+
     return {"bucket": "minute", "revenue": revenue,
             "touches_by_channel": touches_by_channel,
+            "spend_by_channel": spend_by_channel,
             "share_of_model": share_of_model, "illustrative": False}
 
 
@@ -410,6 +420,10 @@ def trends_sample(data: BoardPackData, buckets: int = 15) -> dict:
         c.channel: [{"t": times[i], "touches": max(0, round(40 * c.time_decay / td_total))}
                     for i in range(buckets)]
         for c in data.channels}
+    spend_by_channel = {
+        r.program_category: [{"t": times[i], "spend": round(r.spend / buckets)}
+                             for i in range(buckets)]
+        for r in data.cac_roi if r.spend}
     share_of_model = {}
     for s in data.share_of_model:
         if s.status == "at risk":                       # declining curve (the slip)
@@ -421,6 +435,7 @@ def trends_sample(data: BoardPackData, buckets: int = 15) -> dict:
                                          for i in range(buckets)]
     return {"bucket": "minute", "revenue": revenue,
             "touches_by_channel": touches_by_channel,
+            "spend_by_channel": spend_by_channel,
             "share_of_model": share_of_model, "illustrative": True}
 
 

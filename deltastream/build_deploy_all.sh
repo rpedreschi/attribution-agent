@@ -32,6 +32,7 @@ FILES=(
   deltastream/05_views/06_mv_revenue_timeline.sql
   deltastream/05_views/07_mv_touch_timeline.sql
   deltastream/05_views/08_mv_som_timeline.sql
+  deltastream/05_views/09_mv_spend_timeline.sql
 )
 OUT=deltastream/deploy_all.sql
 

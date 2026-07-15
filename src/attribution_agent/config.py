@@ -54,6 +54,7 @@ class DeltaStreamConfig(BaseModel):
         "revenue_timeline": "attribution_public_mv_revenue_timeline",
         "touch_timeline": "attribution_public_mv_touch_timeline",
         "som_timeline": "attribution_public_mv_som_timeline",
+        "spend_timeline": "attribution_public_mv_spend_timeline",
     })
 
 

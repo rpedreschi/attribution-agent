@@ -12,11 +12,14 @@ CREATE STREAM "linkedin_ads" (
     "campaign"     VARCHAR,
     "spend_amount" DOUBLE,
     "impressions"  BIGINT,
-    "clicks"       BIGINT
+    "clicks"       BIGINT,
+    "event_time"   TIMESTAMP          -- wall-clock of the spend row (for spend timeline)
 ) WITH (
     'topic' = 'attr_linkedin_ads',
     'store' = 'demo_confluent',
-    'value.format' = 'json'
+    'value.format' = 'json',
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );
 
 CREATE STREAM "google_ads" (
@@ -25,9 +28,12 @@ CREATE STREAM "google_ads" (
     "campaign"     VARCHAR,
     "spend_amount" DOUBLE,
     "impressions"  BIGINT,
-    "clicks"       BIGINT
+    "clicks"       BIGINT,
+    "event_time"   TIMESTAMP
 ) WITH (
     'topic' = 'attr_google_ads',
     'store' = 'demo_confluent',
-    'value.format' = 'json'
+    'value.format' = 'json',
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );

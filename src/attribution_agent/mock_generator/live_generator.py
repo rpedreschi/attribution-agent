@@ -250,7 +250,7 @@ class LiveGenerator:
             campaign = self.rng.choice(_AD_CAMPAIGNS[ch_name])
             impr = int(spend * self.rng.uniform(20, 60))
             clicks = int(impr * self.rng.uniform(0.01, 0.04))
-            events.append(builder(day, campaign, round(spend, 2), impr, clicks))
+            events.append(builder(day, campaign, round(spend, 2), impr, clicks, now))
         return events
 
     def _cost_slice(self, won_rev: float, now: datetime) -> list[Event]:
@@ -263,7 +263,7 @@ class LiveGenerator:
             if ch.name in ("Paid Social", "Paid Search", "Events"):
                 continue
             cost = max(won_rev * (ch.spend / sd.TOTAL_ATTRIBUTED_REVENUE), 50.0)
-            events.append(schemas.channel_cost(day, ch.name, round(cost, 2)))
+            events.append(schemas.channel_cost(day, ch.name, round(cost, 2), now))
         return events
 
     def _share_of_model_slice(self, now: datetime) -> list[Event]:

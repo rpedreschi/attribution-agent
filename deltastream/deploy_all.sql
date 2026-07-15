@@ -81,11 +81,14 @@ CREATE STREAM "linkedin_ads" (
     "campaign"     VARCHAR,
     "spend_amount" DOUBLE,
     "impressions"  BIGINT,
-    "clicks"       BIGINT
+    "clicks"       BIGINT,
+    "event_time"   TIMESTAMP
 ) WITH (
     'topic' = 'attr_linkedin_ads',
     'store' = 'demo_confluent',
-    'value.format' = 'json'
+    'value.format' = 'json',
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );
 
 CREATE STREAM "google_ads" (
@@ -94,11 +97,14 @@ CREATE STREAM "google_ads" (
     "campaign"     VARCHAR,
     "spend_amount" DOUBLE,
     "impressions"  BIGINT,
-    "clicks"       BIGINT
+    "clicks"       BIGINT,
+    "event_time"   TIMESTAMP
 ) WITH (
     'topic' = 'attr_google_ads',
     'store' = 'demo_confluent',
-    'value.format' = 'json'
+    'value.format' = 'json',
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );
 
 
@@ -349,40 +355,46 @@ CREATE STREAM "spend" (
     "program_category" VARCHAR,
     "campaign"         VARCHAR,
     "spend_amount"     DOUBLE,
-    "source_platform"  VARCHAR
+    "source_platform"  VARCHAR,
+    "event_time"       TIMESTAMP
 ) WITH (
     'topic' = 'attr_spend',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
     'store' = 'demo_confluent',
-    'value.format' = 'json'
+    'value.format' = 'json',
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );
 
 CREATE STREAM "channel_cost" (
     "spend_date"   VARCHAR,
     "channel"      VARCHAR,
-    "spend_amount" DOUBLE
+    "spend_amount" DOUBLE,
+    "event_time"   TIMESTAMP
 ) WITH (
     'topic' = 'attr_channel_cost',
     'topic.partitions' = 1,
     'topic.replicas' = 3,
     'store' = 'demo_confluent',
-    'value.format' = 'json'
+    'value.format' = 'json',
+    'timestamp' = 'event_time',
+    'timestamp.format' = 'iso8601'
 );
 
 INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
-       "spend_amount", 'linkedin' AS "source_platform"
+       "spend_amount", 'linkedin' AS "source_platform", "event_time"
 FROM "linkedin_ads";
 
 INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category", "campaign",
-       "spend_amount", 'google_ads' AS "source_platform"
+       "spend_amount", 'google_ads' AS "source_platform", "event_time"
 FROM "google_ads";
 
 INSERT INTO "spend"
 SELECT "spend_date", "channel", "channel" AS "program_category",
-       '' AS "campaign", "spend_amount", 'finance' AS "source_platform"
+       '' AS "campaign", "spend_amount", 'finance' AS "source_platform", "event_time"
 FROM "channel_cost";
 
 
@@ -521,3 +533,15 @@ SELECT
     SUM("mentioned")              AS "mentions"
 FROM "share_of_model"
 GROUP BY "buyer_query", FLOOR("event_time" TO MINUTE);
+
+
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
+CREATE MATERIALIZED VIEW "mv_spend_timeline" AS
+SELECT
+    "channel",
+    FLOOR("event_time" TO MINUTE) AS "bucket",
+    SUM("spend_amount")           AS "spend"
+FROM "spend"
+GROUP BY "channel", FLOOR("event_time" TO MINUTE);

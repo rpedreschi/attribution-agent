@@ -28,7 +28,7 @@ pack to Excel.
  │      mv_channel_touch_distribution                │
  │      mv_won_revenue_by_account                    │
  │      mv_share_of_model  (LLM answer-space)        │
- │      mv_revenue_timeline / touch / som (per-min)  │
+ │      mv_revenue/touch/som/spend_timeline (per-min)  │
  │  • MVs auto-exposed over MCP to the token's role  │
  └────────────────────────────────────────────────┘
         │   DeltaStream MCP endpoint (Bearer token)

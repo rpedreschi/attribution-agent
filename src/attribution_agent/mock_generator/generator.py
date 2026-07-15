@@ -268,12 +268,13 @@ class Generator:
             ch = sd.channel_by_name(ch_name)
             daily = ch.spend / (PERIOD_DAYS + 1)
             for d in range(PERIOD_DAYS + 1):
-                day = (PERIOD_START + timedelta(days=d)).strftime("%Y-%m-%d")
+                when = PERIOD_START + timedelta(days=d)
+                day = when.strftime("%Y-%m-%d")
                 campaign = self.rng.choice(campaigns)
                 spend = daily * self.rng.uniform(0.6, 1.4) / len(campaigns)
                 impr = int(spend * self.rng.uniform(20, 60))
                 clicks = int(impr * self.rng.uniform(0.01, 0.04))
-                events.append(builder(day, campaign, spend, impr, clicks))
+                events.append(builder(day, campaign, spend, impr, clicks, when))
         # Loaded cost for the non-ad channels (finance export -> channel_cost).
         # Skip the ad platforms (above) and Events (no live attributed touches, so
         # it would show spend with no revenue).
@@ -282,8 +283,10 @@ class Generator:
                 continue
             daily = ch.spend / (PERIOD_DAYS + 1)
             for d in range(PERIOD_DAYS + 1):
-                day = (PERIOD_START + timedelta(days=d)).strftime("%Y-%m-%d")
-                events.append(schemas.channel_cost(day, ch.name, daily * self.rng.uniform(0.8, 1.2)))
+                when = PERIOD_START + timedelta(days=d)
+                day = when.strftime("%Y-%m-%d")
+                events.append(schemas.channel_cost(day, ch.name,
+                                                   daily * self.rng.uniform(0.8, 1.2), when))
         return events
 
     # -- orchestration -------------------------------------------------------

@@ -97,17 +97,21 @@ def ga4_event(user_id: str, session_id: str, name: str, page: str, device: str,
 
 # --- Ad platforms -----------------------------------------------------------
 
-def linkedin_spend(day: str, campaign: str, spend: float, impr: int, clicks: int) -> Event:
+def linkedin_spend(day: str, campaign: str, spend: float, impr: int, clicks: int,
+                   when: datetime) -> Event:
     return ("linkedin_ads", {
         "spend_date": day, "channel": "Paid Social", "campaign": campaign,
         "spend_amount": round(spend, 2), "impressions": impr, "clicks": clicks,
+        "event_time": _ts(when),
     })
 
 
-def google_spend(day: str, campaign: str, spend: float, impr: int, clicks: int) -> Event:
+def google_spend(day: str, campaign: str, spend: float, impr: int, clicks: int,
+                 when: datetime) -> Event:
     return ("google_ads", {
         "spend_date": day, "channel": "Paid Search", "campaign": campaign,
         "spend_amount": round(spend, 2), "impressions": impr, "clicks": clicks,
+        "event_time": _ts(when),
     })
 
 
@@ -117,9 +121,10 @@ def google_spend(day: str, campaign: str, spend: float, impr: int, clicks: int) 
 # money. Lets the agent compute CAC/ROI for every channel, not just the two
 # ad platforms.
 
-def channel_cost(day: str, channel: str, spend_amount: float) -> Event:
+def channel_cost(day: str, channel: str, spend_amount: float, when: datetime) -> Event:
     return ("channel_cost", {
         "spend_date": day, "channel": channel, "spend_amount": round(spend_amount, 2),
+        "event_time": _ts(when),
     })
 
 

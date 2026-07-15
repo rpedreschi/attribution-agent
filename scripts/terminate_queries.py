@@ -28,6 +28,7 @@ MARKERS = (
     '"mv_channel_touch_distribution"', '"mv_won_revenue_by_account"',
     '"mv_share_of_model"',
     '"mv_revenue_timeline"', '"mv_touch_timeline"', '"mv_som_timeline"',
+    '"mv_spend_timeline"',
 )
 
 
