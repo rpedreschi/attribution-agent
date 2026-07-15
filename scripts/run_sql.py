@@ -78,7 +78,9 @@ def main() -> None:
 
     print(f"\nDone — {len(statements) - failures}/{len(statements)} succeeded, "
           f"{failures} failed.")
-    sys.exit(1 if failures else 0)
+    # --keep-going means "tolerate failures" — so exit 0 (otherwise a harmless
+    # 'already exists' aborts a `set -e` caller like demo_up.sh).
+    sys.exit(1 if failures and not args.keep_going else 0)
 
 
 if __name__ == "__main__":
