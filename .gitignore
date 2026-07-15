@@ -32,3 +32,4 @@ events/*.jsonl
 .DS_Store
 .idea/
 .vscode/
+config/settings.yaml.bak
