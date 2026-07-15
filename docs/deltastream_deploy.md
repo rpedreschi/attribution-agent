@@ -17,25 +17,22 @@ Either way you run the same statements in the same order.
 - Events must already be in Confluent on the `attr_*` source topics (e.g.
   `attr_ga4_events`, `attr_salesforce_cdc_contacts`). Confirm with the
   datagen run, or in the Confluent UI (each topic should have a message count).
-- The Kafka store `demo_confluent` must exist on this DeltaStream instance and be
-  the default. On the org where this was first built it already was — but a
-  **new/different instance won't have it**. Check `LIST STORES;`. If it's missing,
-  create one pointing at your Confluent cluster (you need the Kafka bootstrap +
-  API key/secret), then make it default:
-  ```sql
-  CREATE STORE "demo_confluent" WITH (
-    'type' = KAFKA,
-    'kafka.sasl.hash_function' = PLAIN,
-    'uris' = 'pkc-921jm.us-east-2.aws.confluent.cloud:9092',
-    'kafka.sasl.username' = '<KAFKA_API_KEY>',
-    'kafka.sasl.password' = '<KAFKA_API_SECRET>'
-  );
+- The Kafka store `demo_confluent` must exist on this DeltaStream instance. A
+  **new/different instance won't have it.** One-time setup per instance:
+  ```bash
+  bash scripts/demo_init.sh     # creates the store + the attribution database
   ```
-  (Confirm the exact WITH keys against your DeltaStream version's CREATE STORE
-  docs — they vary by release.)
+  It reads the Kafka bootstrap/key/secret from your config (env or
+  `config/settings.yaml`) and creates the store, then the database. Idempotent.
+  If your DeltaStream release wants different `CREATE STORE` keys, edit that one
+  statement in `scripts/demo_init.sh`.
 - A **new instance also needs a new API token** (`DS_TOKEN` for deploy,
   `DELTASTREAM_API_TOKEN` for the agent) — the old token was scoped to the old
-  org. `demo_up.sh` now creates the `attribution` database for you.
+  org.
+
+**Moving to a new instance, start to finish:** set `DS_TOKEN`/`DS_SERVER`/`DSQL_BIN`
++ Kafka creds → `bash scripts/demo_init.sh` (once) → `bash scripts/demo_up.sh`
+(every rebuild).
 
 ## 1. Database + session context  — `00_stores.sql`
 
