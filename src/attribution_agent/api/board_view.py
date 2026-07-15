@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from ..agent.reporting import BoardPackData
@@ -40,17 +40,21 @@ def build_board_view(
     now: datetime | None = None,
     events_per_sec: int | None = None,
     sources_streaming: int | None = None,
+    trends: dict | None = None,
 ) -> dict:
     """Return the full board-view document (see docs/ui_data_contract.md)."""
     decisions = decisions or []
     now = now or datetime.now(timezone.utc)
     excluded = set(excluded_channels or [])
+    trends = trends or {"bucket": "minute", "revenue": [], "touches_by_channel": {},
+                        "share_of_model": {}, "illustrative": False}
 
     view = {
-        "meta": _meta(data, now, events_per_sec, sources_streaming),
+        "meta": _meta(data, now, events_per_sec, sources_streaming, trends),
+        "trends": trends,
         "live_board": {
             "kpis": _kpis(data, prev_snapshot),
-            "what_changed": _what_changed(data, prev_snapshot, excluded),
+            "what_changed": _what_changed(data, prev_snapshot, excluded, trends),
             "money_by_channel": _money_by_channel(data),
         },
         "model_compare": {
@@ -92,7 +96,7 @@ def snapshot_of(data: BoardPackData, now: datetime | None = None) -> dict:
 # sections                                                                     #
 # --------------------------------------------------------------------------- #
 
-def _meta(data, now, events_per_sec, sources_streaming) -> dict:
+def _meta(data, now, events_per_sec, sources_streaming, trends) -> dict:
     return {
         "customer": data.customer_name,
         "period_label": f"{data.fiscal_period} to date",
@@ -101,6 +105,8 @@ def _meta(data, now, events_per_sec, sources_streaming) -> dict:
         "events_per_sec": events_per_sec if events_per_sec is not None else 2000,
         "events_per_sec_illustrative": events_per_sec is None,
         "window": "period_to_date",
+        # the live time axis available to the UI's time filter (one bucket/minute)
+        "trend_buckets": len(trends.get("revenue", [])),
         "sources_streaming": sources_streaming if sources_streaming is not None else 8,
         "environment": "production",
     }
@@ -140,8 +146,23 @@ def _kpis(data: BoardPackData, prev: dict | None) -> list[dict]:
     ]
 
 
-def _what_changed(data: BoardPackData, prev: dict | None, excluded: set) -> list[dict]:
+def _what_changed(data: BoardPackData, prev: dict | None, excluded: set,
+                  trends: dict) -> list[dict]:
     cards: list[dict] = []
+
+    # REAL (from the revenue timeline): pace of revenue over the live window.
+    rev = trends.get("revenue") or []
+    if len(rev) >= 3:
+        recent = sum(p["revenue"] for p in rev[-3:])
+        earlier = sum(p["revenue"] for p in rev[:3]) or 1
+        pct = (recent - earlier) / earlier * 100
+        cards.append({
+            "kind": "new" if pct >= 0 else "drift",
+            "title": "Revenue pace shifted",
+            "body": f"Closed-won over the latest buckets is {pct:+.0f}% vs the start of "
+                    "the window — recomputed live, no nightly job.",
+            "real": True,
+        })
 
     # REAL: share-of-model slip (the AI Assistant early-warning).
     at_risk = [s for s in data.share_of_model if s.status == "at risk"]
@@ -304,6 +325,106 @@ def _biggest_mover(data: BoardPackData, prev_td: dict) -> tuple[str, float] | No
 
 
 # --------------------------------------------------------------------------- #
+# trends (timeline MVs)                                                        #
+# --------------------------------------------------------------------------- #
+
+def _bucket_iso(v) -> str:
+    from ..agent.reporting import _parse_ts
+    dt = _parse_ts(v)
+    return dt.isoformat() if dt else str(v)
+
+
+def _merge_timeline(rows: list[dict], key: str, sums: tuple[str, ...]) -> dict:
+    """Fold an aggregating MV's partial rows by a single key (DeltaStream can
+    serve several un-merged parts per group)."""
+    agg: dict = {}
+    for r in rows:
+        k = r.get(key)
+        a = agg.setdefault(k, {s: 0.0 for s in sums})
+        for s in sums:
+            a[s] += float(r.get(s) or 0)
+    return agg
+
+
+def trends_from_mcp(client, views: dict) -> dict:
+    """Build the trend series from the timeline MVs; tolerate any that aren't
+    deployed yet (returns empty series for those)."""
+    from ..agent.deltastream_mcp import DeltaStreamMCPError
+
+    def _q(key):
+        try:
+            return client.query_view(key)
+        except (DeltaStreamMCPError, KeyError):
+            return []
+
+    # revenue timeline: one row per minute bucket
+    rev_by_bucket: dict = {}
+    for r in _q("revenue_timeline"):
+        b = _bucket_iso(r.get("bucket"))
+        a = rev_by_bucket.setdefault(b, {"revenue": 0.0, "deals": 0.0})
+        a["revenue"] += float(r.get("revenue") or 0)
+        a["deals"] += float(r.get("deals") or 0)
+    revenue = [{"t": b, "revenue": round(v["revenue"]), "deals": int(v["deals"])}
+               for b, v in sorted(rev_by_bucket.items())]
+
+    # touches by channel over time
+    touch: dict = {}
+    for r in _q("touch_timeline"):
+        ch, b = r.get("channel"), _bucket_iso(r.get("bucket"))
+        touch.setdefault(ch, {}).setdefault(b, 0.0)
+        touch[ch][b] += float(r.get("touches") or 0)
+    touches_by_channel = {ch: [{"t": b, "touches": int(n)} for b, n in sorted(series.items())]
+                          for ch, series in touch.items()}
+
+    # share-of-model mention rate over time
+    som: dict = {}
+    for r in _q("som_timeline"):
+        q, b = r.get("buyer_query"), _bucket_iso(r.get("bucket"))
+        cell = som.setdefault(q, {}).setdefault(b, {"probes": 0.0, "mentions": 0.0})
+        cell["probes"] += float(r.get("probes") or 0)
+        cell["mentions"] += float(r.get("mentions") or 0)
+    share_of_model = {
+        q: [{"t": b, "mention_rate": round(c["mentions"] / c["probes"], 3) if c["probes"] else 0.0}
+            for b, c in sorted(series.items())]
+        for q, series in som.items()}
+
+    return {"bucket": "minute", "revenue": revenue,
+            "touches_by_channel": touches_by_channel,
+            "share_of_model": share_of_model, "illustrative": False}
+
+
+def trends_sample(data: BoardPackData, buckets: int = 15) -> dict:
+    """Deterministic offline trend series so the UI charts render without infra.
+    Revenue ramps in; the at-risk share-of-model query declines to a slip."""
+    base = datetime(2026, 1, 1, 9, 0, tzinfo=timezone.utc)
+    times = [(base + timedelta(minutes=i)).isoformat() for i in range(buckets)]
+    total = data.total_attributed
+    # gentle ramp of per-bucket revenue summing to ~total
+    weights = [1 + i for i in range(buckets)]
+    wsum = sum(weights)
+    revenue = [{"t": times[i], "revenue": round(total * weights[i] / wsum),
+                "deals": max(1, round(data.won_deals * weights[i] / wsum))}
+               for i in range(buckets)]
+    td_total = sum(c.time_decay for c in data.channels) or 1.0
+    touches_by_channel = {
+        c.channel: [{"t": times[i], "touches": max(0, round(40 * c.time_decay / td_total))}
+                    for i in range(buckets)]
+        for c in data.channels}
+    share_of_model = {}
+    for s in data.share_of_model:
+        if s.status == "at risk":                       # declining curve (the slip)
+            series = [max(0.0, round(s.mention_rate + (1 - s.mention_rate) * (1 - i / (buckets - 1)), 3))
+                      for i in range(buckets)]
+        else:
+            series = [round(s.mention_rate, 3)] * buckets
+        share_of_model[s.buyer_query] = [{"t": times[i], "mention_rate": series[i]}
+                                         for i in range(buckets)]
+    return {"bucket": "minute", "revenue": revenue,
+            "touches_by_channel": touches_by_channel,
+            "share_of_model": share_of_model, "illustrative": True}
+
+
+# --------------------------------------------------------------------------- #
 # CLI                                                                          #
 # --------------------------------------------------------------------------- #
 
@@ -312,6 +433,7 @@ class _Loaded:
     data: BoardPackData
     decisions: list[dict]
     excluded: list[str]
+    trends: dict
 
 
 def _load(source: str) -> _Loaded:
@@ -326,8 +448,10 @@ def _load(source: str) -> _Loaded:
         client = DeltaStreamMCPClient(settings.deltastream)
         data = BoardPackData.from_mcp(client, settings.customer.display_name,
                                       settings.customer.fiscal_period)
+        trends = trends_from_mcp(client, settings.deltastream.views)
     else:
         data = BoardPackData.from_sample()
+        trends = trends_sample(data)
 
     claude = ClaudeClient(settings.agent)
     engine = RecommendationEngine(Guardrails(settings.agent.guardrails), claude)
@@ -343,7 +467,7 @@ def _load(source: str) -> _Loaded:
                     decisions.append(json.loads(line))
                 except json.JSONDecodeError:
                     pass
-    return _Loaded(data, decisions, settings.agent.guardrails.excluded_channels)
+    return _Loaded(data, decisions, settings.agent.guardrails.excluded_channels, trends)
 
 
 def _build(source: str, snap_path: Path) -> dict:
@@ -357,7 +481,8 @@ def _build(source: str, snap_path: Path) -> dict:
             except json.JSONDecodeError:
                 prev = None
     view = build_board_view(loaded.data, decisions=loaded.decisions,
-                            prev_snapshot=prev, excluded_channels=loaded.excluded)
+                            prev_snapshot=prev, excluded_channels=loaded.excluded,
+                            trends=loaded.trends)
     snap = snapshot_of(loaded.data)
     snap_path.parent.mkdir(parents=True, exist_ok=True)
     with snap_path.open("a") as fh:

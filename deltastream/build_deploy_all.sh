@@ -29,6 +29,9 @@ FILES=(
   deltastream/05_views/03_mv_channel_touch_distribution.sql
   deltastream/05_views/04_mv_won_revenue_by_account.sql
   deltastream/05_views/05_mv_share_of_model.sql
+  deltastream/05_views/06_mv_revenue_timeline.sql
+  deltastream/05_views/07_mv_touch_timeline.sql
+  deltastream/05_views/08_mv_som_timeline.sql
 )
 OUT=deltastream/deploy_all.sql
 

@@ -51,6 +51,9 @@ class DeltaStreamConfig(BaseModel):
         "channel_touch_distribution": "attribution_public_mv_channel_touch_distribution",
         "won_revenue_by_account": "attribution_public_mv_won_revenue_by_account",
         "share_of_model": "attribution_public_mv_share_of_model",
+        "revenue_timeline": "attribution_public_mv_revenue_timeline",
+        "touch_timeline": "attribution_public_mv_touch_timeline",
+        "som_timeline": "attribution_public_mv_som_timeline",
     })
 
 

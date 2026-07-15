@@ -482,3 +482,42 @@ SELECT
     MAX("event_time")                     AS "last_checked"
 FROM "share_of_model"
 GROUP BY "buyer_query";
+
+
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
+CREATE MATERIALIZED VIEW "mv_revenue_timeline" AS
+SELECT
+    FLOOR("event_time" TO MINUTE) AS "bucket",
+    SUM("revenue")                AS "revenue",
+    COUNT(*)                      AS "deals"
+FROM "conversions"
+WHERE "event_type" = 'closed_won'
+GROUP BY FLOOR("event_time" TO MINUTE);
+
+
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
+CREATE MATERIALIZED VIEW "mv_touch_timeline" AS
+SELECT
+    "channel",
+    FLOOR("event_time" TO MINUTE) AS "bucket",
+    COUNT(*)                      AS "touches"
+FROM "touchpoints"
+WHERE "account_id" IS NOT NULL
+GROUP BY "channel", FLOOR("event_time" TO MINUTE);
+
+
+USE DATABASE "attribution";
+USE SCHEMA "public";
+
+CREATE MATERIALIZED VIEW "mv_som_timeline" AS
+SELECT
+    "buyer_query",
+    FLOOR("event_time" TO MINUTE) AS "bucket",
+    COUNT(*)                      AS "probes",
+    SUM("mentioned")              AS "mentions"
+FROM "share_of_model"
+GROUP BY "buyer_query", FLOOR("event_time" TO MINUTE);

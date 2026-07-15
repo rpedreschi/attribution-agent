@@ -1,17 +1,18 @@
 """The dashboard board-view contract must stay stable for the UI to bind to."""
 from attribution_agent.agent.reporting import BoardPackData
-from attribution_agent.api.board_view import build_board_view, snapshot_of
+from attribution_agent.api.board_view import build_board_view, snapshot_of, trends_sample
 
 
 def _view(**kw):
     d = BoardPackData.from_sample()
+    kw.setdefault("trends", trends_sample(d))
     return d, build_board_view(d, excluded_channels=["Brand", "Events", "AI Assistant"], **kw)
 
 
 def test_top_level_shape():
     _d, v = _view()
-    assert set(v) == {"meta", "live_board", "model_compare", "reallocation_agent",
-                      "decision_ledger"}
+    assert set(v) == {"meta", "trends", "live_board", "model_compare",
+                      "reallocation_agent", "decision_ledger"}
     assert {"kpis", "what_changed", "money_by_channel"} <= set(v["live_board"])
     assert {"credit_by_channel", "credit_by_campaign", "incrementality_tests"} \
         <= set(v["model_compare"])
@@ -51,6 +52,23 @@ def test_what_changed_diffs_against_prior_snapshot():
                          excluded_channels=["Brand", "Events", "AI Assistant"])
     titles = [c["title"] for c in v["live_board"]["what_changed"]]
     assert any("moved since your last look" in t for t in titles)
+
+
+def test_trends_series_present_and_slip_declines():
+    d = BoardPackData.from_sample()
+    tr = trends_sample(d)
+    _d, v = _view(trends=tr)
+    assert v["trends"]["revenue"] and v["meta"]["trend_buckets"] == len(tr["revenue"])
+    # revenue ramps up over the window
+    rev = [p["revenue"] for p in v["trends"]["revenue"]]
+    assert rev[-1] > rev[0]
+    # the at-risk buyer query's mention rate declines across the series
+    som = v["trends"]["share_of_model"]
+    at_risk_q = next(s.buyer_query for s in d.share_of_model if s.status == "at risk")
+    series = [p["mention_rate"] for p in som[at_risk_q]]
+    assert series[0] > series[-1]
+    # deterministic
+    assert trends_sample(d) == trends_sample(d)
 
 
 def test_ledger_has_agent_and_human_events():

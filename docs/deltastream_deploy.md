@@ -117,7 +117,11 @@ you should see resolved rows within a minute or two.
 
 Run `04_facts/` in order (`01_conversions.sql`, `02_spend.sql`,
 `03_funnel_events.sql`) — each adds more continuous queries. Then `05_views/`
-(the five `mv_*`, including `05_mv_share_of_model.sql`). Re-check `LIST QUERIES;` —
+(the eight `mv_*`): the four core views, `05_mv_share_of_model.sql`, and the three
+per-minute **timeline** views (`06_mv_revenue_timeline`, `07_mv_touch_timeline`,
+`08_mv_som_timeline`) that back the dashboard's trend charts + time filter. The
+timelines use `FLOOR("event_time" TO MINUTE)` to bucket — if your DeltaStream
+version rejects that, that's the one expression to adjust. Re-check `LIST QUERIES;` —
 everything should be `Running`.
 
 Unlike streams, **a `SELECT` on a materialized view returns a snapshot** of

@@ -34,6 +34,24 @@ them off as measured. Everything else is real pipeline output.
 }
 ```
 
+## trends (time axis — powers charts + the time filter)
+Real minute-bucketed series from the DeltaStream **timeline MVs**
+(`mv_revenue_timeline`, `mv_touch_timeline`, `mv_som_timeline`). Live mode fills
+them as the stream runs (one bucket/minute); sample mode synthesizes a
+deterministic series (`illustrative:true`).
+```jsonc
+"trends": {
+  "bucket": "minute",
+  "revenue": [ {"t": ISO, "revenue": 12345, "deals": 2}, … ],   // sparkline
+  "touches_by_channel": { "Paid Search": [ {"t": ISO, "touches": 8}, … ], … },
+  "share_of_model":     { "cloud cost anomaly detection": [ {"t": ISO, "mention_rate": 0.31}, … ], … },
+  "illustrative": false
+}
+```
+Use `revenue` for the headline sparkline, `share_of_model[q]` to draw the slip as
+a declining curve, and `touches_by_channel` for per-channel activity. `meta.trend_buckets`
+tells the UI how many minutes of history are available for the time filter.
+
 ## meta (header)
 | field | type | note |
 |---|---|---|
@@ -92,11 +110,14 @@ bar, the 3-model credit split + spread/agree/thin, recommendations + confidence 
 basis, autonomy + match-rate, the ledger, the share-of-model slip and
 too-thin-to-attribute cards, and Export board pack (the existing xlsx).
 
-**Needs new materialized views (time-series) — the main gap:** a real "Last 30
-days" window filter and the day-scale "what changed" cards ("CPL +34% over 6
-days", week-over-week first-touch). The current MVs are current-state snapshots;
-these need windowed MVs. The `board_view` snapshot store (`out/board_snapshots.jsonl`)
-already gives *session-level* deltas ("moved since your last look") as a bridge.
+**Time-series — now real (minute buckets):** the `trends` section is backed by
+three DeltaStream timeline MVs (`mv_revenue_timeline`, `mv_touch_timeline`,
+`mv_som_timeline`), so revenue sparklines, the share-of-model slip curve, and the
+time filter work off live on-platform history. Buckets are 1 minute (a live demo
+builds a trend within minutes; production would bucket by day). Still snapshot-
+based, not timeline: the "moved since your last look" card (`out/board_snapshots.jsonl`).
+Still illustrative: spend-pacing / CPL over days (needs an `event_time` on the
+spend feed) and week-over-week first-touch.
 
 **Net-new features (design, not just a query):** keyword-level granularity,
 incrementality/holdout tests, and the autonomy-level *promotion* flow.

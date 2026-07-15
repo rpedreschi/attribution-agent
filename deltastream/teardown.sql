@@ -1,6 +1,9 @@
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
+DROP MATERIALIZED VIEW "attribution"."public"."mv_som_timeline";
+DROP MATERIALIZED VIEW "attribution"."public"."mv_touch_timeline";
+DROP MATERIALIZED VIEW "attribution"."public"."mv_revenue_timeline";
 DROP MATERIALIZED VIEW "attribution"."public"."mv_share_of_model";
 DROP MATERIALIZED VIEW "attribution"."public"."mv_won_revenue_by_account";
 DROP MATERIALIZED VIEW "attribution"."public"."mv_channel_touch_distribution";
