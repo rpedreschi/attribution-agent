@@ -58,6 +58,7 @@ def _run_stream(settings, args) -> None:
                         new_journey_rate=args.new_journey_rate,
                         ambient_per_tick=0 if args.no_ambient else args.ambient_per_tick,
                         max_journeys=args.max_journeys,
+                        max_concurrent=args.max_concurrent,
                         scenario=args.scenario, slip_at=args.slip_at)
     target = "files in " + args.out_dir if args.dry_run else "Kafka"
     print(f"Streaming live events to {target} every {args.interval}s "
@@ -141,9 +142,15 @@ def main() -> None:
                              "account; ~97%% of the volume). Use on bandwidth-metered "
                              "brokers — cuts the backfill from ~52k events to ~1.7k.")
     parser.add_argument("--max-journeys", type=int, default=12,
-                        help="Cap on new live journeys over the whole run so the "
-                             "headline stays believable (default: 12; 0 = unlimited). "
-                             "Higher = bigger totals; in-flight journeys still finish.")
+                        help="Hard lifetime cap on new live journeys (default: 12; "
+                             "0 = unlimited). Totals plateau once hit; in-flight "
+                             "journeys still finish. Set 0 with --max-concurrent for a "
+                             "continuous gentle climb instead of a plateau.")
+    parser.add_argument("--max-concurrent", type=int, default=0,
+                        help="Cap on journeys IN FLIGHT at once (0 = off). New journeys "
+                             "keep spawning as old ones close, so revenue climbs gently "
+                             "and continuously through the call instead of plateauing. "
+                             "The closing rate is bounded, so demo-length totals stay sane.")
     parser.add_argument("--scenario", action="store_true",
                         help="Run the scripted demo story: warm-up deals so revenue "
                              "ticks live, then the AI-answer slip, with director cues "

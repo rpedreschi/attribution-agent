@@ -11,9 +11,10 @@ The 5-minute live drive. (The full version with objection-handling is
 # 1. one command brings the whole demo up: deploy → backfill the $4.28M / 36-deal
 #    anchor → start the live stream → serve the dashboard at http://localhost:8787/.
 #    Leave it running; Ctrl-C stops both the stream and the server.
-#    MAX_JOURNEYS caps live deals so the headline stays believable (~$5-6M, not a
-#    $30M runaway). Raise it for bigger numbers, lower it to hug the $4.28M anchor.
-bash scripts/demo_up.sh                      # or: MAX_JOURNEYS=20 bash scripts/demo_up.sh
+#    MAX_CONCURRENT bounds journeys in flight, so revenue climbs gently and
+#    continuously through the call (not a plateau, not a $30M runaway). Raise it
+#    for a faster climb, lower it to hug the $4.28M anchor.
+bash scripts/demo_up.sh                      # or: MAX_CONCURRENT=6 bash scripts/demo_up.sh
 
 # 2. (optional) launch the agent on the live pipeline in another terminal
 python -m attribution_agent.agent.cli --source mcp
@@ -44,9 +45,9 @@ and it appears. Tune the slip with `SLIP_AT=120 bash scripts/demo_up.sh`.
 
 Quick pre-flight at the `agent>` prompt: `summary` (non-zero revenue + spend,
 QoQ in a sane +30–50% range), `recs` (proposes a move). If `recs` is empty, the
-data's still thin — let the stream run a bit longer. The cap means the totals
-plateau on their own, so you no longer have to Ctrl-C the stream mid-demo to
-keep the number steady.
+data's still thin — let the stream run a bit longer. Deals keep closing at a
+bounded rate (the concurrent cap), so the headline climbs gently through the
+call instead of plateauing or running away — no need to Ctrl-C mid-demo.
 
 ---
 

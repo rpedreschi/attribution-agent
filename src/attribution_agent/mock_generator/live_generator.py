@@ -95,6 +95,7 @@ class LiveGenerator:
     def __init__(self, *, seed: int = 42, journey_seconds: float = 180.0,
                  new_journey_rate: float = 0.15, ambient_per_tick: int = 2,
                  som_degrade_seconds: float = 120.0, max_journeys: int = 12,
+                 max_concurrent: int = 0,
                  scenario: bool = False, slip_at: float | None = None) -> None:
         self.rng = random.Random(seed)
         self.journey_seconds = journey_seconds
@@ -106,13 +107,18 @@ class LiveGenerator:
         self.scenario = scenario
         self.slip_at = slip_at if slip_at is not None else (90.0 if scenario else som_degrade_seconds)
         self.som_degrade_seconds = self.slip_at
-        # Cap on NEW journeys spawned over the whole run (0 = unlimited). Without
-        # it, a stream left running accumulates unbounded revenue/deals into the
-        # all-time MVs and the headline balloons past believability (the $33M/
-        # +749% runaway). With it, totals plateau at backfill + a few live deals;
-        # in-flight journeys still finish, and ambient/spend/share-of-model keep
-        # flowing so the demo stays live.
+        # Two ways to keep the headline believable:
+        #  * max_concurrent (preferred): cap how many journeys are IN FLIGHT at once
+        #    (0 = off). New journeys keep spawning as old ones close, so revenue
+        #    climbs gently and continuously for the whole call instead of plateauing
+        #    — the closing RATE is bounded, not the lifetime total. Over a demo-length
+        #    session the total stays sane; only an all-day run would balloon.
+        #  * max_journeys: a hard lifetime cap on NEW journeys (0 = unlimited). Totals
+        #    plateau once it's hit. Kept for back-compat / a fixed ceiling.
+        # If both are set, max_concurrent governs spawning and max_journeys still
+        # caps the lifetime total.
         self.max_journeys = max_journeys
+        self.max_concurrent = max_concurrent
         self._spawned = 0
         self._seq = 0
         self._inflight: list[_Journey] = []
@@ -186,9 +192,19 @@ class LiveGenerator:
 
     def _spawn_now(self, now: datetime, **kw) -> None:
         """Spawn a journey immediately if under the cap (used by beats)."""
-        if self.max_journeys <= 0 or self._spawned < self.max_journeys:
+        if self._under_cap():
             self._inflight.append(self._spawn(now, **kw))
             self._spawned += 1
+
+    def _under_cap(self) -> bool:
+        """Whether a new journey may spawn. max_concurrent bounds in-flight journeys
+        (a gentle, continuous closing rate); max_journeys bounds the lifetime total
+        (a hard plateau). Both apply when both are set."""
+        if self.max_journeys > 0 and self._spawned >= self.max_journeys:
+            return False
+        if self.max_concurrent > 0 and len(self._inflight) >= self.max_concurrent:
+            return False
+        return True
 
     @property
     def inflight(self) -> int:
@@ -381,8 +397,7 @@ class LiveGenerator:
         if self.scenario:
             self._run_beats(now, (now - self._t0).total_seconds())
 
-        under_cap = self.max_journeys <= 0 or self._spawned < self.max_journeys
-        if under_cap and self.rng.random() < self.new_journey_rate:
+        if self._under_cap() and self.rng.random() < self.new_journey_rate:
             self._inflight.append(self._spawn(now))
             self._spawned += 1
 

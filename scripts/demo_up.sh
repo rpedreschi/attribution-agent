@@ -8,7 +8,8 @@ cd "$(dirname "$0")/.."
 : "${DSQL_BIN:?set DSQL_BIN, e.g. export DSQL_BIN=../../dscliv2}"
 : "${DS_SERVER:?set DS_SERVER, e.g. export DS_SERVER=https://api-mizaz8.deltastream.io/v2}"
 : "${DS_TOKEN:?set DS_TOKEN to your DeltaStream API token}"
-MAX_JOURNEYS="${MAX_JOURNEYS:-12}"
+MAX_CONCURRENT="${MAX_CONCURRENT:-4}"    # journeys in flight at once; revenue climbs gently
+MAX_JOURNEYS="${MAX_JOURNEYS:-0}"        # 0 = no lifetime plateau (concurrent cap governs)
 INTERVAL="${INTERVAL:-8}"
 PORT="${PORT:-8787}"
 SLIP_AT="${SLIP_AT:-90}"                 # seconds into the stream the AI-answer slip fires
@@ -40,7 +41,8 @@ echo "==> starting the live stream + demo story in the background"
 echo "    (slip fires at T+${SLIP_AT}s; \`touch $CUE_FILE\` to fire the next beat on cue)"
 rm -f "$CUE_FILE"
 python -m attribution_agent.mock_generator --stream --no-backfill --no-ambient \
-    --interval "$INTERVAL" --ambient-per-tick 0 --max-journeys "$MAX_JOURNEYS" \
+    --interval "$INTERVAL" --ambient-per-tick 0 \
+    --max-journeys "$MAX_JOURNEYS" --max-concurrent "$MAX_CONCURRENT" \
     --scenario --slip-at "$SLIP_AT" --cue-file "$CUE_FILE" &
 STREAM_PID=$!
 trap 'echo; echo "==> stopping live stream + server"; kill "$STREAM_PID" 2>/dev/null || true' EXIT INT TERM
