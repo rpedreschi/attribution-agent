@@ -581,12 +581,12 @@ USE SCHEMA "public";
 
 CREATE MATERIALIZED VIEW "mv_revenue_timeline" AS
 SELECT
-    FLOOR("event_time" TO MINUTE) AS "bucket",
-    SUM("revenue")                AS "revenue",
-    COUNT(*)                      AS "deals"
-FROM "conversions"
+    window_start AS "bucket",
+    SUM("revenue") AS "revenue",
+    COUNT(*)       AS "deals"
+FROM TUMBLE("conversions", SIZE 1 MINUTE)
 WHERE "event_type" = 'closed_won'
-GROUP BY FLOOR("event_time" TO MINUTE);
+GROUP BY window_start, window_end;
 
 
 USE DATABASE "attribution";
@@ -595,11 +595,11 @@ USE SCHEMA "public";
 CREATE MATERIALIZED VIEW "mv_touch_timeline" AS
 SELECT
     "channel",
-    FLOOR("event_time" TO MINUTE) AS "bucket",
-    COUNT(*)                      AS "touches"
-FROM "touchpoints"
+    window_start AS "bucket",
+    COUNT(*)     AS "touches"
+FROM TUMBLE("touchpoints", SIZE 1 MINUTE)
 WHERE "account_id" IS NOT NULL
-GROUP BY "channel", FLOOR("event_time" TO MINUTE);
+GROUP BY "channel", window_start, window_end;
 
 
 USE DATABASE "attribution";
@@ -608,11 +608,11 @@ USE SCHEMA "public";
 CREATE MATERIALIZED VIEW "mv_som_timeline" AS
 SELECT
     "buyer_query",
-    FLOOR("event_time" TO MINUTE) AS "bucket",
-    COUNT(*)                      AS "probes",
-    SUM("mentioned")              AS "mentions"
-FROM "share_of_model"
-GROUP BY "buyer_query", FLOOR("event_time" TO MINUTE);
+    window_start AS "bucket",
+    COUNT(*)         AS "probes",
+    SUM("mentioned") AS "mentions"
+FROM TUMBLE("share_of_model", SIZE 1 MINUTE)
+GROUP BY "buyer_query", window_start, window_end;
 
 
 USE DATABASE "attribution";
@@ -621,7 +621,7 @@ USE SCHEMA "public";
 CREATE MATERIALIZED VIEW "mv_spend_timeline" AS
 SELECT
     "channel",
-    FLOOR("event_time" TO MINUTE) AS "bucket",
-    SUM("spend_amount")           AS "spend"
-FROM "spend"
-GROUP BY "channel", FLOOR("event_time" TO MINUTE);
+    window_start AS "bucket",
+    SUM("spend_amount") AS "spend"
+FROM TUMBLE("spend", SIZE 1 MINUTE)
+GROUP BY "channel", window_start, window_end;

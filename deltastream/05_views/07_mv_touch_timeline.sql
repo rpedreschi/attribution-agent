@@ -1,17 +1,13 @@
--- mv_touch_timeline: resolved touch count per channel, bucketed by minute. Backs
--- the per-channel activity trend (spend-pacing proxy) and the "channel X is
--- rising / became a top first-touch" cards. Reads the same touchpoints stream
--- the attribution views use, so no new source plumbing.
-
--- Ensure objects land in attribution.public even if run in a fresh session.
+-- mv_touch_timeline: resolved touches per channel per 1-minute window (per-channel
+-- activity trend). TUMBLE over the touchpoints stream.
 USE DATABASE "attribution";
 USE SCHEMA "public";
 
 CREATE MATERIALIZED VIEW "mv_touch_timeline" AS
 SELECT
     "channel",
-    FLOOR("event_time" TO MINUTE) AS "bucket",
-    COUNT(*)                      AS "touches"
-FROM "touchpoints"
+    window_start AS "bucket",
+    COUNT(*)     AS "touches"
+FROM TUMBLE("touchpoints", SIZE 1 MINUTE)
 WHERE "account_id" IS NOT NULL
-GROUP BY "channel", FLOOR("event_time" TO MINUTE);
+GROUP BY "channel", window_start, window_end;
