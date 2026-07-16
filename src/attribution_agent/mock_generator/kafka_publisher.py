@@ -78,6 +78,8 @@ def _kafka_conf(settings: Settings) -> dict[str, object]:
         })
     if settings.kafka.ssl_ca_location:            # custom broker CA (e.g. WarpStream)
         conf["ssl.ca.location"] = settings.kafka.ssl_ca_location
+    if not settings.kafka.ssl_verify:             # demo escape hatch for a CA mismatch
+        conf["enable.ssl.certificate.verification"] = False
     return conf
 
 

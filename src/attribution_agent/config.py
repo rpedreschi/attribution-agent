@@ -32,6 +32,9 @@ class KafkaConfig(BaseModel):
     # PEM CA file for brokers with a custom root (e.g. WarpStream). Maps to
     # librdkafka's ssl.ca.location for the producer + admin client.
     ssl_ca_location: str | None = None
+    # Set false to skip TLS cert verification (demo/self-signed escape hatch when
+    # the CA doesn't match the broker's presented cert). Insecure — dev only.
+    ssl_verify: bool = True
     topics: dict[str, str] = Field(default_factory=dict)
 
 
