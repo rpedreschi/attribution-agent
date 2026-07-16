@@ -533,29 +533,59 @@ def main() -> None:
         print(text)
 
 
+_UI_DIR = Path(__file__).resolve().parents[3] / "ui"
+_CTYPES = {".html": "text/html; charset=utf-8", ".css": "text/css",
+           ".js": "text/javascript", ".json": "application/json",
+           ".ts": "text/plain; charset=utf-8", ".map": "application/json",
+           ".svg": "image/svg+xml", ".ico": "image/x-icon"}
+
+
 def _serve(source: str, snap_path: Path, port: int) -> None:
+    """Serve both the data and the UI from one origin: `/board.json` re-builds the
+    view per request; any other path serves a static file from ui/ (default
+    index.html). One origin means the UI's fetch is same-origin — no CORS, and
+    opening http://localhost:PORT/ just renders the dashboard."""
     from http.server import BaseHTTPRequestHandler, HTTPServer
+    from urllib.parse import urlparse
 
     class Handler(BaseHTTPRequestHandler):
-        def do_GET(self):  # noqa: N802
-            try:
-                body = json.dumps(_build(source, snap_path)).encode()
-            except Exception as exc:  # noqa: BLE001
-                self.send_response(500)
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": str(exc)}).encode())
-                return
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
+        def _send(self, code: int, body: bytes, ctype: str) -> None:
+            self.send_response(code)
+            self.send_header("Content-Type", ctype)
             self.send_header("Access-Control-Allow-Origin", "*")  # local UI dev
             self.end_headers()
             self.wfile.write(body)
 
+        def do_GET(self):  # noqa: N802
+            path = urlparse(self.path).path
+            if path in ("/board.json", "/board"):
+                try:
+                    body = json.dumps(_build(source, snap_path)).encode()
+                except Exception as exc:  # noqa: BLE001
+                    self._send(500, json.dumps({"error": str(exc)}).encode(),
+                               "application/json")
+                    return
+                self._send(200, body, "application/json")
+                return
+            # Otherwise serve a UI static file. Strip a leading /ui/ so both
+            # http://host/ and http://host/ui/index.html resolve to ui/index.html.
+            rel = path.lstrip("/")
+            if rel.startswith("ui/"):
+                rel = rel[len("ui/"):]
+            if not rel:
+                rel = "index.html"
+            fpath = (_UI_DIR / rel).resolve()
+            if _UI_DIR in fpath.parents and fpath.is_file():
+                self._send(200, fpath.read_bytes(),
+                           _CTYPES.get(fpath.suffix, "application/octet-stream"))
+            else:
+                self._send(404, b"not found", "text/plain")
+
         def log_message(self, *_):  # quiet
             pass
 
-    print(f"Serving board view ({source}) at http://localhost:{port}/board.json  (Ctrl-C to stop)")
+    print(f"Serving dashboard ({source}) at http://localhost:{port}/  "
+          f"(data at /board.json; Ctrl-C to stop)")
     HTTPServer(("127.0.0.1", port), Handler).serve_forever()
 
 

@@ -23,6 +23,6 @@ PY
   echo "    not ready yet (${i}/30); sleeping 10s"; sleep 10
 done
 
-echo "==> serving board view at http://localhost:$PORT/board.json"
-echo "    open: ui/index.html?api=http://localhost:$PORT/board.json"
+echo "==> serving dashboard at http://localhost:$PORT/"
+echo "    open that URL in a browser (data is at /board.json)"
 exec python -m attribution_agent.api.board_view --source mcp --serve "$PORT"
