@@ -7,6 +7,7 @@ CREATE MATERIALIZED VIEW "mv_som_timeline" AS
 SELECT
     "buyer_query",
     window_start AS "bucket",
+    window_end   AS "bucket_end",
     COUNT(*)         AS "probes",
     SUM("mentioned") AS "mentions"
 FROM TUMBLE("share_of_model", SIZE 1 MINUTE)

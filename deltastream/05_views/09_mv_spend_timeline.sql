@@ -7,6 +7,7 @@ CREATE MATERIALIZED VIEW "mv_spend_timeline" AS
 SELECT
     "channel",
     window_start AS "bucket",
+    window_end   AS "bucket_end",
     SUM("spend_amount") AS "spend"
 FROM TUMBLE("spend", SIZE 1 MINUTE)
 GROUP BY "channel", window_start, window_end;

@@ -7,6 +7,7 @@ CREATE MATERIALIZED VIEW "mv_touch_timeline" AS
 SELECT
     "channel",
     window_start AS "bucket",
+    window_end   AS "bucket_end",
     COUNT(*)     AS "touches"
 FROM TUMBLE("touchpoints", SIZE 1 MINUTE)
 WHERE "account_id" IS NOT NULL

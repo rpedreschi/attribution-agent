@@ -8,6 +8,7 @@ USE SCHEMA "public";
 CREATE MATERIALIZED VIEW "mv_revenue_timeline" AS
 SELECT
     window_start AS "bucket",
+    window_end   AS "bucket_end",
     SUM("revenue") AS "revenue",
     COUNT(*)       AS "deals"
 FROM TUMBLE("conversions", SIZE 1 MINUTE)
