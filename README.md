@@ -91,12 +91,12 @@ deterministic, number-grounded templates so the artifact always builds.
    # Clean slate: delete + recreate the topics (clears all data) first:
    python -m attribution_agent.mock_generator --recreate-topics
 
-   # Or run a live stream: new events with current timestamps, forever, so
-   # DeltaStream keeps recomputing attribution (Ctrl-C to stop):
+   # Or run a live stream: publishes the Q1 backfill anchor, then new events with
+   # current timestamps forever, so DeltaStream keeps recomputing (Ctrl-C to stop):
    python -m attribution_agent.mock_generator --stream
 
-   # Backfill Q1 first, then keep streaming live events on top of it:
-   python -m attribution_agent.mock_generator --stream --backfill
+   # Stream without the backfill anchor (live journeys only):
+   python -m attribution_agent.mock_generator --stream --no-backfill
    ```
    The stream emits coherent, compressed journeys (anonymous touch → known
    contact → funnel → closed-won within a few minutes) so channel credit

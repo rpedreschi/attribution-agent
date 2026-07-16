@@ -10,8 +10,9 @@
     # keeps recomputing attribution — Ctrl-C to stop:
     python -m attribution_agent.mock_generator --stream
 
-    # Backfill Q1 first, then keep the stream running on top of it:
-    python -m attribution_agent.mock_generator --stream --backfill
+    # Stream with the Q1 backfill anchor (default) — or without it:
+    python -m attribution_agent.mock_generator --stream
+    python -m attribution_agent.mock_generator --stream --no-backfill
 """
 from __future__ import annotations
 
@@ -93,9 +94,12 @@ def main() -> None:
     parser.add_argument("--stream", action="store_true",
                         help="Continuously emit live events with current timestamps "
                              "(runs until Ctrl-C) instead of the one-shot backfill.")
-    parser.add_argument("--backfill", action="store_true",
-                        help="With --stream: publish the fixed Q1 backfill first, "
-                             "then start streaming on top of it.")
+    parser.add_argument("--backfill", action=argparse.BooleanOptionalAction, default=True,
+                        help="With --stream: publish the fixed Q1 backfill anchor "
+                             "(36 deals across all channels) before streaming on top "
+                             "of it. On by default so the board is never left with "
+                             "only the thin live journeys; pass --no-backfill to "
+                             "stream without the anchor.")
     parser.add_argument("--interval", type=float, default=2.0,
                         help="Seconds between stream ticks (default: 2.0).")
     parser.add_argument("--journey-seconds", type=float, default=180.0,

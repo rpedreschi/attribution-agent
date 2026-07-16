@@ -8,15 +8,20 @@ The 5-minute live drive. (The full version with objection-handling is
 ## Before the call (5 min)
 
 ```bash
-# 1. data flowing — start the stream a few minutes early so deals have closed.
-#    --max-journeys caps live deals so the headline stays believable (~$5-6M,
-#    not a $30M runaway) even if you leave it running. Raise it for bigger
-#    numbers, lower it to stay closer to the $4.28M anchor.
-python -m attribution_agent.mock_generator --stream --backfill --no-ambient --interval 8 --max-journeys 12
+# 1. one command brings the whole demo up: deploy → backfill the $4.28M / 36-deal
+#    anchor → start the live stream → serve the dashboard at http://localhost:8787/.
+#    Leave it running; Ctrl-C stops both the stream and the server.
+#    MAX_JOURNEYS caps live deals so the headline stays believable (~$5-6M, not a
+#    $30M runaway). Raise it for bigger numbers, lower it to hug the $4.28M anchor.
+bash scripts/demo_up.sh                      # or: MAX_JOURNEYS=20 bash scripts/demo_up.sh
 
-# 2. launch the agent on the live pipeline
+# 2. (optional) launch the agent on the live pipeline in another terminal
 python -m attribution_agent.agent.cli --source mcp
 ```
+
+Open **http://localhost:8787/** for the board. The backfill is guaranteed —
+`demo_up.sh` publishes it as a blocking step before serving, so the board never
+opens with only the thin live journeys.
 
 Quick pre-flight at the `agent>` prompt: `summary` (non-zero revenue + spend,
 QoQ in a sane +30–50% range), `recs` (proposes a move). If `recs` is empty, the
