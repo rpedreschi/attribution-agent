@@ -30,18 +30,18 @@ opens with only the thin live journeys.
 terminal running the stream prints a `🎬` director line as each beat lands — glance
 at it, then point at the board:
 
-| T+     | Beat | What to say | What shows on screen |
-|--------|------|-------------|----------------------|
-| 0s     | Baseline | "Every number recomputes as events land." | Warm-up deals close; sourced-pipeline tile + bars tick up |
-| ~35s   | Revenue pace | "No nightly job — this is the stream." | "Revenue pace shifted" card; bars move |
-| **90s**| **AI-answer slip** | **"Watch this — you just dropped out of ChatGPT/Perplexity/Gemini. No ad dashboard shows this."** | **DRIFT card fires**; share-of-model bends to zero |
-| ~115s  | Agent responds | "It flags it but won't spend — you can't buy an LLM's answer." | Decision-ledger entry; share-of-model watch |
+| T+     | Beat | Talking point | What shows on screen |
+|--------|------|---------------|----------------------|
+| 0s     | Baseline | Figures recompute from the event stream as deals close. | Warm-up deals close; sourced-pipeline tile + bars tick up |
+| ~35s   | Revenue pace | Attribution updates continuously, not on a nightly batch. | "Revenue pace shifted" card; bars move |
+| **90s**| **AI-answer slip** | **A tracked buyer query dropped out of ChatGPT, Perplexity, and Gemini — a signal ad and last-touch reporting don't carry.** | **DRIFT card fires**; share-of-model bends to zero |
+| ~115s  | Agent responds | The agent flags it but proposes no budget move — the AI Assistant channel has no media lever. | Decision-ledger entry; share-of-model watch |
 
 The DRIFT card lands ~10–30s after the `🎬` cue (pipeline latency) — narrate into it
 and it appears. Tune the slip with `SLIP_AT=120 bash scripts/demo_up.sh`.
 
-**Drive it by hand:** to fire the next beat exactly when you want ("watch this…"),
-`touch /tmp/demo_cue` from another terminal instead of waiting on the timer.
+**Drive it by hand:** to fire the next beat on cue, `touch /tmp/demo_cue` from
+another terminal instead of waiting on the timer.
 
 Quick pre-flight at the `agent>` prompt: `summary` (non-zero revenue + spend,
 QoQ in a sane +30–50% range), `recs` (proposes a move). If `recs` is empty, the

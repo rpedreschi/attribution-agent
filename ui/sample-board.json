@@ -1442,19 +1442,19 @@
       {
         "kind": "new",
         "title": "Revenue pace shifted",
-        "body": "Closed-won over the latest buckets is +29% vs the start of the window \u2014 recomputed live, no nightly job.",
+        "body": "Closed-won over the latest buckets is +29% vs the start of the window.",
         "real": true
       },
       {
         "kind": "drift",
-        "title": "Slipped out of an AI answer",
-        "body": "\"cloud cost anomaly detection\": mention rate 22%, no longer ranked. The AI Assistant channel is leaking \u2014 no ad dashboard shows this.",
+        "title": "Dropped from AI answers",
+        "body": "\"cloud cost anomaly detection\": mention rate 22%, no longer ranked across the tracked assistants.",
         "real": true
       },
       {
         "kind": "low_confidence",
         "title": "Organic/Web: too few to attribute",
-        "body": "2 conversions in window. Too thin to trust a reallocation \u2014 we are not going to pretend otherwise.",
+        "body": "2 conversions in window \u2014 below the threshold to attribute a reallocation.",
         "real": true
       },
       {

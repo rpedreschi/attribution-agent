@@ -145,25 +145,17 @@ class LiveGenerator:
         ticks; `slip` latches the AI-answer drop; `cue` is the narration line."""
         beats = [
             {"name": "baseline", "at": 0.0, "spawn": 2, "spawn_seconds": 30.0,
-             "cue": "Baseline is live — the full channel mix is loaded. Watch the tiles: "
-                    "deals are closing on the stream right now, and every number "
-                    "recomputes as each closed-won lands. Nothing here waits for a nightly job."},
+             "cue": "Baseline loaded. Live deals are closing; the sourced-pipeline and "
+                    "channel figures update as each closed-won lands."},
             {"name": "revenue", "at": 35.0, "spawn": 0,
-             "cue": "There — the sourced-pipeline tile and the money-by-channel bars just "
-                    "moved. That's the stream recomputing attribution live, not a dashboard "
-                    "someone refreshed last night."},
+             "cue": "Sourced-pipeline and channel figures updated from the deals just closed."},
             {"name": "slip", "at": self.slip_at, "spawn": 0, "slip": True,
-             "cue": "WATCH THIS — you just slipped out of the AI answer. \"cloud cost anomaly "
-                    "detection\" dropped out of ChatGPT, Perplexity, and Gemini: mention rate "
-                    "falling, rank gone. The DRIFT card is firing on the board. No ad platform "
-                    "and no last-touch dashboard will ever show you this — your best-ROI "
-                    "channel is leaking, and today you'd only find out next quarter when the "
-                    "pipeline dried up."},
+             "cue": "AI-answer slip: \"cloud cost anomaly detection\" has dropped out of "
+                    "ChatGPT, Perplexity, and Gemini (mention rate falling, rank lost). The "
+                    "share-of-model DRIFT card updates shortly."},
             {"name": "agent", "at": self.slip_at + 25.0, "spawn": 0,
-             "cue": "And the agent already caught it — logged to the decision ledger, "
-                    "share-of-model flagged as the leading indicator. Notice it does NOT "
-                    "propose a budget move: you can't buy an LLM's recommendation. It acts "
-                    "where it has a lever and watches where it doesn't. That restraint is the point."},
+             "cue": "Agent logged the share-of-model drop to the decision ledger. No budget "
+                    "move proposed: the AI Assistant channel has no media lever."},
         ]
         # Fire in time order (the sequential runner and on-cue path both walk the
         # list in order); ascending `at` keeps timer and story order aligned.

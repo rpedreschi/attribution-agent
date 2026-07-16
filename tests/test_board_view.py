@@ -51,7 +51,7 @@ def test_what_changed_diffs_against_prior_snapshot():
     v = build_board_view(d, prev_snapshot=prev,
                          excluded_channels=["Brand", "Events", "AI Assistant"])
     titles = [c["title"] for c in v["live_board"]["what_changed"]]
-    assert any("moved since your last look" in t for t in titles)
+    assert any("moved since the last snapshot" in t for t in titles)
 
 
 def test_trends_series_present_and_slip_declines():

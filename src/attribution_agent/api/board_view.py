@@ -160,7 +160,7 @@ def _what_changed(data: BoardPackData, prev: dict | None, excluded: set,
             "kind": "new" if pct >= 0 else "drift",
             "title": "Revenue pace shifted",
             "body": f"Closed-won over the latest buckets is {pct:+.0f}% vs the start of "
-                    "the window — recomputed live, no nightly job.",
+                    "the window.",
             "real": True,
         })
 
@@ -169,9 +169,9 @@ def _what_changed(data: BoardPackData, prev: dict | None, excluded: set,
     if at_risk:
         q = sorted(at_risk, key=lambda s: s.avg_rank, reverse=True)[0]
         cards.append({
-            "kind": "drift", "title": "Slipped out of an AI answer",
+            "kind": "drift", "title": "Dropped from AI answers",
             "body": f"\"{q.buyer_query}\": mention rate {q.mention_rate:.0%}, no longer "
-                    f"ranked. The AI Assistant channel is leaking — no ad dashboard shows this.",
+                    f"ranked across the tracked assistants.",
             "real": True,
         })
 
@@ -182,8 +182,8 @@ def _what_changed(data: BoardPackData, prev: dict | None, excluded: set,
         t = min(thin, key=lambda r: r.attributed_deals)
         cards.append({
             "kind": "low_confidence", "title": f"{t.program_category}: too few to attribute",
-            "body": f"{t.attributed_deals} conversions in window. Too thin to trust a "
-                    "reallocation — we are not going to pretend otherwise.",
+            "body": f"{t.attributed_deals} conversions in window — below the threshold "
+                    "to attribute a reallocation.",
             "real": True,
         })
 
@@ -194,15 +194,15 @@ def _what_changed(data: BoardPackData, prev: dict | None, excluded: set,
             ch, delta = mover
             cards.append({
                 "kind": "new" if delta > 0 else "drift",
-                "title": f"{ch} moved since your last look",
-                "body": f"Data-driven credit {'+' if delta > 0 else ''}{delta:,.0f} vs last "
-                        "look, recomputed live as deals landed.",
+                "title": f"{ch} moved since the last snapshot",
+                "body": f"Data-driven credit {'+' if delta > 0 else ''}{delta:,.0f} vs the "
+                        "last snapshot.",
                 "real": True,
             })
     else:
         cards.append({
             "kind": "new", "title": "First snapshot",
-            "body": "Baseline captured. 'What changed' deltas populate on the next refresh.",
+            "body": "Baseline snapshot captured. Change deltas appear on the next refresh.",
             "real": True,
         })
     return cards
