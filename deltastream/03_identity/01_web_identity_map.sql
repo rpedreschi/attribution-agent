@@ -25,6 +25,10 @@ CREATE STREAM "web_resolved" WITH (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 ) AS
@@ -45,6 +49,10 @@ CREATE CHANGELOG "web_identity_map" WITH (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'key.columns' = 'web_user_id'
 ) AS

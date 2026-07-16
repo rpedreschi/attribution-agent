@@ -31,6 +31,10 @@ CREATE CHANGELOG "sf_contacts" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
     'timestamp.format' = 'iso8601'
@@ -51,6 +55,10 @@ CREATE CHANGELOG "sf_accounts" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
     'timestamp.format' = 'iso8601'
@@ -70,6 +78,10 @@ CREATE STREAM "sf_opportunities" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'

@@ -22,6 +22,10 @@ CREATE STREAM "ga4_events" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -50,6 +54,10 @@ CREATE STREAM "hubspot_events" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -72,6 +80,10 @@ CREATE STREAM "outreach_activity" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -94,6 +106,10 @@ CREATE STREAM "linkedin_ads" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -112,6 +128,10 @@ CREATE STREAM "google_ads" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -135,6 +155,10 @@ CREATE STREAM "share_of_model" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -157,6 +181,10 @@ CREATE CHANGELOG "sf_contacts" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
     'timestamp.format' = 'iso8601'
@@ -177,6 +205,10 @@ CREATE CHANGELOG "sf_accounts" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'updated_at',
     'timestamp.format' = 'iso8601'
@@ -196,6 +228,10 @@ CREATE STREAM "sf_opportunities" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -210,6 +246,10 @@ CREATE STREAM "web_resolved" WITH (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 ) AS
@@ -229,6 +269,10 @@ CREATE CHANGELOG "web_identity_map" WITH (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'key.columns' = 'web_user_id'
 ) AS
@@ -263,6 +307,10 @@ CREATE STREAM "touchpoints" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );
@@ -330,6 +378,10 @@ CREATE STREAM "conversions" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );
@@ -378,6 +430,10 @@ CREATE STREAM "spend" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -393,6 +449,10 @@ CREATE STREAM "channel_cost" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time',
     'timestamp.format' = 'iso8601'
@@ -426,6 +486,10 @@ CREATE STREAM "funnel_events" (
     'topic.partitions' = 1,
     'topic.replicas' = 1,
     'store' = 'demo_warpstream',
+    'kafka.properties.request.timeout.ms' = '60000',
+    'kafka.properties.delivery.timeout.ms' = '120000',
+    'kafka.properties.linger.ms' = '100',
+    'kafka.properties.batch.size' = '1048576',
     'value.format' = 'json',
     'timestamp' = 'event_time'
 );
