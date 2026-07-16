@@ -163,6 +163,17 @@ class Generator:
                 k=self.rng.randint(2, 4))
             journey = support + [acct["primary_channel"]]
             start = close - timedelta(days=self.rng.randint(25, 80))
+            # Anon->known bridge: a form fill ties the web cookie to the contact so
+            # web_identity_map resolves and every GA4-sourced touch in this journey
+            # (Paid Search/Social/Brand/AI Assistant/Organic) attributes to the
+            # account. Without it only the email-joined channels (Email Nurture,
+            # Outbound SDR) resolve and the GA4 channels drop out of attribution,
+            # skewing all revenue onto those two. Emitted before the touches (and
+            # dated earliest) so the identity map is populated when they join.
+            events.append(schemas.hubspot_form(
+                acct["contact_id"], f"web-{acct['account_id']}", acct["email"],
+                "Demo Request", f"{acct['primary_channel']} Campaign", "web",
+                start - timedelta(hours=1)))
             n = len(journey)
             for i, channel in enumerate(journey):
                 # Spread touches; primary lands last (closest to close).
