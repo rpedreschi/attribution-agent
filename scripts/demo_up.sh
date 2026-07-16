@@ -11,6 +11,8 @@ cd "$(dirname "$0")/.."
 MAX_JOURNEYS="${MAX_JOURNEYS:-12}"
 INTERVAL="${INTERVAL:-8}"
 PORT="${PORT:-8787}"
+SLIP_AT="${SLIP_AT:-90}"                 # seconds into the stream the AI-answer slip fires
+CUE_FILE="${CUE_FILE:-/tmp/demo_cue}"    # `touch` it to fire the next story beat on cue
 
 echo "==> ensuring the attribution database exists"
 python scripts/run_sql.py deltastream/00_stores.sql --keep-going --cli "$DSQL_BIN" --server "$DS_SERVER"
@@ -30,10 +32,16 @@ python scripts/run_sql.py deltastream/deploy_all.sql --keep-going --cli "$DSQL_B
 echo "==> publishing the Q1 backfill anchor (36 deals across all channels)"
 python -m attribution_agent.mock_generator --no-ambient
 
-# Live trickle on top, in the background. --no-backfill because we just did it.
-echo "==> starting the live stream in the background (capped at $MAX_JOURNEYS journeys)"
+# Live trickle on top, in the background, running the scripted demo story:
+# warm-up deals so revenue ticks, then the AI-answer slip at T+$SLIP_AT (director
+# cues print here as each beat lands). `touch $CUE_FILE` to fire a beat on cue.
+# --no-backfill because we just did it.
+echo "==> starting the live stream + demo story in the background"
+echo "    (slip fires at T+${SLIP_AT}s; \`touch $CUE_FILE\` to fire the next beat on cue)"
+rm -f "$CUE_FILE"
 python -m attribution_agent.mock_generator --stream --no-backfill --no-ambient \
-    --interval "$INTERVAL" --ambient-per-tick 0 --max-journeys "$MAX_JOURNEYS" &
+    --interval "$INTERVAL" --ambient-per-tick 0 --max-journeys "$MAX_JOURNEYS" \
+    --scenario --slip-at "$SLIP_AT" --cue-file "$CUE_FILE" &
 STREAM_PID=$!
 trap 'echo; echo "==> stopping live stream + server"; kill "$STREAM_PID" 2>/dev/null || true' EXIT INT TERM
 

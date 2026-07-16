@@ -94,14 +94,18 @@ class LiveGenerator:
 
     def __init__(self, *, seed: int = 42, journey_seconds: float = 180.0,
                  new_journey_rate: float = 0.15, ambient_per_tick: int = 2,
-                 som_degrade_seconds: float = 120.0, max_journeys: int = 12) -> None:
+                 som_degrade_seconds: float = 120.0, max_journeys: int = 12,
+                 scenario: bool = False, slip_at: float | None = None) -> None:
         self.rng = random.Random(seed)
         self.journey_seconds = journey_seconds
         self.new_journey_rate = new_journey_rate
         self.ambient_per_tick = ambient_per_tick
         # After this many seconds of streaming, the designated buyer query drops
         # out of the LLM answers — the live "you slipped out of the answer" beat.
-        self.som_degrade_seconds = som_degrade_seconds
+        # In scenario mode the slip is driven by a beat (timer or on-cue) instead.
+        self.scenario = scenario
+        self.slip_at = slip_at if slip_at is not None else (90.0 if scenario else som_degrade_seconds)
+        self.som_degrade_seconds = self.slip_at
         # Cap on NEW journeys spawned over the whole run (0 = unlimited). Without
         # it, a stream left running accumulates unbounded revenue/deals into the
         # all-time MVs and the headline balloons past believability (the $33M/
@@ -116,6 +120,75 @@ class LiveGenerator:
         self._weights = [c.attributed_deals for c in sd.CHANNELS]
         self._som_t0: datetime | None = None
         self._som_seq = 0
+        # --- scenario / director state --------------------------------------
+        # A wall-clock zero captured on the first tick, an ordered list of story
+        # beats, a "slipped" latch the share-of-model slice reads, and a cue queue
+        # the CLI drains to narrate each beat as it lands.
+        self._t0: datetime | None = None
+        self._slipped = False
+        self.cues: list[str] = []
+        self._beats = self._build_beats() if scenario else []
+        self._beat_i = 0
+
+    # -- scenario beats ------------------------------------------------------
+
+    def _build_beats(self) -> list[dict]:
+        """The demo story, as an ordered list of beats. Each fires when its `at`
+        offset (seconds) is reached — or immediately when nudged by fire_next_beat
+        (the on-cue path). `spawn` front-loads short won deals so revenue visibly
+        ticks; `slip` latches the AI-answer drop; `cue` is the narration line."""
+        beats = [
+            {"name": "baseline", "at": 0.0, "spawn": 2, "spawn_seconds": 30.0,
+             "cue": "Baseline is live — the full channel mix is loaded. Watch the tiles: "
+                    "deals are closing on the stream right now, and every number "
+                    "recomputes as each closed-won lands. Nothing here waits for a nightly job."},
+            {"name": "revenue", "at": 35.0, "spawn": 0,
+             "cue": "There — the sourced-pipeline tile and the money-by-channel bars just "
+                    "moved. That's the stream recomputing attribution live, not a dashboard "
+                    "someone refreshed last night."},
+            {"name": "slip", "at": self.slip_at, "spawn": 0, "slip": True,
+             "cue": "WATCH THIS — you just slipped out of the AI answer. \"cloud cost anomaly "
+                    "detection\" dropped out of ChatGPT, Perplexity, and Gemini: mention rate "
+                    "falling, rank gone. The DRIFT card is firing on the board. No ad platform "
+                    "and no last-touch dashboard will ever show you this — your best-ROI "
+                    "channel is leaking, and today you'd only find out next quarter when the "
+                    "pipeline dried up."},
+            {"name": "agent", "at": self.slip_at + 25.0, "spawn": 0,
+             "cue": "And the agent already caught it — logged to the decision ledger, "
+                    "share-of-model flagged as the leading indicator. Notice it does NOT "
+                    "propose a budget move: you can't buy an LLM's recommendation. It acts "
+                    "where it has a lever and watches where it doesn't. That restraint is the point."},
+        ]
+        # Fire in time order (the sequential runner and on-cue path both walk the
+        # list in order); ascending `at` keeps timer and story order aligned.
+        return sorted(beats, key=lambda b: b["at"])
+
+    def _do_beat(self, beat: dict, now: datetime) -> None:
+        for _ in range(beat.get("spawn", 0)):
+            self._spawn_now(now, seconds=beat.get("spawn_seconds"), won=True)
+        if beat.get("slip"):
+            self._slipped = True
+        self.cues.append(beat["cue"])
+
+    def _run_beats(self, now: datetime, elapsed: float) -> None:
+        while self._beat_i < len(self._beats) and self._beats[self._beat_i]["at"] <= elapsed:
+            self._do_beat(self._beats[self._beat_i], now)
+            self._beat_i += 1
+
+    def fire_next_beat(self, now: datetime | None = None) -> bool:
+        """Fire the next un-fired beat right now (the on-cue 'watch this' path).
+        Returns False if the story is already exhausted."""
+        if self._beat_i >= len(self._beats):
+            return False
+        self._do_beat(self._beats[self._beat_i], now or datetime.utcnow())
+        self._beat_i += 1
+        return True
+
+    def _spawn_now(self, now: datetime, **kw) -> None:
+        """Spawn a journey immediately if under the cap (used by beats)."""
+        if self.max_journeys <= 0 or self._spawned < self.max_journeys:
+            self._inflight.append(self._spawn(now, **kw))
+            self._spawned += 1
 
     @property
     def inflight(self) -> int:
@@ -156,7 +229,8 @@ class LiveGenerator:
 
     # -- spawning a new journey ----------------------------------------------
 
-    def _spawn(self, now: datetime) -> _Journey:
+    def _spawn(self, now: datetime, *, seconds: float | None = None,
+               primary: str | None = None, won: bool | None = None) -> _Journey:
         self._seq += 1
         n = self._seq
         aid, cid, oid = f"001ACL{n:05d}", f"003CTL{n:05d}", f"006OPL{n:05d}"
@@ -168,12 +242,15 @@ class LiveGenerator:
         region = self.rng.choice(_REGIONS)
         industry = self.rng.choice(_INDUSTRIES)
         amount = self.rng.choice([45_000, 90_000, 140_000, 280_000])
-        primary = self.rng.choices(self._channels, weights=self._weights, k=1)[0]
+        if primary is None:
+            primary = self.rng.choices(self._channels, weights=self._weights, k=1)[0]
         support = self.rng.sample(
             [c for c in self._channels if c != primary], k=self.rng.randint(2, 4))
         journey = support + [primary]          # primary lands last (last touch)
-        won = self.rng.random() < 0.62
-        dur = timedelta(seconds=self.journey_seconds * self.rng.uniform(0.7, 1.3))
+        if won is None:
+            won = self.rng.random() < 0.62
+        span = seconds if seconds is not None else self.journey_seconds
+        dur = timedelta(seconds=span * self.rng.uniform(0.7, 1.3))
         acct = {"account_id": aid, "contact_id": cid, "email": email}
 
         sched: list[tuple[datetime, Event]] = []
@@ -278,7 +355,7 @@ class LiveGenerator:
         self._som_seq += 1
         events: list[Event] = []
         for query, base_rank, competitor in _SOM_QUERIES:
-            dropped = query == _SOM_DROP_QUERY and elapsed >= self.som_degrade_seconds
+            dropped = query == _SOM_DROP_QUERY and (self._slipped or elapsed >= self.som_degrade_seconds)
             if dropped:
                 mentioned, cited, rank, sentiment = False, False, 99, "absent"
             else:
@@ -296,6 +373,13 @@ class LiveGenerator:
         """Advance one step and return the events that fire at ``now``."""
         now = now or datetime.utcnow()
         events: list[Event] = []
+
+        # Scenario mode: fire any story beats now due (they may spawn deals, latch
+        # the AI-answer slip, and queue narration cues for the CLI to print).
+        if self._t0 is None:
+            self._t0 = now
+        if self.scenario:
+            self._run_beats(now, (now - self._t0).total_seconds())
 
         under_cap = self.max_journeys <= 0 or self._spawned < self.max_journeys
         if under_cap and self.rng.random() < self.new_journey_rate:

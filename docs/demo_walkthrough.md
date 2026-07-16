@@ -23,6 +23,25 @@ Open **http://localhost:8787/** for the board. The backfill is guaranteed —
 `demo_up.sh` publishes it as a blocking step before serving, so the board never
 opens with only the thin live journeys.
 
+### The live story (scripted beats)
+
+`demo_up.sh` runs a scripted scenario so the board actually *moves* on cue. The
+terminal running the stream prints a `🎬` director line as each beat lands — glance
+at it, then point at the board:
+
+| T+     | Beat | What to say | What shows on screen |
+|--------|------|-------------|----------------------|
+| 0s     | Baseline | "Every number recomputes as events land." | Warm-up deals close; sourced-pipeline tile + bars tick up |
+| ~35s   | Revenue pace | "No nightly job — this is the stream." | "Revenue pace shifted" card; bars move |
+| **90s**| **AI-answer slip** | **"Watch this — you just dropped out of ChatGPT/Perplexity/Gemini. No ad dashboard shows this."** | **DRIFT card fires**; share-of-model bends to zero |
+| ~115s  | Agent responds | "It flags it but won't spend — you can't buy an LLM's answer." | Decision-ledger entry; share-of-model watch |
+
+The DRIFT card lands ~10–30s after the `🎬` cue (pipeline latency) — narrate into it
+and it appears. Tune the slip with `SLIP_AT=120 bash scripts/demo_up.sh`.
+
+**Drive it by hand:** to fire the next beat exactly when you want ("watch this…"),
+`touch /tmp/demo_cue` from another terminal instead of waiting on the timer.
+
 Quick pre-flight at the `agent>` prompt: `summary` (non-zero revenue + spend,
 QoQ in a sane +30–50% range), `recs` (proposes a move). If `recs` is empty, the
 data's still thin — let the stream run a bit longer. The cap means the totals
