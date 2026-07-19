@@ -7,15 +7,16 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# ============================ EDIT THESE ============================
-KAFKA_BOOTSTRAP="PASTE_WARPSTREAM_BOOTSTRAP:9092"
-KAFKA_KEY="PASTE_WARPSTREAM_SASL_USERNAME"
-KAFKA_SECRET="PASTE_WARPSTREAM_SASL_PASSWORD"
-KAFKA_CA="config/warpstream-ca.crt"   # path to your WarpStream CA (.crt or .pem, PEM-encoded)
-DS_MCP_ENDPOINT="https://api-mizaz8.deltastream.io/mcp/v1"
-DS_API_TOKEN="PASTE_DELTASTREAM_API_TOKEN"
-ANTHROPIC_KEY="PASTE_ANTHROPIC_API_KEY"
-# ===================================================================
+# Reads values from .env (or the environment), so you edit them in one place.
+[ -f .env ] && set -a && . ./.env && set +a
+
+KAFKA_BOOTSTRAP="${KAFKA_BOOTSTRAP:-PASTE_WARPSTREAM_BOOTSTRAP:9092}"
+KAFKA_KEY="${KAFKA_KEY:-PASTE_WARPSTREAM_SASL_USERNAME}"
+KAFKA_SECRET="${KAFKA_SECRET:-PASTE_WARPSTREAM_SASL_PASSWORD}"
+KAFKA_CA="${KAFKA_CA:-config/warpstream-ca.crt}"
+DS_MCP_ENDPOINT="${DS_MCP_ENDPOINT:-https://api-mizaz8.deltastream.io/mcp/v1}"
+DS_API_TOKEN="${DS_API_TOKEN:-${DS_TOKEN:-PASTE_DELTASTREAM_API_TOKEN}}"
+ANTHROPIC_KEY="${ANTHROPIC_KEY:-}"
 
 OUT="config/settings.yaml"
 if [ -f "$OUT" ]; then cp "$OUT" "$OUT.bak"; echo "backed up existing -> $OUT.bak"; fi

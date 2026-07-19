@@ -2,6 +2,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Load credentials from .env if present (see .env.example).
+[ -f .env ] && set -a && . ./.env && set +a
+
 # Window 2: wait until the live pipeline has data, then serve the dashboard JSON.
 # Run this alongside demo_up.sh (which streams in window 1). Usage:
 #   bash scripts/demo_serve.sh [port]     (default port 8787)

@@ -2,6 +2,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Load credentials from .env if present, so you set them once (see .env.example).
+[ -f .env ] && set -a && . ./.env && set +a
+
 # One command brings the whole demo up: deploy the DeltaStream pipeline, publish
 # the Q1 backfill anchor, start the live stream, wait for the views to populate,
 # and serve the dashboard. Ctrl-C stops the server AND the background stream.

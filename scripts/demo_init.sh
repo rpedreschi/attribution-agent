@@ -2,6 +2,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Load credentials from .env if present (see .env.example).
+[ -f .env ] && set -a && . ./.env && set +a
+
 # One-time setup for a NEW DeltaStream instance: create the Kafka store and the
 # attribution database. Run this once after moving instances, then use
 # demo_up.sh for every rebuild. Idempotent — safe to re-run ("already exists" is
