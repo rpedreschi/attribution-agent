@@ -139,7 +139,6 @@
       <span class="spark" id="spark"></span>
       <div class="right">
         <span id="eps"></span>
-        <button class="btn sm">Last 30 days ▾</button>
         <a class="btn pri sm" id="exportBtn" href="board-pack.xlsx" download="DeltaStream_Pulse_Board_Pack.xlsx">Export board pack</a>
       </div>
     </div>
@@ -151,6 +150,8 @@ const FALLBACK = {"meta": {"customer": "Acme Cloud", "period_label": "2026-Q1 to
 const API = new URLSearchParams(location.search).get("api")
   || (location.protocol === "file:" ? "http://localhost:8787/board.json" : "/board.json");
 let BOARD = FALLBACK, SCREEN = "live";
+// Client-side approvals: kept separate from BOARD so they survive live polls.
+const LOCAL_APPROVALS = [], APPROVED = new Set();
 
 const money = n => n==null ? "—" :
   Math.abs(n)>=1e6 ? "$"+(n/1e6).toFixed(1)+"M" : Math.abs(n)>=1e3 ? "$"+(n/1e3).toFixed(1)+"K" : "$"+Math.round(n);
@@ -207,21 +208,32 @@ function modelCompare(){
 }
 function agent(){
   const ra=BOARD.reallocation_agent, a=ra.autonomy;
-  const rec=r=>`<div class="rec ${r.action==='Decrease'&&r.confidence==='low'?'':''}">
+  const rec=r=>{const done=APPROVED.has(r.id);
+    return `<div class="rec">
     <div><h3>${esc(r.title)}</h3><p>${esc(r.rationale)}</p><div class="basis">Basis: ${esc((r.basis||[]).join("  ·  "))}</div></div>
     <div class="side2"><span class="conf">Confidence: ${r.confidence}</span>
-      <button class="btn pri">${r.action==='Decrease'?'Approve cut':'Approve move'}</button>
-      <button class="btn">Show the math</button></div></div>`;
+      <button class="btn pri approve" data-id="${r.id}"${done?" disabled":""}>${done?"Approved ✓":(r.action==='Decrease'?'Approve cut':'Approve move')}</button></div></div>`;};
   return `<div class="eyebrow">Reallocation agent</div><h1>${ra.recommendations.length} pending recommendations</h1>
     <p class="sub">Proposed budget moves from current attribution and guardrails. Each requires approval before it takes effect.</p>
     ${ra.recommendations.map(rec).join("")||'<p class="sub">No material change this period.</p>'}
     <div class="section"><h2>Autonomy</h2>
       <div class="auto"><h3>Level ${a.level} of ${a.max_level} — propose and wait.</h3>
-      <p>Once promoted, the agent can move up to ${money(a.weekly_cap)} per week, only within channels you allow. Every move is capped, reversible, and written to the decision ledger. ${a.match_rate.matched} of your last ${a.match_rate.of} approvals matched the agent's recommendation.</p>
-      <button class="btn pri">Promote to Level ${a.level+1}</button> <button class="btn">See the caps</button></div></div>`;
+      <p>Once promoted, the agent can move up to ${money(a.weekly_cap)} per week, only within channels you allow. Every move is capped, reversible, and written to the decision ledger. ${a.match_rate.matched} of your last ${a.match_rate.of} approvals matched the agent's recommendation.</p></div></div>`;
+}
+function approveRec(id){
+  const r=(BOARD.reallocation_agent.recommendations||[]).find(x=>x.id===id);
+  if(!r||APPROVED.has(id)) return;
+  APPROVED.add(id);
+  const delta=(r.delta>=0?"+":"")+Number(r.delta).toLocaleString();
+  LOCAL_APPROVALS.push({ts:new Date().toISOString(),
+    event:`Approve: ${r.action} ${r.channel} ${delta}/wk`,
+    actor:"HUMAN", result:"Logged to decision ledger"});
+  render();
 }
 function ledger(){
-  const rows=BOARD.decision_ledger.map(e=>`<tr><td class="when">${esc((e.ts||"").slice(11,19)||e.ts)}</td>
+  // Newest local approvals first, then the board's own ledger.
+  const entries=LOCAL_APPROVALS.slice().reverse().concat(BOARD.decision_ledger||[]);
+  const rows=entries.map(e=>`<tr><td class="when">${esc((e.ts||"").slice(11,19)||e.ts)}</td>
     <td class="ev">${esc(e.event)}</td><td><span class="actor ${e.actor}">${e.actor}</span></td><td>${esc(e.result)}</td></tr>`).join("");
   return `<div class="eyebrow">Decision ledger</div><h1>Agent decisions and approvals</h1>
     <p class="sub">What the agent observed, what it proposed, who approved it, and the result.</p>
@@ -236,6 +248,12 @@ document.querySelectorAll(".navitem").forEach(n=>n.addEventListener("click",()=>
   document.querySelectorAll(".navitem").forEach(x=>x.classList.toggle("active",x===n));
   render();
 }));
+
+// Delegated once on the persistent container so it survives re-renders.
+document.getElementById("view").addEventListener("click",e=>{
+  const b=e.target.closest(".approve");
+  if(b&&b.dataset.id!=null) approveRec(Number(b.dataset.id));
+});
 
 async function poll(){
   try{const r=await fetch(API,{cache:"no-store"});if(r.ok){BOARD=await r.json();render();}}catch(e){}
