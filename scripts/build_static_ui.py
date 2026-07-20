@@ -40,22 +40,34 @@ def _brace_span(text: str, start_after: str) -> tuple[int, int]:
     raise ValueError("unbalanced braces after " + start_after)
 
 
-def _board(source: str) -> dict:
-    from attribution_agent.api.board_view import _build
-    snap = Path(tempfile.gettempdir()) / "board_static_snapshot.jsonl"
-    return _build(source, snap)
+def _board_and_pack(source: str) -> tuple[dict, bytes]:
+    """Load the board data once and return (view dict, board-pack .xlsx bytes) so
+    the embedded screen and the embedded workbook come from the same numbers."""
+    from attribution_agent.api.board_view import _load, build_board_view
+    from attribution_agent.spreadsheet.builder import build_workbook_bytes
+    loaded = _load(source)
+    view = build_board_view(loaded.data, decisions=loaded.decisions,
+                            excluded_channels=loaded.excluded, trends=loaded.trends)
+    return view, build_workbook_bytes(loaded.data)
 
 
 def build(source: str) -> str:
+    import base64
     html = _UI.read_text()
+    view, xlsx = _board_and_pack(source)
     # 1. swap the embedded FALLBACK for the chosen dataset (the initial BOARD).
     s, e = _brace_span(html, "const FALLBACK = ")
-    html = html[:s] + json.dumps(_board(source)) + html[e:]
+    html = html[:s] + json.dumps(view) + html[e:]
     # 2. freeze it: drop the live fetch + tickers so it needs no server.
     html = re.sub(r"\npoll\(\);", "\n", html)
     html = re.sub(r"\nsetInterval\(poll,\s*5000\);", "\n", html)
     html = re.sub(r"\nsetInterval\(\(\)=>\{document\.getElementById\(\"recomputed\"\)"
                   r".*?\},\s*1000\);", "\n", html)
+    # 3. embed the matching board pack so "Export board pack" works offline.
+    b64 = base64.b64encode(xlsx).decode()
+    data_uri = ("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                f";base64,{b64}")
+    html = html.replace('href="board-pack.xlsx"', f'href="{data_uri}"')
     return html
 
 

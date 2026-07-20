@@ -293,7 +293,8 @@ def _data_assumptions(wb: Workbook, d: BoardPackData) -> None:
     ws.sheet_view.showGridLines = False
 
 
-def build_workbook(data: BoardPackData, out_path: Path) -> Path:
+def _assemble(data: BoardPackData) -> Workbook:
+    """Build the six-sheet workbook in memory (shared by file + bytes exports)."""
     wb = Workbook()
     _exec_summary(wb, data)
     _attribution_by_channel(wb, data)
@@ -301,6 +302,19 @@ def build_workbook(data: BoardPackData, out_path: Path) -> Path:
     _funnel(wb, data)
     _cac_roi(wb, data)
     _data_assumptions(wb, data)
+    return wb
+
+
+def build_workbook_bytes(data: BoardPackData) -> bytes:
+    """Return the board pack as .xlsx bytes (for serving/embedding, no disk)."""
+    from io import BytesIO
+    bio = BytesIO()
+    _assemble(data).save(bio)
+    return bio.getvalue()
+
+
+def build_workbook(data: BoardPackData, out_path: Path) -> Path:
+    wb = _assemble(data)
     # Tolerate a directory path (e.g. "." or "out/") by dropping a named file in it.
     if out_path.is_dir() or str(out_path).endswith(("/", "\\")):
         fname = f"{data.customer_name}_{data.fiscal_period}.xlsx".replace(" ", "_")

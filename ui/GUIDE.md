@@ -17,6 +17,9 @@ realistic numbers. You can email it, drop it in a deck, or open it offline on a
 plane. The numbers are a fixed, believable example ($4.28M sourced pipeline); it
 does not change on its own.
 
+The **Export board pack** button (top right) downloads a six-sheet Excel workbook
+whose numbers match what's on the screen — works offline, right from this file.
+
 ---
 
 ## Option B — Run it live (moving numbers)
@@ -47,6 +50,9 @@ bash scripts/demo_up.sh
 Wait for it to print `ready — NN won accounts in the views`, then open
 **http://localhost:8787/** in your browser. Leave the terminal running; press
 `Ctrl-C` there when you're done to stop everything.
+
+The **Export board pack** button downloads a six-sheet Excel workbook of the
+current live numbers, matching the board on screen.
 
 While it runs, the terminal prints a `🎬` line each time a story beat happens
 (baseline, revenue update, the AI-answer slip, the agent response) — glance at it,

@@ -537,7 +537,8 @@ _UI_DIR = Path(__file__).resolve().parents[3] / "ui"
 _CTYPES = {".html": "text/html; charset=utf-8", ".css": "text/css",
            ".js": "text/javascript", ".json": "application/json",
            ".ts": "text/plain; charset=utf-8", ".map": "application/json",
-           ".svg": "image/svg+xml", ".ico": "image/x-icon"}
+           ".svg": "image/svg+xml", ".ico": "image/x-icon",
+           ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
 
 
 def _serve(source: str, snap_path: Path, port: int) -> None:
@@ -566,6 +567,24 @@ def _serve(source: str, snap_path: Path, port: int) -> None:
                                "application/json")
                     return
                 self._send(200, body, "application/json")
+                return
+            if path in ("/board-pack.xlsx", "/board-pack"):
+                # Generated from the same BoardPackData the board renders, so the
+                # workbook's numbers match the screen.
+                try:
+                    from ..spreadsheet.builder import build_workbook_bytes
+                    xlsx = build_workbook_bytes(_load(source).data)
+                except Exception as exc:  # noqa: BLE001
+                    self._send(500, json.dumps({"error": str(exc)}).encode(),
+                               "application/json")
+                    return
+                self.send_response(200)
+                self.send_header("Content-Type", _CTYPES[".xlsx"])
+                self.send_header("Content-Disposition",
+                                 'attachment; filename="DeltaStream_Pulse_Board_Pack.xlsx"')
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(xlsx)
                 return
             # Otherwise serve a UI static file. Strip a leading /ui/ so both
             # http://host/ and http://host/ui/index.html resolve to ui/index.html.
