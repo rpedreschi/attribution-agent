@@ -541,6 +541,21 @@ _CTYPES = {".html": "text/html; charset=utf-8", ".css": "text/css",
            ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
 
 
+def _index_with_pack(fpath: Path, source: str) -> bytes:
+    """Serve index.html with the current board pack embedded as base64, so the
+    Export button builds the .xlsx client-side. Falls back to the untouched file
+    (whose button then uses the /board-pack.xlsx endpoint) if the build fails."""
+    html = fpath.read_text()
+    try:
+        import base64
+        from ..spreadsheet.builder import build_workbook_bytes
+        b64 = base64.b64encode(build_workbook_bytes(_load(source).data)).decode()
+        html = html.replace('let EMBEDDED_PACK = "";', f'let EMBEDDED_PACK = "{b64}";', 1)
+    except Exception:  # noqa: BLE001 - keep serving the page regardless
+        pass
+    return html.encode()
+
+
 def _serve(source: str, snap_path: Path, port: int) -> None:
     """Serve both the data and the UI from one origin: `/board.json` re-builds the
     view per request; any other path serves a static file from ui/ (default
@@ -595,6 +610,11 @@ def _serve(source: str, snap_path: Path, port: int) -> None:
                 rel = "index.html"
             fpath = (_UI_DIR / rel).resolve()
             if _UI_DIR in fpath.parents and fpath.is_file():
+                if fpath.name == "index.html":
+                    # Embed the current board pack so Export downloads client-side
+                    # (a Blob), independent of the /board-pack.xlsx round-trip.
+                    self._send(200, _index_with_pack(fpath, source), _CTYPES[".html"])
+                    return
                 self._send(200, fpath.read_bytes(),
                            _CTYPES.get(fpath.suffix, "application/octet-stream"))
             else:
