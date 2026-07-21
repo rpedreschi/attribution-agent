@@ -84,6 +84,12 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
     print(f"Wrote {out} ({len(html):,} bytes) from {args.source} data.")
+    # Mirror into public/ — the directory Vercel serves — so the deployed site
+    # stays in sync with every rebuild.
+    pub = _REPO / "public" / "index.html"
+    pub.parent.mkdir(parents=True, exist_ok=True)
+    pub.write_text(html)
+    print(f"Mirrored to {pub} (Vercel deploy directory).")
     print("Open it in any browser — no server needed.")
 
 
