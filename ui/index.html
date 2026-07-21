@@ -152,6 +152,10 @@ const API = new URLSearchParams(location.search).get("api")
 let BOARD = FALLBACK, SCREEN = "live";
 // Client-side approvals: kept separate from BOARD so they survive live polls.
 const LOCAL_APPROVALS = [], APPROVED = new Set();
+// The static build injects the board-pack workbook here (base64). When set, the
+// Export button builds the file client-side (works offline and inside sandboxed
+// hosts); when empty, the button's href downloads it from the live server.
+let EMBEDDED_PACK = "";
 
 const money = n => n==null ? "—" :
   Math.abs(n)>=1e6 ? "$"+(n/1e6).toFixed(1)+"M" : Math.abs(n)>=1e3 ? "$"+(n/1e3).toFixed(1)+"K" : "$"+Math.round(n);
@@ -253,6 +257,19 @@ document.querySelectorAll(".navitem").forEach(n=>n.addEventListener("click",()=>
 document.getElementById("view").addEventListener("click",e=>{
   const b=e.target.closest(".approve");
   if(b&&b.dataset.id!=null) approveRec(Number(b.dataset.id));
+});
+
+// Export: build the workbook from the embedded bytes via a Blob (sandbox-safe).
+document.getElementById("exportBtn").addEventListener("click",e=>{
+  if(!EMBEDDED_PACK) return;                 // live server: follow the href instead
+  e.preventDefault();
+  const bytes=Uint8Array.from(atob(EMBEDDED_PACK),c=>c.charCodeAt(0));
+  const url=URL.createObjectURL(new Blob([bytes],
+    {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  const a=document.createElement("a");
+  a.href=url; a.download="DeltaStream_Pulse_Board_Pack.xlsx";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
 });
 
 async function poll(){

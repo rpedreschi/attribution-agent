@@ -63,11 +63,11 @@ def build(source: str) -> str:
     html = html.replace("render();\npoll();",
                         "BOARD.meta.recomputed_at=new Date().toISOString();\nrender();", 1)
     html = re.sub(r"\nsetInterval\(poll,\s*5000\);", "\n", html)
-    # 3. embed the matching board pack so "Export board pack" works offline.
+    # 3. embed the matching board pack as base64 so "Export board pack" builds the
+    #    file client-side (Blob) — works offline and inside sandboxed hosts where a
+    #    data:-URL download link is blocked (e.g. embedded artifact iframes).
     b64 = base64.b64encode(xlsx).decode()
-    data_uri = ("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                f";base64,{b64}")
-    html = html.replace('href="board-pack.xlsx"', f'href="{data_uri}"')
+    html = html.replace('let EMBEDDED_PACK = "";', f'let EMBEDDED_PACK = "{b64}";', 1)
     return html
 
 
