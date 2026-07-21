@@ -1408,7 +1408,7 @@
         "format": "currency",
         "delta_pct": 9.5,
         "delta_label": "vs prior period",
-        "subtext": "last-touch sourced, closed-won"
+        "subtext": "Marketing-attributed closed-won revenue"
       },
       {
         "key": "influenced",
@@ -1417,7 +1417,7 @@
         "format": "currency",
         "delta_pct": null,
         "delta_label": "vs last look",
-        "subtext": "held separate, never summed"
+        "subtext": "Closed-won with any marketing touch"
       },
       {
         "key": "blended_cac",
@@ -1426,7 +1426,7 @@
         "format": "currency",
         "delta_pct": null,
         "delta_label": "vs last look",
-        "subtext": "driven by Paid Social"
+        "subtext": "Marketing spend per new customer"
       },
       {
         "key": "cac_payback_months",
@@ -1435,7 +1435,7 @@
         "format": "months",
         "delta_pct": null,
         "delta_label": "",
-        "subtext": "on ARR; gross margin not modeled"
+        "subtext": "Months to recover CAC"
       }
     ],
     "what_changed": [

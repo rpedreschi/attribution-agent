@@ -114,34 +114,33 @@ def _meta(data, now, events_per_sec, sources_streaming, trends) -> dict:
 
 def _kpis(data: BoardPackData, prev: dict | None) -> list[dict]:
     influenced = sum(data.influenced_by_channel.values())
-    cac_driver = _worst_roi_channel(data)
     payback = 12 / data.blended_roi if data.blended_roi else None
     return [
         {
             "key": "sourced_pipeline", "label": "Marketing-sourced pipeline",
             "value": round(data.total_attributed), "format": "currency",
             "delta_pct": round(data.revenue_qoq * 100, 1), "delta_label": "vs prior period",
-            "subtext": "last-touch sourced, closed-won",
+            "subtext": "Marketing-attributed closed-won revenue",
         },
         {
             "key": "influenced", "label": "Marketing-influenced",
             "value": round(influenced), "format": "currency",
             "delta_pct": _pct_delta(influenced, (prev or {}).get("influenced")),
             "delta_label": "vs last look",
-            "subtext": "held separate, never summed",
+            "subtext": "Closed-won with any marketing touch",
         },
         {
             "key": "blended_cac", "label": "Blended CAC",
             "value": round(data.blended_cac), "format": "currency",
             "delta_pct": _pct_delta(data.blended_cac, (prev or {}).get("blended_cac")),
             "delta_label": "vs last look",
-            "subtext": f"driven by {cac_driver}" if cac_driver else "",
+            "subtext": "Marketing spend per new customer",
         },
         {
             "key": "cac_payback_months", "label": "CAC payback",
             "value": round(payback, 1) if payback else None, "format": "months",
             "delta_pct": None, "delta_label": "",
-            "subtext": "on ARR; gross margin not modeled",
+            "subtext": "Months to recover CAC",
         },
     ]
 

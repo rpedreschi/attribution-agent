@@ -22,7 +22,7 @@ def test_influenced_exceeds_sourced_and_never_summed():
     _d, v = _view()
     kpis = {k["key"]: k for k in v["live_board"]["kpis"]}
     assert kpis["influenced"]["value"] > kpis["sourced_pipeline"]["value"]
-    assert kpis["influenced"]["subtext"] == "held separate, never summed"
+    assert kpis["influenced"]["subtext"] == "Closed-won with any marketing touch"
 
 
 def test_credit_shares_normalize_per_model():
