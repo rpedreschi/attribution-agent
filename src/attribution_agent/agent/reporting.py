@@ -15,6 +15,11 @@ from statistics import mean
 from .. import sample_data as sd
 from .deltastream_mcp import DeltaStreamMCPClient, DeltaStreamMCPError
 
+# Fully-loaded blended CAC = media/program spend × this, spread over new customers.
+# Media is ~40% of go-to-market cost (the rest is sales, SDRs, tooling, overhead),
+# so ×2.5 turns media spend into a believable fully-loaded acquisition cost.
+LOADED_CAC_MULTIPLE = 2.5
+
 
 @dataclass
 class ChannelAttribution:
@@ -149,7 +154,19 @@ class BoardPackData:
 
     @property
     def blended_cac(self) -> float:
-        return self.total_spend / self.won_deals if self.won_deals else 0.0
+        """Fully-loaded blended CAC: media/program spend is only part of the cost to
+        acquire a customer — sales, SDRs, tooling and GTM overhead load on top. Media
+        is ~40% of loaded GTM here, so loaded cost ≈ spend × LOADED_CAC_MULTIPLE.
+        (Per-channel CAC in cac_roi stays media-only — that's the reallocation lever.)"""
+        return (self.total_spend * LOADED_CAC_MULTIPLE) / self.won_deals if self.won_deals else 0.0
+
+    @property
+    def blended_payback_months(self) -> float | None:
+        """Months to recover the fully-loaded CAC from annual revenue per customer."""
+        if not self.won_deals or not self.total_attributed:
+            return None
+        acv = self.total_attributed / self.won_deals   # annual revenue per new customer
+        return self.blended_cac / (acv / 12)
 
     @property
     def revenue_qoq(self) -> float:

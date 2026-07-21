@@ -104,7 +104,7 @@ def _exec_summary(wb: Workbook, d: BoardPackData) -> None:
     kpis = [
         ("Attributed Revenue", f"${d.total_attributed:,.0f}", f"{d.revenue_qoq:+.1%} QoQ"),
         ("Blended ROI", f"{d.blended_roi:.2f}x", f"Spend ${d.total_spend:,.0f}"),
-        ("Blended CAC", f"${d.blended_cac:,.0f}", f"{d.won_deals} new customers"),
+        ("Blended CAC", f"${d.blended_cac:,.0f}", f"fully loaded · {d.won_deals} customers"),
         ("Model Agreement", f"{d.model_agreement:.2f}", "1.00 = models agree"),
     ]
     row = 3
@@ -235,7 +235,8 @@ def _cac_roi(wb: Workbook, d: BoardPackData) -> None:
     ws = wb.create_sheet("CAC and ROI")
     _widths(ws, [22, 16, 20, 14, 16, 12, 16])
     _title(ws, "CAC and ROI by Program Category", 7)
-    sub = "ROI = attributed revenue / spend (time-decay). CAC = spend / new customers. Payback = 12 / ROI months (ARR)."
+    sub = ("Per-channel CAC and ROI are media/program cost — the reallocation lever. "
+           "The fully-loaded blended CAC (adds sales + GTM) is on the Executive Summary.")
     ws.merge_cells("A2:G2"); c = ws.cell(2, 1, sub); c.font = Font(size=9, italic=True, color="555555"); c.alignment = LEFT
     _header_row(ws, 3, ["Program", "Spend", "Attributed Revenue", "Deals", "CAC", "ROI", "Payback (mo)"])
     row = 4
@@ -244,8 +245,8 @@ def _cac_roi(wb: Workbook, d: BoardPackData) -> None:
                             r.cac or 0, r.roi or 0, r.payback_months or 0],
                   fmt={2: MONEY, 3: MONEY, 4: '#,##0', 5: MONEY, 6: MULT, 7: '0.0'}, alt=(i % 2 == 1))
         row += 1
-    _data_row(ws, row, ["Blended", d.total_spend, d.total_attributed, d.won_deals,
-                        d.blended_cac, d.blended_roi, 12 / d.blended_roi],
+    _data_row(ws, row, ["Blended (media)", d.total_spend, d.total_attributed, d.won_deals,
+                        d.total_spend / d.won_deals, d.blended_roi, 12 / d.blended_roi],
               fmt={2: MONEY, 3: MONEY, 4: '#,##0', 5: MONEY, 6: MULT, 7: '0.0'})
     for col in range(1, 8):
         ws.cell(row, col).font = Font(size=10, bold=True, color=NAVY)
@@ -272,9 +273,11 @@ def _data_assumptions(wb: Workbook, d: BoardPackData) -> None:
         ("", ""),
         ("Attribution models", "Last touch (100% to final touch), Linear (equal credit), "
                                "Time decay (7-day half-life). Each distributes the same closed-won revenue."),
-        ("CAC", "Spend / new customers (attributed deals)"),
-        ("ROI", "Attributed revenue / spend, using the time-decay model"),
-        ("Payback", "12 / ROI, treating attributed revenue as ARR"),
+        ("Blended CAC", "Fully loaded: media/program spend x 2.5 (adds sales, SDRs, "
+                        "tooling, GTM overhead) / new customers"),
+        ("Per-channel CAC", "Media/program spend / new customers — the reallocation lever"),
+        ("ROI", "Attributed revenue / media spend, using the time-decay model"),
+        ("Payback", "Fully-loaded blended CAC / (annual revenue per customer / 12)"),
         ("Model agreement", f"{d.model_agreement:.2f} — avg. pairwise correlation of channel shares across the three models"),
         ("", ""),
         ("Agent guardrails", "Agent recommends, human approves — no autonomous spend changes in v1."),

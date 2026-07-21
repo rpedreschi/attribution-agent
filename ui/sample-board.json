@@ -2,7 +2,7 @@
   "meta": {
     "customer": "Acme Cloud",
     "period_label": "2026-Q1 to date",
-    "recomputed_at": "2026-07-15T10:42:07+00:00",
+    "recomputed_at": "2026-07-21T19:37:43.418139+00:00",
     "events_per_sec": 2000,
     "events_per_sec_illustrative": true,
     "window": "period_to_date",
@@ -1415,23 +1415,23 @@
         "label": "Marketing-influenced",
         "value": 9416000,
         "format": "currency",
-        "delta_pct": null,
+        "delta_pct": 0.0,
         "delta_label": "vs last look",
         "subtext": "Closed-won with any marketing touch"
       },
       {
         "key": "blended_cac",
         "label": "Blended CAC",
-        "value": 52778,
+        "value": 131944,
         "format": "currency",
-        "delta_pct": null,
+        "delta_pct": 150.0,
         "delta_label": "vs last look",
-        "subtext": "Marketing spend per new customer"
+        "subtext": "Sales + marketing cost per new customer"
       },
       {
         "key": "cac_payback_months",
         "label": "CAC payback",
-        "value": 5.3,
+        "value": 13.3,
         "format": "months",
         "delta_pct": null,
         "delta_label": "",
@@ -1455,12 +1455,6 @@
         "kind": "low_confidence",
         "title": "Organic/Web: too few to attribute",
         "body": "2 conversions in window \u2014 below the threshold to attribute a reallocation.",
-        "real": true
-      },
-      {
-        "kind": "new",
-        "title": "First snapshot",
-        "body": "Baseline captured. 'What changed' deltas populate on the next refresh.",
         "real": true
       }
     ],
@@ -1856,42 +1850,36 @@
       "max_level": 4,
       "weekly_cap": 25000,
       "match_rate": {
-        "matched": 1,
-        "of": 1
+        "matched": 0,
+        "of": 0
       },
       "note": "Every move is capped, reversible, and written to the decision ledger."
     }
   },
   "decision_ledger": [
     {
-      "ts": "2026-07-15T10:42:07+00:00",
+      "ts": "2026-07-21T19:37:43.418139+00:00",
       "event": "Drift detected: AI answer visibility slipped",
       "actor": "AGENT",
       "result": "Flagged in share-of-model"
     },
     {
-      "ts": "2026-07-15T10:42:07+00:00",
+      "ts": "2026-07-21T19:37:43.418139+00:00",
       "event": "Recommendation issued: Decrease Paid Social -110,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-07-15T10:42:07+00:00",
+      "ts": "2026-07-21T19:37:43.418139+00:00",
       "event": "Recommendation issued: Decrease Paid Search -82,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-07-15T10:42:07+00:00",
+      "ts": "2026-07-21T19:37:43.418139+00:00",
       "event": "Recommendation issued: Increase Email Nurture +10,000",
       "actor": "AGENT",
       "result": "Pending approval"
-    },
-    {
-      "ts": "2026-07-15T09:15:22+00:00",
-      "event": "Approve: Increase Email Nurture \u2014 aligns with Q3 plan",
-      "actor": "HUMAN",
-      "result": "Logged to decision ledger"
     }
   ]
 }
