@@ -58,11 +58,11 @@ def build(source: str) -> str:
     # 1. swap the embedded FALLBACK for the chosen dataset (the initial BOARD).
     s, e = _brace_span(html, "const FALLBACK = ")
     html = html[:s] + json.dumps(view) + html[e:]
-    # 2. freeze it: drop the live fetch + tickers so it needs no server.
-    html = re.sub(r"\npoll\(\);", "\n", html)
+    # 2. freeze the data feed (no server), but keep the "recomputed" chip alive:
+    #    re-baseline it to page-load so it always reads fresh, and keep the ticker.
+    html = html.replace("render();\npoll();",
+                        "BOARD.meta.recomputed_at=new Date().toISOString();\nrender();", 1)
     html = re.sub(r"\nsetInterval\(poll,\s*5000\);", "\n", html)
-    html = re.sub(r"\nsetInterval\(\(\)=>\{document\.getElementById\(\"recomputed\"\)"
-                  r".*?\},\s*1000\);", "\n", html)
     # 3. embed the matching board pack so "Export board pack" works offline.
     b64 = base64.b64encode(xlsx).decode()
     data_uri = ("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
