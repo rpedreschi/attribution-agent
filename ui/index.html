@@ -92,6 +92,13 @@
   .tab{padding:10px 2px;font-size:14px;color:var(--ink-2);cursor:pointer;border-bottom:2px solid transparent}
   .tab.active{color:var(--blue);border-color:var(--blue);font-weight:600}
   /* ai answer share */
+  .twin{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:2px 0 24px}
+  .twin .t{border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .twin .t.vis{border-left:4px solid var(--blue)} .twin .t.attr{border-left:4px solid var(--ink-2)}
+  .twin .t .tag2{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .twin .t.vis .tag2{color:var(--blue-ink)} .twin .t.attr .tag2{color:var(--ink-2)}
+  .twin .t h4{margin:7px 0 6px;font-size:15px}
+  .twin .t p{margin:0;color:var(--ink-2);font-size:12.5px;line-height:1.5}
   .som-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   .chart{border:1px solid var(--line);border-radius:14px;padding:18px 20px 12px}
   .chart svg .gl{stroke:#eef1f7;stroke-width:1}
@@ -284,7 +291,13 @@ function aishare(){
     return `<tr><td class="ev som-q">${esc(q.query)}</td><td>${pct(q.mention_rate)}</td><td>${pct(q.citation_rate)}</td><td>${q.avg_rank>=99?"unranked":q.avg_rank}</td><td><span class="tag ${c}">${t}</span></td></tr>`;}).join("");
   const risk=sm.queries_at_risk||0, trk=sm.queries_tracked||0, ass=sm.assistants||[];
   return `<div class="eyebrow">AI answer share</div><h1>Share of model</h1>
-    <p class="sub">How often ${esc(BOARD.meta.customer)} is named when ${esc(ass.join(", "))} answer buyer questions — the leading indicator behind the AI Assistant channel.</p>
+    <p class="sub">How often ${esc(BOARD.meta.customer)} shows up when ${esc(ass.join(", "))} answer buyer questions. This is answer-space <em>visibility</em> — a different measurement from revenue attribution.</p>
+    <div class="twin">
+      <div class="t vis"><div class="tag2">This screen · visibility</div><h4>Share of model</h4>
+        <p>Whether you're named, cited, and where you rank when an assistant answers. It counts the mention itself — no click required. A leading indicator.</p></div>
+      <div class="t attr"><div class="tag2">Live board · attribution</div><h4>AI Assistant channel</h4>
+        <p>Revenue from AI-referred <em>clicks</em> that arrive trackable (a referrer or UTM) and enter the touch path. Lagging, and a floor — it can't see zero-click mentions.</p></div>
+    </div>
     <div class="som-stats">
       ${stat("Answer visibility",pct(sm.avg_mention_rate||0),"avg mention rate across tracked queries")}
       ${stat("Queries at risk",risk+" of "+trk,risk?"slipping out of the answer":"all holding position")}
