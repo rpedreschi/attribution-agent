@@ -2,7 +2,7 @@
   "meta": {
     "customer": "Acme Cloud",
     "period_label": "2026-Q1 to date",
-    "recomputed_at": "2026-07-21T19:37:43.418139+00:00",
+    "recomputed_at": "2026-07-28T13:37:47.643136+00:00",
     "events_per_sec": 2000,
     "events_per_sec_illustrative": true,
     "window": "period_to_date",
@@ -1424,7 +1424,7 @@
         "label": "Blended CAC",
         "value": 131944,
         "format": "currency",
-        "delta_pct": 150.0,
+        "delta_pct": 0.0,
         "delta_label": "vs last look",
         "subtext": "Sales + marketing cost per new customer"
       },
@@ -1856,27 +1856,389 @@
       "note": "Every move is capped, reversible, and written to the decision ledger."
     }
   },
+  "share_of_model": {
+    "assistants": [
+      "ChatGPT",
+      "Perplexity",
+      "Gemini"
+    ],
+    "queries_tracked": 5,
+    "queries_at_risk": 1,
+    "avg_mention_rate": 0.637,
+    "queries": [
+      {
+        "query": "cloud cost anomaly detection",
+        "mention_rate": 0.217,
+        "citation_rate": 0.067,
+        "avg_rank": 11.8,
+        "best_rank": 2,
+        "status": "at risk",
+        "trend": [
+          {
+            "t": "2026-01-01T09:00:00+00:00",
+            "mention_rate": 1.0
+          },
+          {
+            "t": "2026-01-01T09:01:00+00:00",
+            "mention_rate": 0.944
+          },
+          {
+            "t": "2026-01-01T09:02:00+00:00",
+            "mention_rate": 0.888
+          },
+          {
+            "t": "2026-01-01T09:03:00+00:00",
+            "mention_rate": 0.832
+          },
+          {
+            "t": "2026-01-01T09:04:00+00:00",
+            "mention_rate": 0.776
+          },
+          {
+            "t": "2026-01-01T09:05:00+00:00",
+            "mention_rate": 0.72
+          },
+          {
+            "t": "2026-01-01T09:06:00+00:00",
+            "mention_rate": 0.664
+          },
+          {
+            "t": "2026-01-01T09:07:00+00:00",
+            "mention_rate": 0.608
+          },
+          {
+            "t": "2026-01-01T09:08:00+00:00",
+            "mention_rate": 0.552
+          },
+          {
+            "t": "2026-01-01T09:09:00+00:00",
+            "mention_rate": 0.496
+          },
+          {
+            "t": "2026-01-01T09:10:00+00:00",
+            "mention_rate": 0.44
+          },
+          {
+            "t": "2026-01-01T09:11:00+00:00",
+            "mention_rate": 0.385
+          },
+          {
+            "t": "2026-01-01T09:12:00+00:00",
+            "mention_rate": 0.329
+          },
+          {
+            "t": "2026-01-01T09:13:00+00:00",
+            "mention_rate": 0.273
+          },
+          {
+            "t": "2026-01-01T09:14:00+00:00",
+            "mention_rate": 0.217
+          }
+        ]
+      },
+      {
+        "query": "Acme Cloud alternatives",
+        "mention_rate": 0.55,
+        "citation_rate": 0.233,
+        "avg_rank": 4.1,
+        "best_rank": 2,
+        "status": "slipping",
+        "trend": [
+          {
+            "t": "2026-01-01T09:00:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:01:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:02:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:03:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:04:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:05:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:06:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:07:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:08:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:09:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:10:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:11:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:12:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:13:00+00:00",
+            "mention_rate": 0.55
+          },
+          {
+            "t": "2026-01-01T09:14:00+00:00",
+            "mention_rate": 0.55
+          }
+        ]
+      },
+      {
+        "query": "how to reduce our AWS bill",
+        "mention_rate": 0.633,
+        "citation_rate": 0.317,
+        "avg_rank": 3.6,
+        "best_rank": 3,
+        "status": "slipping",
+        "trend": [
+          {
+            "t": "2026-01-01T09:00:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:01:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:02:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:03:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:04:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:05:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:06:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:07:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:08:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:09:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:10:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:11:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:12:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:13:00+00:00",
+            "mention_rate": 0.633
+          },
+          {
+            "t": "2026-01-01T09:14:00+00:00",
+            "mention_rate": 0.633
+          }
+        ]
+      },
+      {
+        "query": "FinOps tools for enterprise",
+        "mention_rate": 0.833,
+        "citation_rate": 0.517,
+        "avg_rank": 2.3,
+        "best_rank": 2,
+        "status": "strong",
+        "trend": [
+          {
+            "t": "2026-01-01T09:00:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:01:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:02:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:03:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:04:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:05:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:06:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:07:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:08:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:09:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:10:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:11:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:12:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:13:00+00:00",
+            "mention_rate": 0.833
+          },
+          {
+            "t": "2026-01-01T09:14:00+00:00",
+            "mention_rate": 0.833
+          }
+        ]
+      },
+      {
+        "query": "best cloud cost optimization platform",
+        "mention_rate": 0.95,
+        "citation_rate": 0.733,
+        "avg_rank": 1.4,
+        "best_rank": 1,
+        "status": "strong",
+        "trend": [
+          {
+            "t": "2026-01-01T09:00:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:01:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:02:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:03:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:04:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:05:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:06:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:07:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:08:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:09:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:10:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:11:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:12:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:13:00+00:00",
+            "mention_rate": 0.95
+          },
+          {
+            "t": "2026-01-01T09:14:00+00:00",
+            "mention_rate": 0.95
+          }
+        ]
+      }
+    ]
+  },
   "decision_ledger": [
     {
-      "ts": "2026-07-21T19:37:43.418139+00:00",
+      "ts": "2026-07-28T13:37:47.643136+00:00",
       "event": "Drift detected: AI answer visibility slipped",
       "actor": "AGENT",
       "result": "Flagged in share-of-model"
     },
     {
-      "ts": "2026-07-21T19:37:43.418139+00:00",
+      "ts": "2026-07-28T13:37:47.643136+00:00",
       "event": "Recommendation issued: Decrease Paid Social -110,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-07-21T19:37:43.418139+00:00",
+      "ts": "2026-07-28T13:37:47.643136+00:00",
       "event": "Recommendation issued: Decrease Paid Search -82,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-07-21T19:37:43.418139+00:00",
+      "ts": "2026-07-28T13:37:47.643136+00:00",
       "event": "Recommendation issued: Increase Email Nurture +10,000",
       "actor": "AGENT",
       "result": "Pending approval"

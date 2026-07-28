@@ -73,6 +73,7 @@ def build_board_view(
             "recommendations": _recommendations(data),
             "autonomy": _autonomy(decisions, autonomy_level, weekly_cap),
         },
+        "share_of_model": _share_of_model(data, trends),
         "decision_ledger": _decision_ledger(data, decisions, now),
     }
     return view
@@ -212,6 +213,32 @@ def _money_by_channel(data: BoardPackData) -> list[dict]:
     rows = sorted(data.channels, key=lambda c: c.time_decay, reverse=True)
     return [{"channel": c.channel, "revenue": round(c.time_decay),
              "share": round(c.time_decay / total, 4)} for c in rows]
+
+
+def _share_of_model(data: BoardPackData, trends: dict) -> dict:
+    """The AI-answer-share panel: per buyer query, how often the brand is named in
+    assistant answers and where it ranks — plus each query's mention-rate trend.
+    Worst-standing first so a slip surfaces at the top."""
+    series = (trends or {}).get("share_of_model", {})
+    rows = sorted(data.share_of_model, key=lambda s: (s.mention_rate, -s.avg_rank))
+    queries = [{
+        "query": s.buyer_query,
+        "mention_rate": round(s.mention_rate, 3),
+        "citation_rate": round(s.citation_rate, 3),
+        "avg_rank": round(s.avg_rank, 1),
+        "best_rank": s.best_rank,
+        "status": s.status,
+        "trend": series.get(s.buyer_query, []),
+    } for s in rows]
+    n = len(data.share_of_model)
+    avg = sum(s.mention_rate for s in data.share_of_model) / n if n else 0.0
+    return {
+        "assistants": ["ChatGPT", "Perplexity", "Gemini"],
+        "queries_tracked": n,
+        "queries_at_risk": sum(1 for s in data.share_of_model if s.status == "at risk"),
+        "avg_mention_rate": round(avg, 3),
+        "queries": queries,
+    }
 
 
 def _credit_by_channel(data: BoardPackData) -> list[dict]:

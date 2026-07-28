@@ -12,7 +12,8 @@ def _view(**kw):
 def test_top_level_shape():
     _d, v = _view()
     assert set(v) == {"meta", "trends", "live_board", "model_compare",
-                      "reallocation_agent", "decision_ledger"}
+                      "reallocation_agent", "share_of_model", "decision_ledger"}
+    assert {"queries", "avg_mention_rate", "queries_at_risk"} <= set(v["share_of_model"])
     assert {"kpis", "what_changed", "money_by_channel"} <= set(v["live_board"])
     assert {"credit_by_channel", "credit_by_campaign", "incrementality_tests"} \
         <= set(v["model_compare"])
