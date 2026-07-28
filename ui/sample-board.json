@@ -2,7 +2,7 @@
   "meta": {
     "customer": "Acme Cloud",
     "period_label": "2026-Q1 to date",
-    "recomputed_at": "2026-07-28T13:37:47.643136+00:00",
+    "recomputed_at": "2026-07-28T14:04:57.364971+00:00",
     "events_per_sec": 2000,
     "events_per_sec_illustrative": true,
     "window": "period_to_date",
@@ -1093,55 +1093,55 @@
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.964
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.975
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.98
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.977
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.968
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.954
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.939
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.927
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.921
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.921
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.929
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.942
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "mention_rate": 0.95
+          "mention_rate": 0.956
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
@@ -1151,59 +1151,59 @@
       "FinOps tools for enterprise": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.859
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.863
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.861
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.851
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.838
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.823
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.811
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.804
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.805
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.812
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.825
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.84
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.853
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "mention_rate": 0.833
+          "mention_rate": 0.861
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
@@ -1213,59 +1213,59 @@
       "how to reduce our AWS bill": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.661
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.651
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.638
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.623
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.611
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.604
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.605
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.612
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.625
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.64
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.653
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.661
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.663
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "mention_rate": 0.633
+          "mention_rate": 0.657
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
@@ -1275,59 +1275,59 @@
       "Acme Cloud alternatives": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.554
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.539
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.527
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.521
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.521
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.529
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.542
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.556
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.57
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.578
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.58
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.574
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.562
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "mention_rate": 0.55
+          "mention_rate": 0.548
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
@@ -1341,55 +1341,55 @@
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "mention_rate": 0.944
+          "mention_rate": 0.96
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "mention_rate": 0.888
+          "mention_rate": 0.92
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "mention_rate": 0.832
+          "mention_rate": 0.878
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "mention_rate": 0.776
+          "mention_rate": 0.836
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "mention_rate": 0.72
+          "mention_rate": 0.792
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "mention_rate": 0.664
+          "mention_rate": 0.746
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "mention_rate": 0.608
+          "mention_rate": 0.699
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "mention_rate": 0.552
+          "mention_rate": 0.65
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "mention_rate": 0.496
+          "mention_rate": 0.598
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "mention_rate": 0.44
+          "mention_rate": 0.543
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "mention_rate": 0.385
+          "mention_rate": 0.483
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "mention_rate": 0.329
+          "mention_rate": 0.417
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "mention_rate": 0.273
+          "mention_rate": 0.34
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
@@ -1880,55 +1880,55 @@
           },
           {
             "t": "2026-01-01T09:01:00+00:00",
-            "mention_rate": 0.944
+            "mention_rate": 0.96
           },
           {
             "t": "2026-01-01T09:02:00+00:00",
-            "mention_rate": 0.888
+            "mention_rate": 0.92
           },
           {
             "t": "2026-01-01T09:03:00+00:00",
-            "mention_rate": 0.832
+            "mention_rate": 0.878
           },
           {
             "t": "2026-01-01T09:04:00+00:00",
-            "mention_rate": 0.776
+            "mention_rate": 0.836
           },
           {
             "t": "2026-01-01T09:05:00+00:00",
-            "mention_rate": 0.72
+            "mention_rate": 0.792
           },
           {
             "t": "2026-01-01T09:06:00+00:00",
-            "mention_rate": 0.664
+            "mention_rate": 0.746
           },
           {
             "t": "2026-01-01T09:07:00+00:00",
-            "mention_rate": 0.608
+            "mention_rate": 0.699
           },
           {
             "t": "2026-01-01T09:08:00+00:00",
-            "mention_rate": 0.552
+            "mention_rate": 0.65
           },
           {
             "t": "2026-01-01T09:09:00+00:00",
-            "mention_rate": 0.496
+            "mention_rate": 0.598
           },
           {
             "t": "2026-01-01T09:10:00+00:00",
-            "mention_rate": 0.44
+            "mention_rate": 0.543
           },
           {
             "t": "2026-01-01T09:11:00+00:00",
-            "mention_rate": 0.385
+            "mention_rate": 0.483
           },
           {
             "t": "2026-01-01T09:12:00+00:00",
-            "mention_rate": 0.329
+            "mention_rate": 0.417
           },
           {
             "t": "2026-01-01T09:13:00+00:00",
-            "mention_rate": 0.273
+            "mention_rate": 0.34
           },
           {
             "t": "2026-01-01T09:14:00+00:00",
@@ -1946,59 +1946,59 @@
         "trend": [
           {
             "t": "2026-01-01T09:00:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.554
           },
           {
             "t": "2026-01-01T09:01:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.539
           },
           {
             "t": "2026-01-01T09:02:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.527
           },
           {
             "t": "2026-01-01T09:03:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.521
           },
           {
             "t": "2026-01-01T09:04:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.521
           },
           {
             "t": "2026-01-01T09:05:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.529
           },
           {
             "t": "2026-01-01T09:06:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.542
           },
           {
             "t": "2026-01-01T09:07:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.556
           },
           {
             "t": "2026-01-01T09:08:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.57
           },
           {
             "t": "2026-01-01T09:09:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.578
           },
           {
             "t": "2026-01-01T09:10:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.58
           },
           {
             "t": "2026-01-01T09:11:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.574
           },
           {
             "t": "2026-01-01T09:12:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.562
           },
           {
             "t": "2026-01-01T09:13:00+00:00",
-            "mention_rate": 0.55
+            "mention_rate": 0.548
           },
           {
             "t": "2026-01-01T09:14:00+00:00",
@@ -2016,59 +2016,59 @@
         "trend": [
           {
             "t": "2026-01-01T09:00:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.661
           },
           {
             "t": "2026-01-01T09:01:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.651
           },
           {
             "t": "2026-01-01T09:02:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.638
           },
           {
             "t": "2026-01-01T09:03:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.623
           },
           {
             "t": "2026-01-01T09:04:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.611
           },
           {
             "t": "2026-01-01T09:05:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.604
           },
           {
             "t": "2026-01-01T09:06:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.605
           },
           {
             "t": "2026-01-01T09:07:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.612
           },
           {
             "t": "2026-01-01T09:08:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.625
           },
           {
             "t": "2026-01-01T09:09:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.64
           },
           {
             "t": "2026-01-01T09:10:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.653
           },
           {
             "t": "2026-01-01T09:11:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.661
           },
           {
             "t": "2026-01-01T09:12:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.663
           },
           {
             "t": "2026-01-01T09:13:00+00:00",
-            "mention_rate": 0.633
+            "mention_rate": 0.657
           },
           {
             "t": "2026-01-01T09:14:00+00:00",
@@ -2086,59 +2086,59 @@
         "trend": [
           {
             "t": "2026-01-01T09:00:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.859
           },
           {
             "t": "2026-01-01T09:01:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.863
           },
           {
             "t": "2026-01-01T09:02:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.861
           },
           {
             "t": "2026-01-01T09:03:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.851
           },
           {
             "t": "2026-01-01T09:04:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.838
           },
           {
             "t": "2026-01-01T09:05:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.823
           },
           {
             "t": "2026-01-01T09:06:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.811
           },
           {
             "t": "2026-01-01T09:07:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.804
           },
           {
             "t": "2026-01-01T09:08:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.805
           },
           {
             "t": "2026-01-01T09:09:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.812
           },
           {
             "t": "2026-01-01T09:10:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.825
           },
           {
             "t": "2026-01-01T09:11:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.84
           },
           {
             "t": "2026-01-01T09:12:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.853
           },
           {
             "t": "2026-01-01T09:13:00+00:00",
-            "mention_rate": 0.833
+            "mention_rate": 0.861
           },
           {
             "t": "2026-01-01T09:14:00+00:00",
@@ -2160,55 +2160,55 @@
           },
           {
             "t": "2026-01-01T09:01:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.964
           },
           {
             "t": "2026-01-01T09:02:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.975
           },
           {
             "t": "2026-01-01T09:03:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.98
           },
           {
             "t": "2026-01-01T09:04:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.977
           },
           {
             "t": "2026-01-01T09:05:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.968
           },
           {
             "t": "2026-01-01T09:06:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.954
           },
           {
             "t": "2026-01-01T09:07:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.939
           },
           {
             "t": "2026-01-01T09:08:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.927
           },
           {
             "t": "2026-01-01T09:09:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.921
           },
           {
             "t": "2026-01-01T09:10:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.921
           },
           {
             "t": "2026-01-01T09:11:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.929
           },
           {
             "t": "2026-01-01T09:12:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.942
           },
           {
             "t": "2026-01-01T09:13:00+00:00",
-            "mention_rate": 0.95
+            "mention_rate": 0.956
           },
           {
             "t": "2026-01-01T09:14:00+00:00",
@@ -2220,25 +2220,25 @@
   },
   "decision_ledger": [
     {
-      "ts": "2026-07-28T13:37:47.643136+00:00",
+      "ts": "2026-07-28T14:04:57.364971+00:00",
       "event": "Drift detected: AI answer visibility slipped",
       "actor": "AGENT",
       "result": "Flagged in share-of-model"
     },
     {
-      "ts": "2026-07-28T13:37:47.643136+00:00",
+      "ts": "2026-07-28T14:04:57.364971+00:00",
       "event": "Recommendation issued: Decrease Paid Social -110,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-07-28T13:37:47.643136+00:00",
+      "ts": "2026-07-28T14:04:57.364971+00:00",
       "event": "Recommendation issued: Decrease Paid Search -82,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-07-28T13:37:47.643136+00:00",
+      "ts": "2026-07-28T14:04:57.364971+00:00",
       "event": "Recommendation issued: Increase Email Nurture +10,000",
       "actor": "AGENT",
       "result": "Pending approval"

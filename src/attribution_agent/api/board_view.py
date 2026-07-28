@@ -16,6 +16,7 @@ pass them off as measured. Everything else is real pipeline output.
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -451,13 +452,19 @@ def trends_sample(data: BoardPackData, buckets: int = 15) -> dict:
         r.program_category: [{"t": times[i], "spend": round(r.spend / buckets)}
                              for i in range(buckets)]
         for r in data.cac_roi if r.spend}
+    # Each line ENDS on the query's current mention rate (the value in the table),
+    # so the chart's right edge and the table agree. At-risk queries slip down to
+    # it from a healthy start; the rest drift gently and land on it.
     share_of_model = {}
-    for s in data.share_of_model:
-        if s.status == "at risk":                       # declining curve (the slip)
-            series = [max(0.0, round(s.mention_rate + (1 - s.mention_rate) * (1 - i / (buckets - 1)), 3))
+    for qi, s in enumerate(data.share_of_model):
+        r = s.mention_rate
+        if s.status == "at risk":
+            series = [max(0.0, round(r + (1 - r) * (1 - i / (buckets - 1)) ** 0.7, 3))
                       for i in range(buckets)]
         else:
-            series = [round(s.mention_rate, 3)] * buckets
+            series = [round(min(1.0, max(0.0, r + 0.03 * math.sin(i / 2.0 + qi))), 3)
+                      for i in range(buckets)]
+        series[-1] = round(r, 3)                          # right edge == table value
         share_of_model[s.buyer_query] = [{"t": times[i], "mention_rate": series[i]}
                                          for i in range(buckets)]
     return {"bucket": "minute", "revenue": revenue,
