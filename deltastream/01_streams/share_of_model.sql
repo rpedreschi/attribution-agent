@@ -1,7 +1,7 @@
 -- Share-of-model probe feed: the scheduled "ask the assistants" job that records,
 -- per buyer-intent prompt, whether an LLM (ChatGPT / Perplexity / Gemini) named
 -- the brand, cited it, and where it ranked. This is the leading indicator for the
--- AI Assistant channel — the place you lose overnight when a model updates. The
+-- AEO / LLM channel — the place you lose overnight when a model updates. The
 -- agent reads the aggregate (mv_share_of_model); a live drop shows up here first.
 --
 -- Carries topic.partitions/replicas because rachel_share_of_model is new —

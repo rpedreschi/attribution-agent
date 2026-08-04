@@ -36,7 +36,7 @@ _TOUCH_SOURCE = {
     "Paid Social": "ga4",
     "Organic/Web": "ga4",
     "Brand": "ga4",
-    "AI Assistant": "ga4",
+    "AEO / LLM": "ga4",
     "Events": "hubspot_form",
     "Email Nurture": "hubspot_email",
     "Outbound SDR": "outreach",
@@ -155,7 +155,8 @@ class LiveGenerator:
                     "share-of-model DRIFT card updates shortly."},
             {"name": "agent", "at": self.slip_at + 25.0, "spawn": 0,
              "cue": "Agent logged the share-of-model drop to the decision ledger. No budget "
-                    "move proposed: the AI Assistant channel has no media lever."},
+                    "move proposed: AEO / LLM spend is content/PR, not a dial-able media "
+                    "buy — you steer it by share-of-model."},
         ]
         # Fire in time order (the sequential runner and on-cue path both walk the
         # list in order); ascending `at` keeps timer and story order aligned.
@@ -207,12 +208,12 @@ class LiveGenerator:
     def _touch(self, acct: dict, channel: str, when: datetime) -> list[Event]:
         kind = _TOUCH_SOURCE[channel]
         web_id = f"web-{acct['account_id']}"
-        if kind == "ga4" and channel == "AI Assistant":
+        if kind == "ga4" and channel == "AEO / LLM":
             src = self.rng.choice(["chatgpt", "perplexity", "gemini"])
             return [schemas.ga4_event(
                 web_id, f"sess-{acct['account_id']}-{when:%j%H%M}", "page_view",
                 "https://acme.cloud/solutions", self.rng.choice(_DEVICES),
-                src, "ai-referral", "AI Assistant Campaign", when)]
+                src, "ai-referral", "AEO / LLM Campaign", when)]
         if kind == "ga4":
             utm = {"Paid Search": ("google", "cpc"), "Paid Social": ("linkedin", "paid-social"),
                    "Organic/Web": ("google", "organic"), "Brand": ("direct", "brand")}[channel]

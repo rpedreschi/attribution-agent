@@ -48,7 +48,7 @@ _TOUCH_SOURCE = {
     "Paid Social": "ga4",
     "Organic/Web": "ga4",
     "Brand": "ga4",
-    "AI Assistant": "ga4",          # assistant referral lands as a web session
+    "AEO / LLM": "ga4",          # assistant referral lands as a web session
     "Events": "hubspot_form",
     "Email Nurture": "hubspot_email",
     "Outbound SDR": "outreach",
@@ -165,7 +165,7 @@ class Generator:
             start = close - timedelta(days=self.rng.randint(25, 80))
             # Anon->known bridge: a form fill ties the web cookie to the contact so
             # web_identity_map resolves and every GA4-sourced touch in this journey
-            # (Paid Search/Social/Brand/AI Assistant/Organic) attributes to the
+            # (Paid Search/Social/Brand/AEO / LLM/Organic) attributes to the
             # account. Without it only the email-joined channels (Email Nurture,
             # Outbound SDR) resolve and the GA4 channels drop out of attribution,
             # skewing all revenue onto those two. Emitted before the touches (and
@@ -187,7 +187,7 @@ class Generator:
         kind = _TOUCH_SOURCE[channel]
         web_id = f"web-{acct['account_id']}"
         if kind == "ga4":
-            if channel == "AI Assistant":
+            if channel == "AEO / LLM":
                 utm = (self.rng.choice(["chatgpt", "perplexity", "gemini"]), "ai-referral")
             else:
                 utm = {"Paid Search": ("google", "cpc"), "Paid Social": ("linkedin", "paid-social"),

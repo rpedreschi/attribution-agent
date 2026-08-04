@@ -324,14 +324,14 @@ SELECT
         WHEN 'cpc'          THEN 'Paid Search'
         WHEN 'paid-social'  THEN 'Paid Social'
         WHEN 'brand'        THEN 'Brand'
-        WHEN 'ai-referral'  THEN 'AI Assistant'
+        WHEN 'ai-referral'  THEN 'AEO / LLM'
         ELSE 'Organic/Web'
     END AS VARCHAR) AS "channel",
     CAST(CASE g."utm_medium"
         WHEN 'cpc'          THEN 'Paid Search'
         WHEN 'paid-social'  THEN 'Paid Social'
         WHEN 'brand'        THEN 'Brand'
-        WHEN 'ai-referral'  THEN 'AI Assistant'
+        WHEN 'ai-referral'  THEN 'AEO / LLM'
         ELSE 'Organic/Web'
     END AS VARCHAR) AS "program_category",
     g."utm_campaign" AS "campaign", 'ga4' AS "source", 'ga4' AS "source_system"

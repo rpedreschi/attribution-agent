@@ -140,7 +140,7 @@ class AgentCLI:
 
     def _print_unbuyable_note(self) -> None:
         """Flag channels the agent deliberately won't reallocate because they
-        out-earn the blend yet have no media lever — chiefly AI Assistant."""
+        out-earn the blend yet have no media lever — chiefly AEO / LLM."""
         excluded = set(self.settings.agent.guardrails.excluded_channels)
         blended = self.data.blended_roi
         flagged = [r for r in self.data.cac_roi
@@ -151,9 +151,9 @@ class AgentCLI:
         for r in sorted(flagged, key=lambda r: r.roi or 0, reverse=True):
             print(f"    • {r.program_category}: {r.roi:.1f}x ROI (blended {blended:.2f}x), "
                   f"excluded from autonomy.")
-        if any(r.program_category == "AI Assistant" for r in flagged):
-            print("      AI Assistant has no media buy — you can't spend into an LLM's "
-                  "recommendation. Watch share-of-model (aishare), don't fund it.")
+        if any(r.program_category == "AEO / LLM" for r in flagged):
+            print("      AEO / LLM spend is content/PR to earn placement, not a dial-able "
+                  "media buy — steer it by share-of-model (aishare), not by reallocation.")
 
     def cmd_aishare(self, _: str) -> None:
         som = self.data.share_of_model
@@ -177,7 +177,7 @@ class AgentCLI:
             q = at_risk[0]
             print(f"\n  ⚠ You've slipped out of the answer on \"{q.buyer_query}\" "
                   f"(mention {q.mention_rate:.0%}, avg rank {q.avg_rank:.1f}). "
-                  "No ad dashboard would show this — it's the AI Assistant channel "
+                  "No ad dashboard would show this — it's the AEO / LLM channel "
                   "leaking, live.")
 
     # -- human-in-the-loop --------------------------------------------------

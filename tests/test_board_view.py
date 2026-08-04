@@ -6,7 +6,7 @@ from attribution_agent.api.board_view import build_board_view, snapshot_of, tren
 def _view(**kw):
     d = BoardPackData.from_sample()
     kw.setdefault("trends", trends_sample(d))
-    return d, build_board_view(d, excluded_channels=["Brand", "Events", "AI Assistant"], **kw)
+    return d, build_board_view(d, excluded_channels=["Brand", "Events", "AEO / LLM"], **kw)
 
 
 def test_top_level_shape():
@@ -50,7 +50,7 @@ def test_what_changed_diffs_against_prior_snapshot():
     # perturb one channel so the mover card fires
     prev["by_channel_td"]["Paid Search"] = d.channel_attr("Paid Search").time_decay - 50_000
     v = build_board_view(d, prev_snapshot=prev,
-                         excluded_channels=["Brand", "Events", "AI Assistant"])
+                         excluded_channels=["Brand", "Events", "AEO / LLM"])
     titles = [c["title"] for c in v["live_board"]["what_changed"]]
     assert any("moved since the last snapshot" in t for t in titles)
 
@@ -77,7 +77,7 @@ def test_ledger_has_agent_and_human_events():
     decisions = [{"ts": "2026-07-15T10:00:00", "decision": "approve",
                   "action": "Increase", "channel": "Email Nurture", "reason": "ok"}]
     v = build_board_view(d, decisions=decisions,
-                         excluded_channels=["Brand", "Events", "AI Assistant"])
+                         excluded_channels=["Brand", "Events", "AEO / LLM"])
     actors = {e["actor"] for e in v["decision_ledger"]}
     assert {"AGENT", "HUMAN"} <= actors
     assert v["reallocation_agent"]["autonomy"]["match_rate"] == {"matched": 1, "of": 1}

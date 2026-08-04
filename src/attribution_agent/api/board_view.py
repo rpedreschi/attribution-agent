@@ -165,7 +165,7 @@ def _what_changed(data: BoardPackData, prev: dict | None, excluded: set,
             "real": True,
         })
 
-    # REAL: share-of-model slip (the AI Assistant early-warning).
+    # REAL: share-of-model slip (the AEO / LLM early-warning).
     at_risk = [s for s in data.share_of_model if s.status == "at risk"]
     if at_risk:
         q = sorted(at_risk, key=lambda s: s.avg_rank, reverse=True)[0]

@@ -96,7 +96,7 @@ class CampaignRow:
 @dataclass
 class ShareOfModelRow:
     """The brand's standing in LLM answers for one buyer query — the leading
-    indicator for the (un-buyable) AI Assistant channel."""
+    indicator for the AEO / LLM channel (you earn placement, you don't buy it)."""
     buyer_query: str
     probes: int
     mentions: int
@@ -140,7 +140,7 @@ class BoardPackData:
     # Marketing-influenced revenue per channel (full deal revenue to every channel
     # in the path; sums higher than sourced — held separate, never summed).
     influenced_by_channel: dict[str, float] = field(default_factory=dict)
-    # LLM answer-space visibility (leading indicator for the AI Assistant channel)
+    # LLM answer-space visibility (leading indicator for the AEO / LLM channel)
     share_of_model: list[ShareOfModelRow] = field(default_factory=list)
     # filled in by the agent layer
     observations: list[str] = field(default_factory=list)

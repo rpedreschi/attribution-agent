@@ -54,23 +54,23 @@ class Channel:
 # Channel economics. Spend sums to $1,900,000; each revenue column sums to
 # $4,280,000; attributed_deals sums to 36.
 #
-# "AI Assistant" is the LLM-influence channel: deals where the buyer was steered
-# by ChatGPT / Perplexity / Gemini (zero-click, self-reported, or arriving via an
-# assistant referrer). It carries almost no *controllable* spend — you can't buy
-# an LLM recommendation — so its ROI is outsized and it is agent_eligible=False:
-# the agent must not propose budget moves on a channel with no media lever. What
-# you steer instead is share-of-model (see SHARE_OF_MODEL below). Note last-touch
-# *under*-credits it (the assistant touch is invisible, so last-touch hands the
-# credit to the direct/branded visit that follows); time-decay catches it.
+# "AEO / LLM" is the answer-engine channel: deals where the buyer was steered by
+# ChatGPT / Perplexity / Gemini (arriving via an assistant referral or self-
+# reported). Its spend is content, PR, and site work to *earn* placement in the
+# answers — real budget, and now the largest, but NOT a dial-able media buy. So it
+# stays agent_eligible=False: the agent doesn't reallocate it like ad spend; you
+# steer it by share-of-model (see SHARE_OF_MODEL below). Note last-touch *under*-
+# credits it (the assistant touch is invisible, so last-touch hands the credit to
+# the direct/branded visit that follows); time-decay catches it.
 CHANNELS: list[Channel] = [
-    Channel("Paid Search",   "Paid Search",   410_000, 1_100_000, 680_000, 870_000, 8, "google_ads",  "google_ads", True),
-    Channel("Paid Social",   "Paid Social",   550_000,   520_000, 820_000, 640_000, 6, "linkedin_ads","linkedin",   True),
-    Channel("Outbound SDR",  "Outbound SDR",  300_000,   980_000, 560_000, 710_000, 6, "outreach",    "outreach",   True),
-    Channel("Email Nurture", "Email Nurture",  50_000,   720_000, 540_000, 640_000, 6, "hubspot",     "hubspot",    True),
-    Channel("Events",        "Events",        360_000,   470_000, 720_000, 560_000, 4, "salesforce",  "manual",     False),
+    Channel("Paid Search",   "Paid Search",   300_000, 1_100_000, 680_000, 640_000, 6, "google_ads",  "google_ads", True),
+    Channel("Paid Social",   "Paid Social",   400_000,   520_000, 820_000, 590_000, 6, "linkedin_ads","linkedin",   True),
+    Channel("Outbound SDR",  "Outbound SDR",  300_000,   980_000, 560_000, 560_000, 5, "outreach",    "outreach",   True),
+    Channel("Email Nurture", "Email Nurture",  50_000,   720_000, 540_000, 540_000, 6, "hubspot",     "hubspot",    True),
+    Channel("Events",        "Events",        260_000,   470_000, 720_000, 520_000, 3, "salesforce",  "manual",     False),
     Channel("Organic/Web",   "Organic/Web",    30_000,   250_000, 300_000, 300_000, 2, "ga4",         "manual",     True),
-    Channel("Brand",         "Brand",         180_000,   120_000, 380_000, 220_000, 1, "salesforce",  "manual",     False),
-    Channel("AI Assistant",  "AI Assistant",   20_000,   120_000, 280_000, 340_000, 3, "ga4",         "ai_referral",False),
+    Channel("Brand",         "Brand",         110_000,   120_000, 380_000, 230_000, 1, "salesforce",  "manual",     False),
+    Channel("AEO / LLM",  "AEO / LLM",  450_000,   120_000, 280_000, 900_000, 7, "ga4",         "ai_referral",False),
 ]
 
 
@@ -87,15 +87,15 @@ class FunnelRow:
 
 # Funnel by program category. Columns roll up to the period totals above.
 FUNNEL: list[FunnelRow] = [
-    FunnelRow("Paid Search",   12_400, 1_650, 560, 190, 31, 8),
+    FunnelRow("Paid Search",   12_400, 1_650, 560, 190, 31, 6),
     FunnelRow("Paid Social",   15_800, 1_980, 620, 175, 25, 6),
-    FunnelRow("Outbound SDR",   6_200, 1_420, 410, 150, 27, 6),
+    FunnelRow("Outbound SDR",   6_200, 1_420, 410, 150, 27, 5),
     FunnelRow("Email Nurture",  7_600,   980, 380, 120, 20, 6),
-    FunnelRow("Events",         3_100,   290, 140,  55, 16, 4),
+    FunnelRow("Events",         3_100,   290, 140,  55, 16, 3),
     FunnelRow("Organic/Web",    2_400,    78,  52,  22,  9, 2),
     FunnelRow("Brand",            700,    22,  18,   8,  3, 1),
-    # AI Assistant: low volume, high intent — few touches but they convert.
-    FunnelRow("AI Assistant",   1_900,   240,  90,  28, 11, 3),
+    # AEO / LLM: high-intent answer-engine referrals — few touches, strong convert.
+    FunnelRow("AEO / LLM",   1_900,   240,  90,  28, 11, 7),
 ]
 
 # Top campaigns by attributed revenue (time-decay), for the Campaign sheet.
@@ -129,7 +129,7 @@ CAMPAIGNS: list[Campaign] = [
     Campaign("Brand - Podcast Sponsor",    "Brand",         70_000,  90_000, 0),
     Campaign("SDR Outbound - SMB",         "Outbound SDR",  60_000, 200_000, 2),
     Campaign("Nurture - Onboarding",       "Email Nurture", 18_000, 160_000, 1),
-    Campaign("LLM Referral - Organic",     "AI Assistant",  20_000, 340_000, 3),
+    Campaign("AEO Content & PR Program",   "AEO / LLM", 180_000, 520_000, 4),
 ]
 
 
@@ -137,7 +137,7 @@ CAMPAIGNS: list[Campaign] = [
 class ModelVisibilityRow:
     """One buyer-intent prompt's standing in the LLM answer space ("share of
     model"): how often the brand is named/cited when an assistant answers it, and
-    where it ranks. The leading indicator for the AI Assistant channel — you can't
+    where it ranks. The leading indicator for the AEO / LLM channel — you can't
     buy the recommendation, but you can watch (and lose) your place in the answer.
     `probes` = times we asked the assistants this in the period."""
     buyer_query: str

@@ -2,7 +2,7 @@
   "meta": {
     "customer": "Acme Cloud",
     "period_label": "2026-Q1 to date",
-    "recomputed_at": "2026-07-28T14:04:57.364971+00:00",
+    "recomputed_at": "2026-08-04T20:52:02.868996+00:00",
     "events_per_sec": 2000,
     "events_per_sec_illustrative": true,
     "window": "period_to_date",
@@ -93,63 +93,63 @@
       "Paid Search": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "touches": 8
+          "touches": 6
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "touches": 8
+          "touches": 6
         }
       ],
       "Paid Social": [
@@ -217,125 +217,125 @@
       "Outbound SDR": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "touches": 7
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "touches": 7
+          "touches": 5
         }
       ],
       "Email Nurture": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "touches": 6
+          "touches": 5
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "touches": 6
+          "touches": 5
         }
       ],
       "Events": [
@@ -524,66 +524,66 @@
           "touches": 2
         }
       ],
-      "AI Assistant": [
+      "AEO / LLM": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "touches": 3
+          "touches": 8
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "touches": 3
+          "touches": 8
         }
       ]
     },
@@ -591,125 +591,125 @@
       "Paid Search": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "spend": 27333
+          "spend": 20000
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "spend": 27333
+          "spend": 20000
         }
       ],
       "Paid Social": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "spend": 36667
+          "spend": 26667
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "spend": 36667
+          "spend": 26667
         }
       ],
       "Outbound SDR": [
@@ -839,63 +839,63 @@
       "Events": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "spend": 24000
+          "spend": 17333
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "spend": 24000
+          "spend": 17333
         }
       ],
       "Organic/Web": [
@@ -963,125 +963,125 @@
       "Brand": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "spend": 12000
+          "spend": 7333
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "spend": 12000
+          "spend": 7333
         }
       ],
-      "AI Assistant": [
+      "AEO / LLM": [
         {
           "t": "2026-01-01T09:00:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:01:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:02:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:03:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:04:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:05:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:06:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:07:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:08:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:09:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:10:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:11:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:12:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:13:00+00:00",
-          "spend": 1333
+          "spend": 30000
         },
         {
           "t": "2026-01-01T09:14:00+00:00",
-          "spend": 1333
+          "spend": 30000
         }
       ]
     },
@@ -1456,38 +1456,44 @@
         "title": "Organic/Web: too few to attribute",
         "body": "2 conversions in window \u2014 below the threshold to attribute a reallocation.",
         "real": true
+      },
+      {
+        "kind": "drift",
+        "title": "Paid Search moved since the last snapshot",
+        "body": "Data-driven credit -230,000 vs the last snapshot.",
+        "real": true
       }
     ],
     "money_by_channel": [
       {
-        "channel": "Paid Search",
-        "revenue": 870000,
-        "share": 0.2033
+        "channel": "AEO / LLM",
+        "revenue": 900000,
+        "share": 0.2103
       },
       {
-        "channel": "Outbound SDR",
-        "revenue": 710000,
-        "share": 0.1659
+        "channel": "Paid Search",
+        "revenue": 640000,
+        "share": 0.1495
       },
       {
         "channel": "Paid Social",
-        "revenue": 640000,
-        "share": 0.1495
+        "revenue": 590000,
+        "share": 0.1379
       },
       {
-        "channel": "Email Nurture",
-        "revenue": 640000,
-        "share": 0.1495
-      },
-      {
-        "channel": "Events",
+        "channel": "Outbound SDR",
         "revenue": 560000,
         "share": 0.1308
       },
       {
-        "channel": "AI Assistant",
-        "revenue": 340000,
-        "share": 0.0794
+        "channel": "Email Nurture",
+        "revenue": 540000,
+        "share": 0.1262
+      },
+      {
+        "channel": "Events",
+        "revenue": 520000,
+        "share": 0.1215
       },
       {
         "channel": "Organic/Web",
@@ -1496,8 +1502,8 @@
       },
       {
         "channel": "Brand",
-        "revenue": 220000,
-        "share": 0.0514
+        "revenue": 230000,
+        "share": 0.0537
       }
     ]
   },
@@ -1514,23 +1520,23 @@
     },
     "credit_by_channel": [
       {
+        "channel": "AEO / LLM",
+        "shares": {
+          "last_touch": 0.028,
+          "linear": 0.0654,
+          "time_decay": 0.2103
+        },
+        "spread_pts": 18,
+        "status": "disagree"
+      },
+      {
         "channel": "Paid Search",
         "shares": {
           "last_touch": 0.257,
           "linear": 0.1589,
-          "time_decay": 0.2033
+          "time_decay": 0.1495
         },
-        "spread_pts": 10,
-        "status": "disagree"
-      },
-      {
-        "channel": "Outbound SDR",
-        "shares": {
-          "last_touch": 0.229,
-          "linear": 0.1308,
-          "time_decay": 0.1659
-        },
-        "spread_pts": 10,
+        "spread_pts": 11,
         "status": "disagree"
       },
       {
@@ -1538,9 +1544,19 @@
         "shares": {
           "last_touch": 0.1215,
           "linear": 0.1916,
-          "time_decay": 0.1495
+          "time_decay": 0.1379
         },
         "spread_pts": 7,
+        "status": "disagree"
+      },
+      {
+        "channel": "Outbound SDR",
+        "shares": {
+          "last_touch": 0.229,
+          "linear": 0.1308,
+          "time_decay": 0.1308
+        },
+        "spread_pts": 10,
         "status": "disagree"
       },
       {
@@ -1548,7 +1564,7 @@
         "shares": {
           "last_touch": 0.1682,
           "linear": 0.1262,
-          "time_decay": 0.1495
+          "time_decay": 0.1262
         },
         "spread_pts": 4,
         "status": "agree"
@@ -1558,20 +1574,10 @@
         "shares": {
           "last_touch": 0.1098,
           "linear": 0.1682,
-          "time_decay": 0.1308
+          "time_decay": 0.1215
         },
         "spread_pts": 6,
         "status": "disagree"
-      },
-      {
-        "channel": "AI Assistant",
-        "shares": {
-          "last_touch": 0.028,
-          "linear": 0.0654,
-          "time_decay": 0.0794
-        },
-        "spread_pts": 5,
-        "status": "agree"
       },
       {
         "channel": "Organic/Web",
@@ -1588,7 +1594,7 @@
         "shares": {
           "last_touch": 0.028,
           "linear": 0.0888,
-          "time_decay": 0.0514
+          "time_decay": 0.0537
         },
         "spread_pts": 6,
         "status": "thin"
@@ -1756,12 +1762,12 @@
         "roi": 8.89
       },
       {
-        "campaign": "LLM Referral - Organic",
-        "channel": "AI Assistant",
-        "spend": 20000,
-        "attributed_revenue": 340000,
-        "deals": 3,
-        "roi": 17.0
+        "campaign": "AEO Content & PR Program",
+        "channel": "AEO / LLM",
+        "spend": 180000,
+        "attributed_revenue": 520000,
+        "deals": 4,
+        "roi": 2.89
       }
     ],
     "incrementality_tests": {
@@ -1774,17 +1780,17 @@
     "recommendations": [
       {
         "id": 0,
-        "title": "Decrease Paid Social -110,000/wk",
+        "title": "Decrease Paid Social -80,000/wk",
         "action": "Decrease",
         "channel": "Paid Social",
-        "current_spend": 550000,
-        "delta": -110000,
-        "proposed_spend": 440000,
-        "expected_revenue_impact": -128000,
+        "current_spend": 400000,
+        "delta": -80000,
+        "proposed_spend": 320000,
+        "expected_revenue_impact": -118000,
         "confidence": "low",
-        "rationale": "Paid Social ROI is 1.16x, below the blended 2.25x. Decrease weekly spend by $110,000 (to $440,000); estimated revenue impact $-128,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.",
+        "rationale": "Paid Social ROI is 1.48x, below the blended 2.25x. Decrease weekly spend by $80,000 (to $320,000); estimated revenue impact $-118,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.",
         "basis": [
-          "cac_roi: Paid Social spend $550,000, ROI 1.16x",
+          "cac_roi: Paid Social spend $400,000, ROI 1.48x",
           "funnel_metrics: Paid Social 6 conversions (trailing 90d)"
         ],
         "reversible_days": 7,
@@ -1792,54 +1798,72 @@
       },
       {
         "id": 1,
-        "title": "Decrease Paid Search -82,000/wk",
+        "title": "Decrease Outbound SDR -60,000/wk",
         "action": "Decrease",
-        "channel": "Paid Search",
-        "current_spend": 410000,
-        "delta": -82000,
-        "proposed_spend": 328000,
-        "expected_revenue_impact": -174000,
+        "channel": "Outbound SDR",
+        "current_spend": 300000,
+        "delta": -60000,
+        "proposed_spend": 240000,
+        "expected_revenue_impact": -112000,
         "confidence": "low",
-        "rationale": "Paid Search ROI is 2.12x, below the blended 2.25x. Decrease weekly spend by $82,000 (to $328,000); estimated revenue impact $-174,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.",
+        "rationale": "Outbound SDR ROI is 1.87x, below the blended 2.25x. Decrease weekly spend by $60,000 (to $240,000); estimated revenue impact $-112,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.",
         "basis": [
-          "cac_roi: Paid Search spend $410,000, ROI 2.12x",
-          "funnel_metrics: Paid Search 8 conversions (trailing 90d)"
+          "cac_roi: Outbound SDR spend $300,000, ROI 1.87x",
+          "funnel_metrics: Outbound SDR 5 conversions (trailing 90d)"
         ],
         "reversible_days": 7,
         "status": "pending"
       },
       {
         "id": 2,
-        "title": "Increase Email Nurture +10,000/wk",
-        "action": "Increase",
-        "channel": "Email Nurture",
-        "current_spend": 50000,
-        "delta": 10000,
-        "proposed_spend": 60000,
-        "expected_revenue_impact": 128000,
+        "title": "Decrease AEO / LLM -90,000/wk",
+        "action": "Decrease",
+        "channel": "AEO / LLM",
+        "current_spend": 450000,
+        "delta": -90000,
+        "proposed_spend": 360000,
+        "expected_revenue_impact": -180000,
         "confidence": "low",
-        "rationale": "Email Nurture ROI is 12.80x, above the blended 2.25x. Increase weekly spend by $10,000 (to $60,000); estimated revenue impact $+128,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.",
+        "rationale": "AEO / LLM ROI is 2.00x, below the blended 2.25x. Decrease weekly spend by $90,000 (to $360,000); estimated revenue impact $-180,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.",
         "basis": [
-          "cac_roi: Email Nurture spend $50,000, ROI 12.80x",
-          "funnel_metrics: Email Nurture 6 conversions (trailing 90d)"
+          "cac_roi: AEO / LLM spend $450,000, ROI 2.00x",
+          "funnel_metrics: AEO / LLM 7 conversions (trailing 90d)"
         ],
         "reversible_days": 7,
         "status": "pending"
       },
       {
         "id": 3,
-        "title": "Increase Outbound SDR +29,960/wk",
-        "action": "Increase",
-        "channel": "Outbound SDR",
+        "title": "Decrease Paid Search -60,000/wk",
+        "action": "Decrease",
+        "channel": "Paid Search",
         "current_spend": 300000,
-        "delta": 29960,
-        "proposed_spend": 329960,
-        "expected_revenue_impact": 70906,
-        "confidence": "high",
-        "rationale": "Outbound SDR ROI is 2.37x, above the blended 2.25x. Increase weekly spend by $29,960 (to $329,960); estimated revenue impact $+70,906 at current efficiency.",
+        "delta": -60000,
+        "proposed_spend": 240000,
+        "expected_revenue_impact": -128000,
+        "confidence": "low",
+        "rationale": "Paid Search ROI is 2.13x, below the blended 2.25x. Decrease weekly spend by $60,000 (to $240,000); estimated revenue impact $-128,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.",
         "basis": [
-          "cac_roi: Outbound SDR spend $300,000, ROI 2.37x",
-          "funnel_metrics: Outbound SDR 6 conversions (trailing 90d)"
+          "cac_roi: Paid Search spend $300,000, ROI 2.13x",
+          "funnel_metrics: Paid Search 6 conversions (trailing 90d)"
+        ],
+        "reversible_days": 7,
+        "status": "pending"
+      },
+      {
+        "id": 4,
+        "title": "Increase Email Nurture +10,000/wk",
+        "action": "Increase",
+        "channel": "Email Nurture",
+        "current_spend": 50000,
+        "delta": 10000,
+        "proposed_spend": 60000,
+        "expected_revenue_impact": 108000,
+        "confidence": "low",
+        "rationale": "Email Nurture ROI is 10.80x, above the blended 2.25x. Increase weekly spend by $10,000 (to $60,000); estimated revenue impact $+108,000 at current efficiency. Capped by the \u00b120% weekly reallocation guardrail.",
+        "basis": [
+          "cac_roi: Email Nurture spend $50,000, ROI 10.80x",
+          "funnel_metrics: Email Nurture 6 conversions (trailing 90d)"
         ],
         "reversible_days": 7,
         "status": "pending"
@@ -2220,26 +2244,26 @@
   },
   "decision_ledger": [
     {
-      "ts": "2026-07-28T14:04:57.364971+00:00",
+      "ts": "2026-08-04T20:52:02.868996+00:00",
       "event": "Drift detected: AI answer visibility slipped",
       "actor": "AGENT",
       "result": "Flagged in share-of-model"
     },
     {
-      "ts": "2026-07-28T14:04:57.364971+00:00",
-      "event": "Recommendation issued: Decrease Paid Social -110,000",
+      "ts": "2026-08-04T20:52:02.868996+00:00",
+      "event": "Recommendation issued: Decrease Paid Social -80,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-07-28T14:04:57.364971+00:00",
-      "event": "Recommendation issued: Decrease Paid Search -82,000",
+      "ts": "2026-08-04T20:52:02.868996+00:00",
+      "event": "Recommendation issued: Decrease Outbound SDR -60,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-07-28T14:04:57.364971+00:00",
-      "event": "Recommendation issued: Increase Email Nurture +10,000",
+      "ts": "2026-08-04T20:52:02.868996+00:00",
+      "event": "Recommendation issued: Decrease AEO / LLM -90,000",
       "actor": "AGENT",
       "result": "Pending approval"
     }

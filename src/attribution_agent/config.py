@@ -67,10 +67,11 @@ class DeltaStreamConfig(BaseModel):
 class GuardrailConfig(BaseModel):
     max_weekly_reallocation_pct: float = 0.20
     min_conversions_trailing_90d: int = 3   # min trailing won deals to act on a channel
-    # Brand/Events: policy exclusion. AI Assistant: no media lever exists, so
-    # there is nothing to reallocate — the agent watches share-of-model instead.
+    # Brand/Events: policy exclusion. AEO / LLM: its spend is content/PR to earn
+    # placement, not a dial-able media buy — the agent watches share-of-model
+    # instead of reallocating it like ad budget.
     excluded_channels: list[str] = Field(
-        default_factory=lambda: ["Brand", "Events", "AI Assistant"])
+        default_factory=lambda: ["Brand", "Events", "AEO / LLM"])
     attribution_model_for_decisions: str = "time_decay"
 
 

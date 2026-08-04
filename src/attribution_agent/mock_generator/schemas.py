@@ -131,7 +131,7 @@ def channel_cost(day: str, channel: str, spend_amount: float, when: datetime) ->
 # --- Share of model (LLM answer-space visibility) ---------------------------
 # A scheduled "probe" feed: we ask the assistants (ChatGPT / Perplexity / Gemini)
 # the buyer-intent prompts that matter and record whether the brand was named,
-# cited, and where it ranked. This is the leading indicator for the AI Assistant
+# cited, and where it ranked. This is the leading indicator for the AEO / LLM
 # channel — the place you can lose overnight when a model updates.
 
 def share_of_model(when: datetime, buyer_query: str, assistant: str, mentioned: bool,
