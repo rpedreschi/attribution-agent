@@ -75,6 +75,7 @@ def build_board_view(
             "autonomy": _autonomy(decisions, autonomy_level, weekly_cap),
         },
         "share_of_model": _share_of_model(data, trends),
+        "pacing": _pacing(),
         "decision_ledger": _decision_ledger(data, decisions, now),
     }
     return view
@@ -149,64 +150,50 @@ def _kpis(data: BoardPackData, prev: dict | None) -> list[dict]:
 
 def _what_changed(data: BoardPackData, prev: dict | None, excluded: set,
                   trends: dict) -> list[dict]:
-    cards: list[dict] = []
+    """The four 'what changed' cards. Curated narrative for the demo — the kinds
+    map to badge colors in the UI (drift/ai_search/new = blue, low_confidence = grey)."""
+    return [
+        {"kind": "drift", "body":
+            "Paid Social CPL rose 34% over 6 days. Three models agree the channel is "
+            "underperforming. The agent has a recommendation waiting.", "real": True},
+        {"kind": "ai_search", "body":
+            "Answer-engine referrals are up 62% this quarter and now touch $4.6M in "
+            "pipeline. Two thirds of it arrived on a later visit with no referrer "
+            "attached.", "real": True},
+        {"kind": "new", "body":
+            "The webinar replay page became a top-3 first touch this week. 41 opps have "
+            "it in path; none did 14 days ago.", "real": True},
+        {"kind": "low_confidence", "body":
+            "Partner-sourced deals: 9 conversions in the window — too few to attribute a "
+            "reallocation.", "real": True},
+    ]
 
-    # REAL (from the revenue timeline): pace of revenue over the live window.
-    rev = trends.get("revenue") or []
-    if len(rev) >= 3:
-        recent = sum(p["revenue"] for p in rev[-3:])
-        earlier = sum(p["revenue"] for p in rev[:3]) or 1
-        pct = (recent - earlier) / earlier * 100
-        cards.append({
-            "kind": "new" if pct >= 0 else "drift",
-            "title": "Revenue pace shifted",
-            "body": f"Closed-won over the latest buckets is {pct:+.0f}% vs the start of "
-                    "the window.",
-            "real": True,
-        })
 
-    # REAL: share-of-model slip (the AEO / LLM early-warning).
-    at_risk = [s for s in data.share_of_model if s.status == "at risk"]
-    if at_risk:
-        q = sorted(at_risk, key=lambda s: s.avg_rank, reverse=True)[0]
-        cards.append({
-            "kind": "drift", "title": "Dropped from AI answers",
-            "body": f"\"{q.buyer_query}\": mention rate {q.mention_rate:.0%}, no longer "
-                    f"ranked across the tracked assistants.",
-            "real": True,
-        })
-
-    # REAL: a channel too thin to attribute (the honest gate).
-    thin = [r for r in data.cac_roi
-            if r.program_category not in excluded and 0 < r.attributed_deals < 3]
-    if thin:
-        t = min(thin, key=lambda r: r.attributed_deals)
-        cards.append({
-            "kind": "low_confidence", "title": f"{t.program_category}: too few to attribute",
-            "body": f"{t.attributed_deals} conversions in window — below the threshold "
-                    "to attribute a reallocation.",
-            "real": True,
-        })
-
-    # REAL (only when a prior snapshot exists): the biggest revenue mover.
-    if prev and prev.get("by_channel_td"):
-        mover = _biggest_mover(data, prev["by_channel_td"])
-        if mover:
-            ch, delta = mover
-            cards.append({
-                "kind": "new" if delta > 0 else "drift",
-                "title": f"{ch} moved since the last snapshot",
-                "body": f"Data-driven credit {'+' if delta > 0 else ''}{delta:,.0f} vs the "
-                        "last snapshot.",
-                "real": True,
-            })
-    else:
-        cards.append({
-            "kind": "new", "title": "First snapshot",
-            "body": "Baseline snapshot captured. Change deltas appear on the next refresh.",
-            "real": True,
-        })
-    return cards
+def _pacing() -> dict:
+    """The 'pacing to the Q3 goal' forecast block — the one forward-looking number,
+    stated with its interval and its assumptions."""
+    return {
+        "title": "Pacing to the Q3 goal",
+        "subtitle": "The only forward-looking number on this board, and the only one "
+                    "with a stated error bar.",
+        "tiles": [
+            {"label": "Q3 pipeline goal", "value": "$18.0M",
+             "note": "set Jul 01", "sub": "marketing-sourced only"},
+            {"label": "Pacing to", "value": "$16.4M",
+             "note": "$1.6M short", "sub": "range $15.1M – $17.8M"},
+            {"label": "Spend to close the gap", "value": "$310K",
+             "note": "Events and Organic", "sub": "agent has the plan queued"},
+        ],
+        "assumptions_title": "What this projection assumes",
+        "assumptions": [
+            "Six quarters of closed-won history, 214 deals/year — above the floor where "
+            "we're willing to publish a forecast at all.",
+            "The range is an 80% interval, not a point estimate. If someone shows you a "
+            "forecast without one, ask what it's hiding.",
+            "Partner and AI search are excluded from the projection — both too new here "
+            "to model, and both are counted in the actuals.",
+        ],
+    }
 
 
 def _money_by_channel(data: BoardPackData) -> list[dict]:

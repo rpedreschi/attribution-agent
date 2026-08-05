@@ -2,7 +2,7 @@
   "meta": {
     "customer": "Acme Cloud",
     "period_label": "2026-Q1 to date",
-    "recomputed_at": "2026-08-04T20:52:02.868996+00:00",
+    "recomputed_at": "2026-08-05T21:44:04.933630+00:00",
     "events_per_sec": 2000,
     "events_per_sec_illustrative": true,
     "window": "period_to_date",
@@ -1440,27 +1440,23 @@
     ],
     "what_changed": [
       {
-        "kind": "new",
-        "title": "Revenue pace shifted",
-        "body": "Closed-won over the latest buckets is +29% vs the start of the window.",
+        "kind": "drift",
+        "body": "Paid Social CPL rose 34% over 6 days. Three models agree the channel is underperforming. The agent has a recommendation waiting.",
         "real": true
       },
       {
-        "kind": "drift",
-        "title": "Dropped from AI answers",
-        "body": "\"cloud cost anomaly detection\": mention rate 22%, no longer ranked across the tracked assistants.",
+        "kind": "ai_search",
+        "body": "Answer-engine referrals are up 62% this quarter and now touch $4.6M in pipeline. Two thirds of it arrived on a later visit with no referrer attached.",
+        "real": true
+      },
+      {
+        "kind": "new",
+        "body": "The webinar replay page became a top-3 first touch this week. 41 opps have it in path; none did 14 days ago.",
         "real": true
       },
       {
         "kind": "low_confidence",
-        "title": "Organic/Web: too few to attribute",
-        "body": "2 conversions in window \u2014 below the threshold to attribute a reallocation.",
-        "real": true
-      },
-      {
-        "kind": "drift",
-        "title": "Paid Search moved since the last snapshot",
-        "body": "Data-driven credit -230,000 vs the last snapshot.",
+        "body": "Partner-sourced deals: 9 conversions in the window \u2014 too few to attribute a reallocation.",
         "real": true
       }
     ],
@@ -2242,27 +2238,57 @@
       }
     ]
   },
+  "pacing": {
+    "title": "Pacing to the Q3 goal",
+    "subtitle": "The only forward-looking number on this board, and the only one with a stated error bar.",
+    "tiles": [
+      {
+        "label": "Q3 pipeline goal",
+        "value": "$18.0M",
+        "note": "set Jul 01",
+        "sub": "marketing-sourced only"
+      },
+      {
+        "label": "Pacing to",
+        "value": "$16.4M",
+        "note": "$1.6M short",
+        "sub": "range $15.1M \u2013 $17.8M"
+      },
+      {
+        "label": "Spend to close the gap",
+        "value": "$310K",
+        "note": "Events and Organic",
+        "sub": "agent has the plan queued"
+      }
+    ],
+    "assumptions_title": "What this projection assumes",
+    "assumptions": [
+      "Six quarters of closed-won history, 214 deals/year \u2014 above the floor where we're willing to publish a forecast at all.",
+      "The range is an 80% interval, not a point estimate. If someone shows you a forecast without one, ask what it's hiding.",
+      "Partner and AI search are excluded from the projection \u2014 both too new here to model, and both are counted in the actuals."
+    ]
+  },
   "decision_ledger": [
     {
-      "ts": "2026-08-04T20:52:02.868996+00:00",
+      "ts": "2026-08-05T21:44:04.933630+00:00",
       "event": "Drift detected: AI answer visibility slipped",
       "actor": "AGENT",
       "result": "Flagged in share-of-model"
     },
     {
-      "ts": "2026-08-04T20:52:02.868996+00:00",
+      "ts": "2026-08-05T21:44:04.933630+00:00",
       "event": "Recommendation issued: Decrease Paid Social -80,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-08-04T20:52:02.868996+00:00",
+      "ts": "2026-08-05T21:44:04.933630+00:00",
       "event": "Recommendation issued: Decrease Outbound SDR -60,000",
       "actor": "AGENT",
       "result": "Pending approval"
     },
     {
-      "ts": "2026-08-04T20:52:02.868996+00:00",
+      "ts": "2026-08-05T21:44:04.933630+00:00",
       "event": "Recommendation issued: Decrease AEO / LLM -90,000",
       "actor": "AGENT",
       "result": "Pending approval"

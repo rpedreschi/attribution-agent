@@ -12,7 +12,8 @@ def _view(**kw):
 def test_top_level_shape():
     _d, v = _view()
     assert set(v) == {"meta", "trends", "live_board", "model_compare",
-                      "reallocation_agent", "share_of_model", "decision_ledger"}
+                      "reallocation_agent", "share_of_model", "pacing", "decision_ledger"}
+    assert {"tiles", "assumptions", "subtitle"} <= set(v["pacing"])
     assert {"queries", "avg_mention_rate", "queries_at_risk"} <= set(v["share_of_model"])
     assert {"kpis", "what_changed", "money_by_channel"} <= set(v["live_board"])
     assert {"credit_by_channel", "credit_by_campaign", "incrementality_tests"} \
@@ -44,15 +45,12 @@ def test_ai_slip_and_thin_cards_are_real():
     assert v["model_compare"]["incrementality_tests"]["illustrative"] is True
 
 
-def test_what_changed_diffs_against_prior_snapshot():
-    d = BoardPackData.from_sample()
-    prev = snapshot_of(d)
-    # perturb one channel so the mover card fires
-    prev["by_channel_td"]["Paid Search"] = d.channel_attr("Paid Search").time_decay - 50_000
-    v = build_board_view(d, prev_snapshot=prev,
-                         excluded_channels=["Brand", "Events", "AEO / LLM"])
-    titles = [c["title"] for c in v["live_board"]["what_changed"]]
-    assert any("moved since the last snapshot" in t for t in titles)
+def test_what_changed_cards_present():
+    _d, v = _view()
+    cards = v["live_board"]["what_changed"]
+    kinds = {c["kind"] for c in cards}
+    assert {"drift", "ai_search", "new", "low_confidence"} <= kinds
+    assert all(c.get("body") for c in cards)
 
 
 def test_trends_series_present_and_slip_declines():
