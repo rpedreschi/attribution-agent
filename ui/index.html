@@ -19,6 +19,7 @@
   /* sidebar */
   .side{background:var(--nav);color:var(--nav-text);padding:22px 16px;display:flex;flex-direction:column}
   .brand{color:#fff;font-weight:700;font-size:15px;letter-spacing:.2px;padding:0 8px 22px}
+  .brand .logo{display:block;height:26px;width:auto;max-width:180px;margin-bottom:14px}
   .brand small{display:block;color:var(--nav-label);font-weight:500;font-size:11px;margin-top:2px}
   .navlabel{color:var(--nav-label);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:16px 8px 8px}
   .navitem{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;color:var(--nav-text);
@@ -150,7 +151,7 @@
 <body>
 <div class="app">
   <aside class="side">
-    <div class="brand">Marketing Attribution<small id="brandSub">Powered by DeltaStream</small></div>
+    <div class="brand"><img class="logo" src="/deltastream-logo.svg" alt="DeltaStream" onerror="this.style.display='none'">Marketing Attribution<small id="brandSub">Powered by DeltaStream</small></div>
     <div class="navlabel">Attribution</div>
     <div class="navitem active" data-screen="live"><span class="dot"></span>Live board</div>
     <div class="navitem" data-screen="aishare"><span class="dot"></span>AI answer share</div>
